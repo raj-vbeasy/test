@@ -81,7 +81,7 @@ class Event extends Model
         '4th Hold (4H)',
         '5th Hold (5H)',
         'Archived Section',
-        'Future Consideration Mutually Agreeable Date (slot)',
+        'Future Consideration',
     ];
 
     final public function performanceLocation(): BelongsTo

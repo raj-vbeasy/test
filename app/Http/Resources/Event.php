@@ -49,7 +49,7 @@ class Event extends JsonResource
             '4th Hold (4H)' => ['background' => '#8e7cc3', 'color' => '#000000'],
             '5th Hold (5H)' => ['background' => '#377369', 'color' => '#ffffff'],
             'Archived Section' => ['background' => '#999999', 'color' => '#000000'],
-            'Future Consideration Mutually Agreeable Date (slot)' => ['background' => '#f0a714', 'color' => '#000000'],
+            'Future Consideration' => ['background' => '#f0a714', 'color' => '#000000'],
         ];
 
         foreach ($this->resource->artists as $artist) {
