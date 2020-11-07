@@ -15,7 +15,7 @@
 			<div class="row">
 				<div class="col-sm-6">{{ new Date().getFullYear() }} © {{ appName }}.</div>
 				<div class="col-sm-6">
-					<div class="text-sm-right d-none d-sm-block">Developed by <a href="https://www.vbeasyapp.com">V B Easy</a></div>
+					<div class="text-sm-right d-none d-sm-block">Developed by <a href="https://vbeasy.com/">VB Easy</a></div>
 				</div>
 			</div>
 		</div>
