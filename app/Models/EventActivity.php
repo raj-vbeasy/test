@@ -37,6 +37,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\Artist|null $artist
  * @property-read \App\Models\Stage|null $stage
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EventActivity whereStageId($value)
+ * @property string $cell_phone
+ * @property string $radio_channel
+ * @property string $email
+ * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereCellPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereRadioChannel($value)
  */
 class EventActivity extends Model
 {

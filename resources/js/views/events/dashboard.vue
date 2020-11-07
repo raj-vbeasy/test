@@ -700,6 +700,20 @@
                     </b-col>
                 </b-row>
 
+        <b-row v-if="form.artist.status === 7">
+          <b-col>
+            <b-form-group label-for="offer_expiration_date" label="Offer Expiration By">
+              <date-picker
+                  v-model="form.artist.offer_expiration_date"
+                  :first-day-of-week="1"
+                  lang="en"
+                  confirm
+                  value-type="timestamp"
+                  format="MMM DD, YYYY dddd"></date-picker>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
                 <b-row>
                     <b-col>
                         <b-form-group label="Hold Position" label-for="artist_hold_position">
@@ -1129,7 +1143,8 @@
                         challenged_by: '',
                         challenged_hours: '',
                         hold_position: null,
-						amount: 0
+						amount: 0,
+            offer_expiration_date: null
 					},
 					contact: {
 						id: '',
@@ -1511,7 +1526,8 @@
                         challenged_hours: this.form.artist.challenged_hours,
                         hold_position: this.form.artist.hold_position,
                         notes: this.form.artist.notes,
-						amount: this.form.artist.amount
+						amount: this.form.artist.amount,
+            offer_expiration_date: this.form.artist.offer_expiration_date
 					};
 					customRequest = this.$http.put('events/' + this.event.id + '/artists/' + this.form.artist.id.value, postParam);
 				} else if (this.modal.artist.add) {
@@ -1526,7 +1542,8 @@
                         challenged_hours: this.form.artist.challenged_hours,
                         hold_position: this.form.artist.hold_position,
                         notes: this.form.artist.notes,
-						amount: this.form.artist.amount
+						amount: this.form.artist.amount,
+            offer_expiration_date: this.form.artist.offer_expiration_date
 					};
 					customRequest = this.$http.post('events/' + this.event.id + '/artists', postParam);
 				} else {
