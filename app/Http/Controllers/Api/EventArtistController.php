@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Artist;
 use App\Models\Event;
+use App\Models\User;
+use App\Notifications\ArtistStatusUpdate;
 use App\Traits\HandleApiRequestAndResponse;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -56,12 +60,15 @@ class EventArtistController extends Controller
         ];
         $this->validateApiRequest();
         if ($this->isInputValid) {
+            $event = Event::find($eventId);
             \DB::beginTransaction();
             try {
-                $event = Event::find($eventId);
+                if ($request->get('offer_expiration_date')) {
+                    $request->merge(['offer_expiration_date' => Carbon::createFromTimestampMs($request->get('offer_expiration_date'))->format('Y-m-d H:i:s')]);
+                }
                 $event->artists()->syncWithoutDetaching(
                     [
-                        $request->get('artist_id') => $request->only(['type', 'email', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes'])
+                        $request->get('artist_id') => $request->only(['type', 'email', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date'])
                     ]
                 );
                 $this->setResponseVars("Artist added");
@@ -76,7 +83,7 @@ class EventArtistController extends Controller
             }
             $id=$event->id;
             $events = DB::table('artist_event')
-                ->where('id','!=', $id)
+                ->where('artist_id','!=', $id)
                 ->where('event_id', '=', $eventId)
                 ->where('hold_position', '>=', $request->input('hold_position'))
                 ->orderBy('hold_position')
@@ -87,6 +94,9 @@ class EventArtistController extends Controller
                     ->where('id', '=', $e->id)
                     ->update(['hold_position' => $hold_position]);
             }
+
+            // Notify related artists
+            $this->sendStatusAlert($event, $request->get('artist_id'), $request->get('status'));
         }
         return $this->apiResponse();
     }
@@ -127,12 +137,16 @@ class EventArtistController extends Controller
         ];
         $this->validateApiRequest();
         if ($this->isInputValid) {
+            $event = Event::find($eventId);
             \DB::beginTransaction();
             try {
-                $event = Event::find($eventId);
+                if ($request->get('offer_expiration_date')) {
+                    $request->merge(['offer_expiration_date' => Carbon::createFromTimestampMs($request->get('offer_expiration_date'))->format('Y-m-d H:i:s')]);
+                }
+
                 $event->artists()->updateExistingPivot(
                     $request->get('id'),
-                    $request->only(['type', 'email', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'notes'])
+                    $request->only(['type', 'email', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'notes', 'offer_expiration_date'])
                 );
                 $this->setResponseVars("Artist updated");
                 \DB::commit();
@@ -145,7 +159,7 @@ class EventArtistController extends Controller
                 );
             }
             $events = DB::table('artist_event')
-                ->where('id','!=', $id)
+                ->where('artist_id','!=', $id)
                 ->where('event_id', '=', $eventId)
                 ->where('hold_position', '>=', $request->input('hold_position'))
                 ->orderBy('hold_position')
@@ -156,6 +170,9 @@ class EventArtistController extends Controller
                     ->where('id', '=', $e->id)
                     ->update(['hold_position' => $hold_position]);
             }
+
+            // Notify related artists
+            $this->sendStatusAlert($event, $request->get('id'), $request->get('status'));
         }
         return $this->apiResponse();
     }
@@ -193,5 +210,206 @@ class EventArtistController extends Controller
             }
         }
         return $this->apiResponse();
+    }
+
+    final private function sendStatusAlert(Event $event, $artistId, $status)
+    {
+       $artistEventData = $event->artists()->where('artist_id', $artistId)->first();
+
+       if ($artistEventData && $artistEventData->pivot->email) {
+           $eventDate = $event->date->format('m-d-Y');
+
+           switch($artistEventData->pivot->status) {
+               case 1:
+                   $content = "Are you available and have interest in performing at <b>\"{$event->name}\"</b> event on <b>{$eventDate}</b>?";
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(new ArtistStatusUpdate($content));
+                   break;
+               case 2:
+                   $content = "You have indicated availability for <b>\"{$eventDate}\"</b> dates:have been assigned";
+                   $content .= ' to <b>"' . Event::HOLD_POSITION[$artistEventData->pivot->hold_position] .'"</b> position.';
+
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(new ArtistStatusUpdate($content));
+                   break;
+               case 3:
+                   $content = "Confirm the details of the Mutually Agreeable Terms<br/><br/>";
+                   $content .= "<b>{$artistEventData->pivot->date_notes}</b>";
+
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(new ArtistStatusUpdate($content));
+                   break;
+               case 4:
+                   $content = "You have indicated you are not available for the \"<b>{$eventDate}</b>\". Suggest Mutually agreeable date for the venue \"<b>{$event->performanceLocation->name}</b>\".";
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(new ArtistStatusUpdate($content));
+                   break;
+               case 5:
+                   $challengedBy = Artist::find($artistEventData->pivot->challenged_by);
+
+                   $content = "Your Hold 1 position is being challenged by <b>\"{$challengedBy->name}\"</b> and";
+                   $content .= " has <b>{$artistEventData->pivot->challenged_hours}</b> business hours.";
+                   $content .= '<br/><br/>You are required to request an offer, release the date, within the stated time frame.';
+
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(new ArtistStatusUpdate($content));
+
+                   // Send email to artist who challenged first hold
+                   $challengedByData = $challengedBy->events()->where('event_id', $event->id)->first();
+
+                   $content1 = "You have challenged Hold 1 position and ";
+                   $content1 .= "you will get an answer with <b>{$artistEventData->pivot->challenged_hours}</b> business hours.";
+
+                   ((new User())->fill([
+                       'email' => $challengedByData->pivot->email, 'name' => $challengedBy->name
+                   ]))->notify(new ArtistStatusUpdate($content1));
+                   break;
+               case 6:
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(
+                       new ArtistStatusUpdate(
+                           'You have been released from <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b><br/><br/>'.
+                           ' Your current status is <b>' . Event::ARTIST_STATUS[$artistEventData->pivot->status] . '</b>'
+                       )
+                   );
+
+                   // Inform all other artists about their new hold position
+                   $content = 'Your hold position is changed to <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b>';
+                   foreach ($event->artists as $artist) {
+                       if ($artist->id !== $artistId) {
+                           ((new User())->fill([
+                               'email' => $artist->pivot->email,
+                               'name' => $artist->name
+                           ]))->notify(
+                               new ArtistStatusUpdate($content)
+                           );
+                       }
+                   }
+                   break;
+               case 7:
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(
+                       new ArtistStatusUpdate(
+                           'Your status has been changed to <b>' . Event::ARTIST_STATUS[$artistEventData->pivot->status] . '</b><br/><br/>'.
+                           ' Offer will expire on <b>' . $artistEventData->pivot->offer_expiration_date .'</b>'
+                       )
+                   );
+                   break;
+               case 8:
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(
+                       new ArtistStatusUpdate(
+                           'You are acknowledged that, your status has been updated to <b>'.Event::ARTIST_STATUS[$artistEventData->pivot->status].'</b>'
+                       )
+                   );
+
+                   // Inform all other artists about their new hold position
+                   foreach ($event->artists as $artist) {
+                       if ($artist->id !== $artistId) {
+                           ((new User())->fill([
+                               'email' => $artist->pivot->email,
+                               'name' => $artist->name
+                           ]))->notify(
+                               new ArtistStatusUpdate(
+                                   '<b>You are notified that your hold position has been rescinded by the venue due to the confirmation of an artists with a higher hold position.</b>'
+                               )
+                           );
+                       }
+                   }
+                   break;
+               case 9:
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(
+                       new ArtistStatusUpdate(
+                           'You are acknowledged that, your status and hold position are being declined by you on <b>'.$eventDate.'</b>'
+                       )
+                   );
+
+                   // Inform all other artists about their new hold position
+                   foreach ($event->artists as $artist) {
+                       if ($artist->id !== $artistId) {
+                           ((new User())->fill([
+                               'email' => $artist->pivot->email,
+                               'name' => $artist->name
+                           ]))->notify(
+                               new ArtistStatusUpdate(
+                                   'Your hold position is changed to <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b>'
+                               )
+                           );
+                       }
+                   }
+                   break;
+               case 10:
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(
+                       new ArtistStatusUpdate(
+                           'You status has been changed to <b>' . Event::ARTIST_STATUS[$artistEventData->pivot->status] . '</b>'
+                       )
+                   );
+
+                   // Inform all other artists about their new hold position
+                   foreach ($event->artists as $artist) {
+                       if ($artist->id !== $artistId) {
+                           ((new User())->fill([
+                               'email' => $artist->pivot->email,
+                               'name' => $artist->name
+                           ]))->notify(
+                               new ArtistStatusUpdate(
+                                   'Your hold position is changed to <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b>'
+                               )
+                           );
+                       }
+                   }
+                   break;
+               case 11:
+                   ((new User())->fill([
+                       'email' => $artistEventData->pivot->email,
+                       'name' => $artistEventData->name
+                   ]))->notify(
+                       new ArtistStatusUpdate(
+                           'You have requested to withdrawal offer, So, your status has been changed to <b>' . Event::ARTIST_STATUS[$artistEventData->pivot->status] . '</b><br/><br/>'.
+                           ' We request you for mutually agreeable dates and for deposit return'
+                       )
+                   );
+
+                   // Inform all other artists about their new hold position
+                   foreach ($event->artists as $artist) {
+                       if ($artist->id !== $artistId) {
+                           ((new User())->fill([
+                               'email' => $artist->pivot->email,
+                               'name' => $artist->name
+                           ]))->notify(
+                               new ArtistStatusUpdate(
+                                   'Your hold position is changed to <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b>'
+                               )
+                           );
+                       }
+                   }
+                   break;
+               default:
+                   $content = '';
+                   break;
+           }
+       }
     }
 }

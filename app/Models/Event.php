@@ -50,6 +50,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $tasks_count
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event wherePerformanceLocationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereStatus($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Artist[] $artists_headliners
+ * @property-read int|null $artists_headliners_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Artist[] $artists_historical
+ * @property-read int|null $artists_historical_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Artist[] $artists_support
+ * @property-read int|null $artists_support_count
  */
 class Event extends Model
 {
@@ -84,6 +90,8 @@ class Event extends Model
         'Future Consideration',
     ];
 
+    protected $dates = ['date'];
+
     final public function performanceLocation(): BelongsTo
     {
         return $this->belongsTo(PerformanceLocation::class);
@@ -101,7 +109,7 @@ class Event extends Model
 
     final public function artists(): BelongsToMany
     {
-        return $this->belongsToMany(Artist::class)->withPivot(['type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes']);
+        return $this->belongsToMany(Artist::class)->withPivot(['type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date']);
     }
 
     final public function artists_headliners(): BelongsToMany
@@ -109,7 +117,7 @@ class Event extends Model
         return $this->belongsToMany(Artist::class)
             ->where('type', '=','headliner')
             ->whereNotIn('status',[3,5,8,11,12,13])
-            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes']);
+            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date']);
     }
 
     final public function artists_support(): BelongsToMany
@@ -117,14 +125,14 @@ class Event extends Model
         return $this->belongsToMany(Artist::class)
             ->where('type', '=','support')
             ->whereNotIn('status',[3,5,8,11,12,13])
-            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes']);
+            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date']);
     }
 
     final public function artists_historical(): BelongsToMany
     {
         return $this->belongsToMany(Artist::class)
             ->whereIn('status',[3,5,8,11,12,13])
-            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes']);
+            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date']);
     }
 
     final public function contacts(): HasMany

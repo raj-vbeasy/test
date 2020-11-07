@@ -23,6 +23,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EventNote whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EventNote whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $start
+ * @property string $end
+ * @method static \Illuminate\Database\Eloquent\Builder|EventNote whereEnd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EventNote whereStart($value)
  */
 class EventNote extends Model
 {
