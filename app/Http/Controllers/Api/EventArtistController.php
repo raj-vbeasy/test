@@ -13,10 +13,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use DB;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class EventArtistController extends Controller
 {
-    use HandleApiRequestAndResponse;
+    use HandleApiRequestAndResponse,
+        LogsActivity;
 
     final public function create(): JsonResponse
     {
@@ -97,6 +99,17 @@ class EventArtistController extends Controller
 
             // Notify related artists
             $this->sendStatusAlert($event, $request->get('artist_id'), $request->get('status'));
+
+            // Log status activity
+            activity()
+                ->inLog('Artist Status')
+                ->on($event)
+                ->withProperties([
+                    'old' => '',
+                    'new' => Event::ARTIST_STATUS[$request->get('status')],
+                    'artist_name' => ($event->artists()->where('artist_id', $request->get('artist_id'))->first())->name
+                ])
+                ->log('Added artist with status "'.Event::ARTIST_STATUS[$request->get('status')].'"');
         }
         return $this->apiResponse();
     }
@@ -138,6 +151,8 @@ class EventArtistController extends Controller
         $this->validateApiRequest();
         if ($this->isInputValid) {
             $event = Event::find($eventId);
+            $oldData = $event->artists()->where('artist_id', $request->get('id'))->first();
+
             \DB::beginTransaction();
             try {
                 if ($request->get('offer_expiration_date')) {
@@ -173,6 +188,19 @@ class EventArtistController extends Controller
 
             // Notify related artists
             $this->sendStatusAlert($event, $request->get('id'), $request->get('status'));
+
+            if ($oldData->pivot->status !== $request->get('status')) {
+                // Log status activity
+                activity()
+                    ->inLog('Artist Status')
+                    ->on($event)
+                    ->withProperties([
+                        'old' => Event::ARTIST_STATUS[$oldData->pivot->status],
+                        'new' => Event::ARTIST_STATUS[$request->get('status')],
+                        'artist_name' => $oldData->name
+                    ])
+                    ->log('Artist status updated');
+            }
         }
         return $this->apiResponse();
     }

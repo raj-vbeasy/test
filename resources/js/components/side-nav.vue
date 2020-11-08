@@ -123,6 +123,13 @@
 							<span>Artists</span>
 						</router-link>
 					</li>
+
+          <li>
+            <router-link tag="a" :to="{name: 'history'}" class="side-nav-link-ref">
+              <i class="mdi mdi-history"></i>
+              <span>History</span>
+            </router-link>
+          </li>
 				</ul>
 			</li>
 		</ul>

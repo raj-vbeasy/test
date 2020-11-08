@@ -30,6 +30,7 @@ Route::prefix('v1')->group(function () {
             Route::resource('activities', 'EventActivityController');
             Route::resource('expenses', 'EventExpenseController');
         });
+        Route::get('history', 'HistoryController@index')->name('history');
     });
 });
 
