@@ -176,6 +176,14 @@ export default [
         component: () => import('@/views/events/dashboard')
     },
     {
+        path: '/history',
+        name: 'history',
+        meta: {
+            authRequired: true
+        },
+        component: () => import('@/views/history/list')
+    },
+    {
         path: '*',
         redirect: '404',
     }

@@ -60,7 +60,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Event extends Model
 {
     protected $fillable = [
-        'name', 'email', 'performance_location_id', 'promoter', 'date', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'notes',
+        'name', 'email', 'performance_location_id', 'promoter', 'date', 'status'
     ];
 
     const ARTIST_STATUS = [
