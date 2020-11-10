@@ -28,7 +28,7 @@ class ArtistController extends Controller
             });
         }
         if ($request->get('filter')) {
-            $artist->where('name', 'LIKE', "%{$request->get('filter')}%");
+            $artist->where('name', 'LIKE', "{$request->get('filter')}%");
         }
         
         $sortBy = $request->get('sort-by') ?? 'updated_at';
