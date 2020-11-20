@@ -6,10 +6,10 @@ We wanted to let you know as soon as possible so that you can open the date on y
 If you would like to explore mutually agreeable dates for future consideration please click below link and let us know any details.
 
 <h4>Summary:</h4>
--Artist Name: {{ $content['artist']['name'] }}
--Event Name: {{ $content['event']['name'] }}
--Location: {{ $content['location']['name'] }}
--Date: {{ $content['event']['date'] }}
+-Artist Name: {{ $content['artist']['name'] }}<br/>
+-Event Name: {{ $content['event']['name'] }}<br/>
+-Location: {{ $content['location']['name'] }}<br/>
+-Date: {{ $content['event']['date'] }}<br/>
 
 @component('mail::button', ['url' => $content['url']])
     Upload

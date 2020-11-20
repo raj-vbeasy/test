@@ -289,6 +289,7 @@ class EventArtistController extends Controller
                    if ($artistEventData->pivot->hold_position === 8) {
                        $content['view'] = 'emails.artist_status_update.mutually_agreeable_dates';
                        $content['url'] = url('/');
+                       $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                        ((new User())->fill([
                            'email' => $artistEventData->pivot->email

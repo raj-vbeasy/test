@@ -6,12 +6,12 @@ Accordingly, {{ $content['artist']['name'] }} has been assigned to the {{ $conte
 You will be updated shortly of any status changes as we progress in the event booking process.<br/>
 
 <h4>Summary:</h4>
--Artist Name: {{ $content['artist']['name'] }}
--Event Name: {{ $content['event']['name'] }}
--Event Date: {{ $content['event']['date'] }}
--Location: {{ $content['location']['name'] }}
--Status: {{ $content['artist']['status'] }}
--Hold Position: {{ $content['artist']['hold_position'] }}
+-Artist Name: {{ $content['artist']['name'] }}<br/>
+-Event Name: {{ $content['event']['name'] }}<br/>
+-Event Date: {{ $content['event']['date'] }}<br/>
+-Location: {{ $content['location']['name'] }}<br/>
+-Status: {{ $content['artist']['status'] }}<br/>
+-Hold Position: {{ $content['artist']['hold_position'] }}<br/>
 
 Please notify us of any changes in availability as soon as possible.
 

@@ -5,11 +5,11 @@ Thank you for indicating that {{ $content['artist']['name'] }} is available for 
 Accordingly, you will be updated if we decide to move forward with assigning a hold position.
 
 <h4>Summary:</h4>
--Artist Name: {{ $content['artist']['name'] }}
--Event Name: {{ $content['event']['name'] }}
--Event Date: {{ $content['event']['date'] }}
--Location: {{ $content['location']['name'] }}
--Status: {{ $content['artist']['status'] }}
+-Artist Name: {{ $content['artist']['name'] }}<br/>
+-Event Name: {{ $content['event']['name'] }}<br/>
+-Event Date: {{ $content['event']['date'] }}<br/>
+-Location: {{ $content['location']['name'] }}<br/>
+-Status: {{ $content['artist']['status'] }}<br/>
 
 Please notify us of any changes in availability as soon as possible.
 
