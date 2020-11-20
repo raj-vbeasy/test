@@ -43,10 +43,8 @@ class ArtistStatusUpdate extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->greeting("Hello {$notifiable->name}")
             ->bcc('raj@vbeasy.com')
-            ->line($this->content)
-            ->line('Thank you for using our application!');
+            ->markdown($this->content['view'], ['content' => $this->content]);
     }
 
     /**
