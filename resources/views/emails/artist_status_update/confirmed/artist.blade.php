@@ -5,12 +5,12 @@ We have received your confirmation of our offer and are looking forward to {{ $c
 To submit the publicity assets and links or upload the most current version of the contract and rider(s) click below link.
 
 <h4>Summary:</h4>
--Artist Name: {{ $content['artist']['name'] }}
--Event Name: {{ $content['event']['name'] }}
--Location: {{ $content['location']['name'] }}
--Date: {{ $content['event']['date'] }}
--Set Time: and Set Length
--Terms:
+-Artist Name: {{ $content['artist']['name'] }}<br/>
+-Event Name: {{ $content['event']['name'] }}<br/>
+-Location: {{ $content['location']['name'] }}<br/>
+-Date: {{ $content['event']['date'] }}<br/>
+-Set Time: and Set Length<br/>
+-Terms:<br/>
 
 Please let us know if you have any additional questions.
 

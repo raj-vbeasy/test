@@ -5,9 +5,9 @@ Thank you for the rapid response letting us know that {{ $content['artist']['nam
 If you would like to explore mutually agreeable dates for future consideration please click below link and let us know any details.
 
 <h4>Summary:</h4>
--Artist Name: {{ $content['artist']['name'] }}
--Event Name: {{ $content['event']['name'] }}
--Location: {{ $content['location']['name'] }}
+-Artist Name: {{ $content['artist']['name'] }}<br/>
+-Event Name: {{ $content['event']['name'] }}<br/>
+-Location: {{ $content['location']['name'] }}<br/>
 
 @component('mail::button', ['url' => $content['url']])
     Select Date

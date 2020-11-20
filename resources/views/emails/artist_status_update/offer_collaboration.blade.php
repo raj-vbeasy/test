@@ -5,15 +5,15 @@ Please see the attached offer for consideration of {{ $content['artist']['name']
 Please see the attached venue technical pack and offer.
 
 <h4>Summary:</h4>
--Artist Name: {{ $content['artist']['name'] }}
--Event Name: {{ $content['event']['name'] }}
--Location: {{ $content['location']['name'] }}
--Date: {{ $content['event']['date'] }}
--Set Time: and Set Length
--Terms:
--Offer Expiration Date: {{ $content['offer_expiration_date'] }}
+-Artist Name: {{ $content['artist']['name'] }}<br/>
+-Event Name: {{ $content['event']['name'] }}<br/>
+-Location: {{ $content['location']['name'] }}<br/>
+-Date: {{ $content['event']['date'] }}<br/>
+-Set Time: and Set Length<br/>
+-Terms:<br/>
+-Offer Expiration Date: {{ $content['offer_expiration_date'] }}<br/>
 
-Please let us know if  you have any questions.
+Please let us know if  you have any questions.<br/>
 
 Thank you,<br/>
 {{ $content['admin']['name'] }}<br/>

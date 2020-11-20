@@ -6,11 +6,11 @@ You have {{ $content['challenge_expiration_hours'] }} business hours to 1) reque
 If you would like to explore mutually agreeable dates for future consideration please check the yes box below and let us know any details.<br/>
 
 <h4>Summary:</h4>
--Artist Name: {{ $content['artist']['name'] }}
--Event Name: {{ $content['event']['name'] }}
--Location: {{ $content['location']['name'] }}
--Status: {{ $content['artist']['status'] }}
--Hold Position: {{ $content['artist']['hold_position'] }}
+-Artist Name: {{ $content['artist']['name'] }}<br/>
+-Event Name: {{ $content['event']['name'] }}<br/>
+-Location: {{ $content['location']['name'] }}<br/>
+-Status: {{ $content['artist']['status'] }}<br/>
+-Hold Position: {{ $content['artist']['hold_position'] }}<br/>
 
 Please notify us of any changes in availability as soon as possible.
 

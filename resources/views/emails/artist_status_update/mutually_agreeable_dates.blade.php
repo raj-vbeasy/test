@@ -5,13 +5,13 @@ Let's connect! We are excited to hear that {{ $content['artist']['name'] }} is w
 Please reply with potential timeframes and or days that would work into your scheduling.<br/>
 
 <h4>Summary:</h4>
--Artist Name: {{ $content['artist']['name'] }}
--Event Name: {{ $content['event']['name'] }}
--Location: {{ $content['location']['name'] }}
--Status: {{ $content['artist']['status'] }}
--Position: {{ $content['artist']['hold_position'] }}
+-Artist Name: {{ $content['artist']['name'] }}<br/>
+-Event Name: {{ $content['event']['name'] }}<br/>
+-Location: {{ $content['location']['name'] }}<br/>
+-Status: {{ $content['artist']['status'] }}<br/>
+-Position: {{ $content['artist']['hold_position'] }}<br/>
 
-Please notify us of any changes in availability as soon as possible.
+Please notify us of any changes in availability as soon as possible.<br/>
 
 @component('mail::button', ['url' => $content['url']])
     Select Date
