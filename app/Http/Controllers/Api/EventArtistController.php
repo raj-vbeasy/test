@@ -402,51 +402,55 @@ class EventArtistController extends Controller
                    //}
                    break;
                case 10:
-                   ((new User())->fill([
-                       'email' => $artistEventData->pivot->email,
-                       'name' => $artistEventData->name
-                   ]))->notify(
-                       new ArtistStatusUpdate(
-                           'You status has been changed to <b>' . Event::ARTIST_STATUS[$artistEventData->pivot->status] . '</b>'
-                       )
-                   );
+                   if (false) {
+                       ((new User())->fill([
+                           'email' => $artistEventData->pivot->email,
+                           'name' => $artistEventData->name
+                       ]))->notify(
+                           new ArtistStatusUpdate(
+                               'You status has been changed to <b>' . Event::ARTIST_STATUS[$artistEventData->pivot->status] . '</b>'
+                           )
+                       );
 
-                   // Inform all other artists about their new hold position
-                   foreach ($event->artists as $artist) {
-                       if ($artist->id !== $artistId) {
-                           ((new User())->fill([
-                               'email' => $artist->pivot->email,
-                               'name' => $artist->name
-                           ]))->notify(
-                               new ArtistStatusUpdate(
-                                   'Your hold position is changed to <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b>'
-                               )
-                           );
+                       // Inform all other artists about their new hold position
+                       foreach ($event->artists as $artist) {
+                           if ($artist->id !== $artistId) {
+                               ((new User())->fill([
+                                   'email' => $artist->pivot->email,
+                                   'name' => $artist->name
+                               ]))->notify(
+                                   new ArtistStatusUpdate(
+                                       'Your hold position is changed to <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b>'
+                                   )
+                               );
+                           }
                        }
                    }
                    break;
                case 11:
-                   ((new User())->fill([
-                       'email' => $artistEventData->pivot->email,
-                       'name' => $artistEventData->name
-                   ]))->notify(
-                       new ArtistStatusUpdate(
-                           'You have requested to withdrawal offer, So, your status has been changed to <b>' . Event::ARTIST_STATUS[$artistEventData->pivot->status] . '</b><br/><br/>'.
-                           ' We request you for mutually agreeable dates and for deposit return'
-                       )
-                   );
+                   if (false) {
+                       ((new User())->fill([
+                           'email' => $artistEventData->pivot->email,
+                           'name' => $artistEventData->name
+                       ]))->notify(
+                           new ArtistStatusUpdate(
+                               'You have requested to withdrawal offer, So, your status has been changed to <b>' . Event::ARTIST_STATUS[$artistEventData->pivot->status] . '</b><br/><br/>'.
+                               ' We request you for mutually agreeable dates and for deposit return'
+                           )
+                       );
 
-                   // Inform all other artists about their new hold position
-                   foreach ($event->artists as $artist) {
-                       if ($artist->id !== $artistId) {
-                           ((new User())->fill([
-                               'email' => $artist->pivot->email,
-                               'name' => $artist->name
-                           ]))->notify(
-                               new ArtistStatusUpdate(
-                                   'Your hold position is changed to <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b>'
-                               )
-                           );
+                       // Inform all other artists about their new hold position
+                       foreach ($event->artists as $artist) {
+                           if ($artist->id !== $artistId) {
+                               ((new User())->fill([
+                                   'email' => $artist->pivot->email,
+                                   'name' => $artist->name
+                               ]))->notify(
+                                   new ArtistStatusUpdate(
+                                       'Your hold position is changed to <b>'.Event::HOLD_POSITION[$artistEventData->pivot->hold_position].'</b>'
+                                   )
+                               );
+                           }
                        }
                    }
                    break;
