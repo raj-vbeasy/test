@@ -308,6 +308,7 @@ class EventArtistController extends Controller
                    $content['view'] = 'emails.artist_status_update.challenged.to';
                    $content['challenge_expiration_hours'] = $artistEventData->pivot->challenged_hours;
                    $content['url'] = url('/');
+                   $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                    ((new User())->fill([
                        'email' => $artistEventData->pivot->email
@@ -317,6 +318,7 @@ class EventArtistController extends Controller
                    $challengedBy = Artist::find($artistEventData->pivot->challenged_by);
                    // Send email to artist who challenged first hold
                    $challengedByData = $challengedBy->events()->where('event_id', $event->id)->first();
+                   $content['artist']['hold_position'] = Event::HOLD_POSITION[$challengedByData->pivot->hold_position];
 
                    ((new User())->fill([
                        'email' => $challengedByData->pivot->email
@@ -383,6 +385,7 @@ class EventArtistController extends Controller
                case 9:
                    $content['view'] = 'emails.artist_status_update.declined';
                    $content['url'] = url('/');
+                   $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                    ((new User())->fill([
                        'email' => $artistEventData->pivot->email
