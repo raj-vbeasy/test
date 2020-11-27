@@ -138,6 +138,6 @@ class Artist extends Model
     final public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class)
-            ->withPivot(['type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date']);
+            ->withPivot(['type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id', 'management_firm_id', 'publicity_firm_id']);
     }
 }

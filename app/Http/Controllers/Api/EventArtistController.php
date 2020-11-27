@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Agency;
 use App\Models\Artist;
 use App\Models\Event;
 use App\Models\User;
@@ -48,6 +49,8 @@ class EventArtistController extends Controller
             'event_id' => 'exists:events,id',
             'artist_id' => 'required|exists:artists,id',
             'amount' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'agency.name' => 'required',
+            'agency.email' => 'required|email',
             'status' => [
                 'required',
                 function ($attribute, $value, $fail) {
@@ -73,11 +76,44 @@ class EventArtistController extends Controller
                 if ($request->get('offer_expiration_date')) {
                     $request->merge(['offer_expiration_date' => Carbon::createFromTimestampMs($request->get('offer_expiration_date'))->format('Y-m-d H:i:s')]);
                 }
+
+                $agency = Agency::create($request->get('agency'));
+                $request->merge(['agency_id' => $agency->id]);
+
                 $event->artists()->syncWithoutDetaching(
                     [
-                        $request->get('artist_id') => $request->only(['type', 'email', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date'])
+                        $request->get('artist_id') => $request->only(['type', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id'])
                     ]
                 );
+
+                $id=$event->id;
+                $events = DB::table('artist_event')
+                    ->where('artist_id','!=', $id)
+                    ->where('event_id', '=', $eventId)
+                    ->where('hold_position', '>=', $request->input('hold_position'))
+                    ->orderBy('hold_position')
+                    ->get('id');
+                foreach ($events as $k=>$e) {
+                    $hold_position = $k+$request->input('hold_position');
+                    DB::table('artist_event')
+                        ->where('id', '=', $e->id)
+                        ->update(['hold_position' => $hold_position]);
+                }
+
+                // Notify related artists
+                $this->sendStatusAlert($event, $request->get('artist_id'), $request->get('status'));
+
+                // Log status activity
+                activity()
+                    ->inLog('Artist Status')
+                    ->on($event)
+                    ->withProperties([
+                        'old' => '',
+                        'new' => Event::ARTIST_STATUS[$request->get('status')],
+                        'artist_name' => ($event->artists()->where('artist_id', $request->get('artist_id'))->first())->name
+                    ])
+                    ->log('Added artist with status "'.Event::ARTIST_STATUS[$request->get('status')].'"');
+
                 $this->setResponseVars("Artist added");
                 \DB::commit();
             } catch (\Exception $exception) {
@@ -88,33 +124,6 @@ class EventArtistController extends Controller
                     Response::HTTP_INTERNAL_SERVER_ERROR
                 );
             }
-            $id=$event->id;
-            $events = DB::table('artist_event')
-                ->where('artist_id','!=', $id)
-                ->where('event_id', '=', $eventId)
-                ->where('hold_position', '>=', $request->input('hold_position'))
-                ->orderBy('hold_position')
-                ->get('id');
-            foreach ($events as $k=>$e) {
-                $hold_position = $k+$request->input('hold_position');
-                DB::table('artist_event')
-                    ->where('id', '=', $e->id)
-                    ->update(['hold_position' => $hold_position]);
-            }
-
-            // Notify related artists
-            $this->sendStatusAlert($event, $request->get('artist_id'), $request->get('status'));
-
-            // Log status activity
-            activity()
-                ->inLog('Artist Status')
-                ->on($event)
-                ->withProperties([
-                    'old' => '',
-                    'new' => Event::ARTIST_STATUS[$request->get('status')],
-                    'artist_name' => ($event->artists()->where('artist_id', $request->get('artist_id'))->first())->name
-                ])
-                ->log('Added artist with status "'.Event::ARTIST_STATUS[$request->get('status')].'"');
         }
         return $this->apiResponse();
     }
@@ -136,6 +145,8 @@ class EventArtistController extends Controller
         $this->validationRules = [
             'event_id' => 'exists:events,id',
             'id' => 'exists:artists',
+            'agency.name' => 'required',
+            'agency.email' => 'required|email',
             'status' => [
                 'required',
                 function ($attribute, $value, $fail) {
@@ -248,10 +259,11 @@ class EventArtistController extends Controller
 
     final private function sendStatusAlert(Event $event, $artistId, $status)
     {
-        return;
         $artistEventData = $event->artists()->where('artist_id', $artistId)->first();
 
-        if ($artistEventData && $artistEventData->pivot->email) {
+        $agency = Agency::find($artistEventData->pivot->agency_id);
+
+        if ($artistEventData && $agency) {
             $location = $event->performanceLocation;
 
             $content = [
@@ -260,7 +272,7 @@ class EventArtistController extends Controller
                     'name' => auth()->user()->name
                 ],
                 'artist' => [
-                    'agent' => $artistEventData->name,
+                    'agent' => $agency->name,
                     'name' => $artistEventData->name,
                     'status' => Event::ARTIST_STATUS[$artistEventData->pivot->status]
                 ],
@@ -278,7 +290,7 @@ class EventArtistController extends Controller
                 case 1:
                     $content['view'] = 'emails.artist_status_update.inquiry';
                     ((new User())->fill([
-                        'email' => $artistEventData->pivot->email
+                        'email' => $agency->email
                     ]))->notify(new ArtistStatusUpdate($content));
                     break;
                 case 2:
@@ -289,7 +301,7 @@ class EventArtistController extends Controller
                     }
                     $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
                     ((new User())->fill([
-                        'email' => $artistEventData->pivot->email
+                        'email' => $agency->email
                     ]))->notify(new ArtistStatusUpdate($content));
                     break;
                 case 3:
@@ -299,7 +311,7 @@ class EventArtistController extends Controller
                         $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                         ((new User())->fill([
-                            'email' => $artistEventData->pivot->email
+                            'email' => $agency->email
                         ]))->notify(new ArtistStatusUpdate($content));
                     }
                     break;
@@ -308,7 +320,7 @@ class EventArtistController extends Controller
                     $content['url'] = url('/');
 
                     ((new User())->fill([
-                        'email' => $artistEventData->pivot->email
+                        'email' => $agency->email
                     ]))->notify(new ArtistStatusUpdate($content));
                     break;
                 case 5:
@@ -318,7 +330,7 @@ class EventArtistController extends Controller
                     $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                     ((new User())->fill([
-                        'email' => $artistEventData->pivot->email
+                        'email' => $agency->email
                     ]))->notify(new ArtistStatusUpdate($content));
 
                     $content['view'] = 'emails.artist_status_update.challenged.by';
@@ -362,7 +374,7 @@ class EventArtistController extends Controller
                         $content['view'] = 'emails.artist_status_update.offer_collaboration';
                         $content['offer_expiration_date'] = Carbon::createFromFormat('Y-m-d H:i:s', $artistEventData->pivot->offer_expiration_date)->format('m-d-Y');
                         ((new User())->fill([
-                            'email' => $artistEventData->pivot->email
+                            'email' => $agency->email
                         ]))->notify(new ArtistStatusUpdate($content));
                     }
                     break;
@@ -370,7 +382,7 @@ class EventArtistController extends Controller
                     $content['view'] = 'emails.artist_status_update.confirmed.artist';
                     $content['url'] = url('/');
                     ((new User())->fill([
-                        'email' => $artistEventData->pivot->email
+                        'email' => $agency->email
                     ]))->notify(new ArtistStatusUpdate($content));
 
                     // Inform all other artists about their new hold position
@@ -395,7 +407,7 @@ class EventArtistController extends Controller
                     $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                     ((new User())->fill([
-                        'email' => $artistEventData->pivot->email
+                        'email' => $agency->email
                     ]))->notify(new ArtistStatusUpdate($content));
 
                     // Inform all other artists about their new hold position

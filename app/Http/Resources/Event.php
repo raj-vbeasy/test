@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Agency;
 use App\Models\Artist;
 use App\Models\Stage;
 use Carbon\Carbon;
@@ -55,7 +56,6 @@ class Event extends JsonResource
             array_push($artists, [
                 'id' => $artist->id,
                 'name' => $artist->name,
-                'email' => $artist->pivot->email,
                 'image' => $artist->image_url,
                 'type' => $artist->pivot->type,
                 'category' => $artistType,
@@ -68,7 +68,8 @@ class Event extends JsonResource
                 'amount' => $artist->pivot->amount,
                 'notes' => $artist->pivot->notes,
                 'date_notes' => $artist->pivot->date_notes,
-                'challenged' => $challenged
+                'challenged' => $challenged,
+                'agency' => ($agency = Agency::find($artist->pivot->agency_id)) ? $agency->toArray() : []
             ]);
         }
 

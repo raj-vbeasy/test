@@ -197,17 +197,6 @@
 
         <b-row>
           <b-col>
-            <b-form-group label-for="artist_email" label="Agent Email, Management Email and Other">
-              <b-form-input
-                  id="artist_email"
-                  v-model="form.email"
-                  placeholder="Emails"></b-form-input>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col>
             <b-form-group label-for="talent_amount" label="Amount">
               <b-form-input
                   class="col-3"
@@ -260,22 +249,14 @@
           </b-col>
         </b-row>
 
-        <b-row>
-          <b-col>
-            <b-form-group label="Status" label-for="artist_status">
-              <b-form-select v-model="form.status" :options="statuses"></b-form-select>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <!-- Mutual Date new html -->
+        <!-- Agency, management, publicity html -->
         <b-row>
           <b-col>
             <b-form-group>
-              <b-radio-group>
-                <b-form-radio v-model="selectedRadio" name="some-radios" value="agency">Agency Details</b-form-radio>
-                <b-form-radio v-model="selectedRadio" name="some-radios" value="management">Management Details</b-form-radio>
-                <b-form-radio v-model="selectedRadio" name="some-radios" value="publicity">Publicity Details</b-form-radio>
+              <b-radio-group v-model="selectedRadio">
+                <b-form-radio value="agency">Agency Details</b-form-radio>
+                <b-form-radio value="management">Management Details</b-form-radio>
+                <b-form-radio value="publicity">Publicity Details</b-form-radio>
               </b-radio-group>
             </b-form-group>
           </b-col>
@@ -283,37 +264,39 @@
 
         <b-row v-if="selectedRadio === 'agency'">
           <b-col cols="12">
-            <b-form-group label-for="" label="Agency Name:">
-              <b-form-input
-                  id=""
-                  placeholder="Enter Agency Name"></b-form-input>
+            <b-form-group label-for="agency_name" label="Agency Name:">
+              <b-form-input id="agency_name" v-model="form.agency.name" placeholder="Enter Agency Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Agency Phone:">
+            <b-form-group label-for="agency_phone" label="Agency Phone:">
               <b-form-input
-                  id=""
+                  id="agency_phone"
+                  v-model="form.agency.phone"
                   placeholder="Enter Agency Phone"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Agency Email:">
+            <b-form-group label-for="agency_email" label="Agency Email:">
               <b-form-input
-                  id=""
+                  id="agency_email"
+                  v-model="form.agency.email"
                   placeholder="Enter Agency Email"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Agent Assistant Name:">
+            <b-form-group label-for="agent_assistant_name" label="Agent Assistant Name:">
               <b-form-input
-                  id=""
+                  id="agent_assistant_name"
+                  v-model="form.agency.agent_assistant_name"
                   placeholder="Enter Agent Assistant Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Agent Assistant Phone:">
+            <b-form-group label-for="agent_assistant_phone" label="Agent Assistant Phone:">
               <b-form-input
-                  id=""
+                  id="agent_assistant_phone"
+                  v-model="form.agency.agent_assistant_phone"
                   placeholder="Enter Agent Assistant Phone"></b-form-input>
             </b-form-group>
           </b-col>
@@ -321,51 +304,58 @@
 
         <b-row v-if="selectedRadio === 'management'">
           <b-col cols="12">
-            <b-form-group label-for="" label="Management Firm Name:">
+            <b-form-group label-for="management_firm_name" label="Management Firm Name:">
               <b-form-input
-                  id=""
+                  id="management_firm_name"
+                  v-model="form.management_firm.name"
                   placeholder="Enter Management Firm Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Manager Name:">
+            <b-form-group label-for="manager_name" label="Manager Name:">
               <b-form-input
-                  id=""
+                  id="manager_name"
+                  v-model="form.management_firm.manager_name"
                   placeholder="Enter Manager Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Manager Phone:">
+            <b-form-group label-for="manager_phone" label="Manager Phone:">
               <b-form-input
-                  id=""
+                  id="manager_phone"
+                  v-model="form.management_firm.manager_phone"
                   placeholder="Enter Manager Phone"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Manger Email:">
+            <b-form-group label-for="manager_email" label="Manger Email:">
               <b-form-input
-                  id=""
+                  id="manager_email"
+                  v-model="form.management_firm.manager_email"
                   placeholder="Enter Manager Email"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Manager Assistant Name:">
+            <b-form-group label-for="manager_assistant_name" label="Manager Assistant Name:">
               <b-form-input
-                  id=""
+                  id="manager_assistant_name"
+                  v-model="form.management_firm.manager_assistant_name"
                   placeholder="Enter Manager Assistant Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Manager Assistant Phone:">
+            <b-form-group label-for="manager_assistant_phone" label="Manager Assistant Phone:">
               <b-form-input
-                  id=""
+                  id="manager_assistant_phone"
+                  v-model="form.management_firm.manager_assistant_phone"
                   placeholder="Enter Manager Assistant Phone"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Manager Assistant Email:">
+            <b-form-group label-for="manager_assistant_email" label="Manager Assistant Email:">
               <b-form-input
-                  id=""
+                  id="manager_assistant_email"
+                  v-model="form.management_firm.manager_assistant_email"
                   placeholder="Enter Manager Assistant Email"></b-form-input>
             </b-form-group>
           </b-col>
@@ -373,70 +363,78 @@
 
         <b-row v-if="selectedRadio === 'publicity'">
           <b-col cols="12">
-            <b-form-group label-for="" label="Publicity Firm Name:">
+            <b-form-group label-for="publicity_firm_name" label="Publicity Firm Name:">
               <b-form-input
-                  id=""
+                  id="publicity_firm_name"
+                  v-model="form.publicity_firm.name"
                   placeholder="Enter Publicity Firm Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Publicist Name:">
+            <b-form-group label-for="publicist_name" label="Publicist Name:">
               <b-form-input
-                  id=""
+                  id="publicist_name"
+                  v-model="form.publicity_firm.publicist_name"
                   placeholder="Enter Publicist Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Publicist Phone:">
+            <b-form-group label-for="publicist_phone" label="Publicist Phone:">
               <b-form-input
-                  id=""
+                  id="publicist_phone"
+                  v-model="form.publicity_firm.publicist_phone"
                   placeholder="Enter Publicist Phone"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Publicist Email:">
+            <b-form-group label-for="publicist_email" label="Publicist Email:">
               <b-form-input
-                  id=""
+                  id="publicist_email"
+                  v-model="form.publicity_firm.publicist_email"
                   placeholder="Enter Publicist Email"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Publicist Assistant Name:">
+            <b-form-group label-for="publicist_assistant_name" label="Publicist Assistant Name:">
               <b-form-input
-                  id=""
+                  id="publicist_assistant_name"
+                  v-model="form.publicity_firm.publicist_assistant_name"
                   placeholder="Enter Publicist Assistant Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Publicist Assistant Phone:">
+            <b-form-group label-for="publicist_assistant_phone" label="Publicist Assistant Phone:">
               <b-form-input
-                  id=""
+                  id="publicist_assistant_phone"
+                  v-model="form.publicity_firm.publicist_assistant_phone"
                   placeholder="Enter Publicist Assistant Phone"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Publicist Assistant Email:">
+            <b-form-group label-for="publicist_assistant_email" label="Publicist Assistant Email:">
               <b-form-input
-                  id=""
+                  id="publicist_assistant_email"
+                  v-model="form.publicity_firm.publicist_assistant_email"
                   placeholder="Enter Publicist Assistant Email"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="" label="Publicist Assistant Email:">
-              <b-form-input
-                  id=""
-                  placeholder="Enter Publicist Assistant Email"></b-form-input>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12">
-            <b-form-group label-for="" label="Add Waves:">
+            <b-form-group label-for="publicity_doc" label="Upload Doc:">
               <b-form-file
-                  id=""
-                  placeholder="Add Waves"></b-form-file>
+                  id="publicity_doc"
+                  placeholder="Upload Doc"></b-form-file>
             </b-form-group>
           </b-col>
         </b-row>
-        <!-- Mutual Date new html -->
+        <!-- Agency, management, publicity html -->
+
+        <b-row>
+          <b-col>
+            <b-form-group label="Status" label-for="artist_status">
+              <b-form-select v-model="form.status" :options="statuses"></b-form-select>
+            </b-form-group>
+          </b-col>
+        </b-row>
 
         <b-row v-if="form.status === 3 || form.status === 9">
           <b-col>
@@ -571,7 +569,7 @@ export default {
       holdPositionColor: [],
       modal: this.default('modal'),
       form: this.default('form'),
-      selectedRadio: null
+      selectedRadio: 'agency'
     }
   },
   computed: {
@@ -620,7 +618,6 @@ export default {
       this.modal.edit = true;
 
       this.form.id = {label: info.name, value: info.id};
-      this.form.email = info.email;
       this.form.type = info.type;
       this.form.promoter_profit_enable = Number(info.promoter_profit) > 0;
       this.form.promoter_profit = Number(info.promoter_profit);
@@ -631,6 +628,8 @@ export default {
       this.form.hold_position = this.fetchHoldPosition(info.hold_position, 'key');
       this.form.notes = info.notes;
       this.form.amount = info.amount;
+
+      this.form.agency = cloneDeep(info.agency);
     },
     remove(info) {
       this.form.id = info.id;
@@ -693,7 +692,6 @@ export default {
                   type: 'add',
                   data: {
                     id: this.form.id.value,
-                    email: this.form.email,
                     name: this.form.id.label,
                     image: this.form.id.image,
                     type: this.form.type,
@@ -713,6 +711,7 @@ export default {
                     status_color: this.statusColor[this.fetchStatus(this.form.status, 'value')],
                     hold_position_order: this.form.hold_position,
                     hold_position_color: this.holdPositionColor[this.fetchHoldPosition(this.form.hold_position, 'value')],
+                    agency: this.form.agency
                   }
                 });
               } else if (this.modal.edit) {
@@ -722,7 +721,6 @@ export default {
                       type: 'update',
                       id: this.form.id.value,
                       data: {
-                        email: this.form.email,
                         type: this.form.type,
                         category: this.form.type,
                         promoter_profit: this.promoter_profit_enable ? this.form.promoter_profit : 0,
@@ -773,7 +771,6 @@ export default {
         case 'form':
           result = {
             id: '',
-            email: '',
             type: 'headliner',
             promoter_profit_enable: false,
             promoter_profit: 0,
@@ -783,7 +780,32 @@ export default {
             challenged_hours: '',
             hold_position: null,
             amount: 0,
-            offer_expiration_date: null
+            offer_expiration_date: null,
+            agency: {
+              name: '',
+              phone: '',
+              email: '',
+              agent_assistant_name: '',
+              agent_assistant_phone: ''
+            },
+            management_firm: {
+              name: '',
+              manager_name: '',
+              manager_phone: '',
+              manager_email: '',
+              manager_assistant_name: '',
+              manager_assistant_phone: '',
+              manager_assistant_email: ''
+            },
+            publicity_firm: {
+              name: '',
+              publicist_name: '',
+              publicist_phone: '',
+              publicist_email: '',
+              publicist_assistant_name: '',
+              publicist_assistant_phone: '',
+              publicist_assistant_email: ''
+            }
           };
           break;
         case 'modal':
