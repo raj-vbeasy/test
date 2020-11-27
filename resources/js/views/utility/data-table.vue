@@ -50,23 +50,23 @@
 </template>
 
 <script>
-    export default {
-        name: "data-table",
-	    props: {
-            items: [Array, Function],
-            sortBy: [String],
-            fields: [Array],
-		    totalItems: [Number],
-		    slots: [Array],
-		    customRef: [String]
-	    },
-	    data() {
-            return {
-                pageOptions: [10, 25, 50, 100],
-                perPage: 10,
-	            filter: null,
-                currentPage: 1
-            }
-	    }
+export default {
+  name: "data-table",
+  props: {
+    items: [Array, Function],
+    sortBy: [String],
+    fields: [Array],
+    totalItems: [Number],
+    slots: [Array],
+    customRef: [String]
+  },
+  data() {
+    return {
+      pageOptions: [10, 25, 50, 100],
+      perPage: 10,
+      filter: null,
+      currentPage: 1
     }
+  }
+}
 </script>
