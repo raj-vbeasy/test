@@ -90,6 +90,33 @@ class Event extends Model
         'Future Consideration',
     ];
 
+    const STATUS_COLOR = [
+        '--' => ['background' => '#999999', 'color' => '#000000'],
+        'Inquiry' => ['background' => '#000000', 'color' => '#ffffff'],
+        'Available' => ['background' => '#377369', 'color' => '#ffffff'],
+        'Mutually Agreed Date' => ['background' => '#f0a714', 'color' => '#000000'],
+        'Not Available' => ['background' => '#ff0000', 'color' => '#ffffff'],
+        'Challenged By' => ['background' => '#8e7cc3', 'color' => '#000000'],
+        'Hold Released by Artist' => ['background' => '#999999', 'color' => '#000000'],
+        'Offer Collaboration' => ['background' => '#78d0a0', 'color' => '#000000'],
+        'Confirmed' => ['background' => '#38761d', 'color' => '#ffffff'],
+        'Declined' => ['background' => '#ff0000', 'color' => '#ffffff'],
+        'Hold Rescinded by Venue' => ['background' => '#999999', 'color' => '#000000'],
+        'Request to Withdraw Offer' => ['background' => '#ff0000', 'color' => '#ffffff'],
+    ];
+
+    const HOLD_POSITION_COLOR = [
+        '--' => ['background' => '#999999', 'color' => '#000000'],
+        'Offer Tendered' => ['background' => '#38761d', 'color' => '#ffffff'],
+        '1st Hold (1H)' => ['background' => '#78d0a0', 'color' => '#000000'],
+        '2nd Hold (2H)' => ['background' => '#f1c232', 'color' => '#000000'],
+        '3rd Hold (3H)' => ['background' => '#1155cc', 'color' => '#ffffff'],
+        '4th Hold (4H)' => ['background' => '#8e7cc3', 'color' => '#000000'],
+        '5th Hold (5H)' => ['background' => '#377369', 'color' => '#ffffff'],
+        'Archived Section' => ['background' => '#999999', 'color' => '#000000'],
+        'Future Consideration' => ['background' => '#f0a714', 'color' => '#000000'],
+    ];
+
     protected $dates = ['date'];
 
     final public function performanceLocation(): BelongsTo

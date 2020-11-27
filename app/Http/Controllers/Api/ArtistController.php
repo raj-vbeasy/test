@@ -22,13 +22,15 @@ class ArtistController extends Controller
     final public function index(Request $request): JsonResponse
     {
         $artist = Artist::query();
+
+        if ($request->get('filter')) {
+            $artist->where('name', 'LIKE', "{$request->get('filter')}%");
+        }
+
         if ($request->get('event')) {
             $artist->whereDoesntHave('events', function (Builder $builder) use ($request){
                 $builder->where('event_id', $request->get('event'));
             });
-        }
-        if ($request->get('filter')) {
-            $artist->where('name', 'LIKE', "{$request->get('filter')}%");
         }
         
         $sortBy = $request->get('sort-by') ?? 'updated_at';
