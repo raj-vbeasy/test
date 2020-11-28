@@ -47,7 +47,7 @@ class Event extends JsonResource
                 ];
             }
 
-            if (in_array($artist->pivot->status, [3,5,8,11])) {
+            if (in_array($artist->pivot->status, [0,3,4,6,9,10,11])) {
                 $artistType = 'historical';
             } else {
                 $artistType = strtolower($artist->pivot->type);

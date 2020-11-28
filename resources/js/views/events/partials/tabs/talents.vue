@@ -630,6 +630,8 @@ export default {
       this.form.amount = info.amount;
 
       this.form.agency = cloneDeep(info.agency);
+      this.form.management_firm = cloneDeep(info.management_firm);
+      this.form.publicity_firm = cloneDeep(info.publicity_firm);
     },
     remove(info) {
       this.form.id = info.id;
@@ -695,7 +697,7 @@ export default {
                     name: this.form.id.label,
                     image: this.form.id.image,
                     type: this.form.type,
-                    category: this.form.type,
+                    category: [0,3,4,6,9,10,11].includes(this.form.status) ? 'historical' : this.form.type,
                     promoter_profit: this.form.promoter_profit_enable ? this.form.promoter_profit : 0,
                     status: this.fetchStatus(this.form.status, 'value'),
                     date_notes: this.form.date_notes,
@@ -722,7 +724,7 @@ export default {
                       id: this.form.id.value,
                       data: {
                         type: this.form.type,
-                        category: this.form.type,
+                        category: [0,3,4,6,9,10,11].includes(this.form.status) ? 'historical' : this.form.type,
                         promoter_profit: this.promoter_profit_enable ? this.form.promoter_profit : 0,
                         status: this.fetchStatus(this.form.status, 'value'),
                         date_notes: this.form.date_notes,
