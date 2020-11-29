@@ -136,7 +136,7 @@ class Event extends Model
 
     final public function artists(): BelongsToMany
     {
-        return $this->belongsToMany(Artist::class)->withPivot(['type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id', 'management_firm_id', 'publicity_firm_id']);
+        return $this->belongsToMany(Artist::class)->withPivot(['type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id', 'management_firm_id', 'publicity_firm_id', 'token', 'artist_representative_mad']);
     }
 
     final public function artists_headliners(): BelongsToMany
