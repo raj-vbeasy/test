@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use App\Models\Agency;
 use App\Models\Artist;
+use App\Models\ManagementFirm;
+use App\Models\PublicityFirm;
 use App\Models\Stage;
 use Carbon\Carbon;
 use Exception;
@@ -69,7 +71,31 @@ class Event extends JsonResource
                 'notes' => $artist->pivot->notes,
                 'date_notes' => $artist->pivot->date_notes,
                 'challenged' => $challenged,
-                'agency' => ($agency = Agency::find($artist->pivot->agency_id)) ? $agency->toArray() : []
+                'agency' => ($agency = Agency::find($artist->pivot->agency_id)) ? $agency->toArray() : [
+                    "agent_assistant_name" => "",
+                    "agent_assistant_phone" => "",
+                    "email" => "",
+                    "name" => "",
+                    "phone" => ""
+                ],
+                'management_firm' => ($managementFirm = ManagementFirm::find($artist->pivot->management_firm_id)) ? $managementFirm->toArray() : [
+                    "manager_assistant_email"=> "",
+                    "manager_assistant_name"=> "",
+                    "manager_assistant_phone"=> "",
+                    "manager_email"=> "",
+                    "manager_name"=> "",
+                    "manager_phone"=> "",
+                    "name"=> ""
+                ],
+                'publicity_firm' => ($publicityFirm = PublicityFirm::find($artist->pivot->publicity_firm_id)) ? $publicityFirm->toArray() : [
+                    "name"=> "",
+                    "publicist_assistant_email"=> "",
+                    "publicist_assistant_name"=> "",
+                    "publicist_assistant_phone"=> "",
+                    "publicist_email"=> "",
+                    "publicist_name"=> "",
+                    "publicist_phone"=> ""
+                ]
             ]);
         }
 
