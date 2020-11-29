@@ -636,7 +636,14 @@ export default {
     remove(info) {
       this.form.id = info.id;
       this.modal.delete = true;
-      this.handle();
+      this.$swal.fire({
+        text: 'You want to delete this artist?',
+        confirmButtonText: 'Delete'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.handle();
+        }
+      });
     },
     search(name) {
       if (name.length >= 3) {
@@ -713,7 +720,9 @@ export default {
                     status_color: this.statusColor[this.fetchStatus(this.form.status, 'value')],
                     hold_position_order: this.form.hold_position,
                     hold_position_color: this.holdPositionColor[this.fetchHoldPosition(this.form.hold_position, 'value')],
-                    agency: this.form.agency
+                    agency: this.form.agency,
+                    management_firm: this.form.management_firm,
+                    publicity_firm: this.form.publicity_firm
                   }
                 });
               } else if (this.modal.edit) {
@@ -740,6 +749,9 @@ export default {
                         status_color: this.statusColor[this.fetchStatus(this.form.status, 'value')],
                         hold_position_order: this.form.hold_position,
                         hold_position_color: this.holdPositionColor[this.fetchHoldPosition(this.form.hold_position, 'value')],
+                        agency: this.form.agency,
+                        management_firm: this.form.management_firm,
+                        publicity_firm: this.form.publicity_firm
                       }
                     });
                     break;

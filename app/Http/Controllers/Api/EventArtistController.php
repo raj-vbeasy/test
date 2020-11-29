@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Agency;
 use App\Models\Artist;
 use App\Models\Event;
+use App\Models\ManagementFirm;
+use App\Models\PublicityFirm;
 use App\Models\User;
 use App\Notifications\ArtistStatusUpdate;
 use App\Traits\HandleApiRequestAndResponse;
@@ -68,6 +70,11 @@ class EventArtistController extends Controller
                 }
             ]
         ];
+        $this->validationMessages = [
+            'agency.name.required' => 'Agency name is required',
+            'agency.email.required' => 'Agency email is required',
+            'agency.email.email' => 'Please enter valid agency email'
+        ];
         $this->validateApiRequest();
         if ($this->isInputValid) {
             $event = Event::find($eventId);
@@ -78,11 +85,18 @@ class EventArtistController extends Controller
                 }
 
                 $agency = Agency::create($request->get('agency'));
-                $request->merge(['agency_id' => $agency->id]);
+                $managementFirm = ManagementFirm::create($request->get('management_firm'));
+                $publicityFirm = PublicityFirm::create($request->get('publicity_firm'));
+
+                $request->merge([
+                    'agency_id' => $agency->id,
+                    'management_firm_id' => $managementFirm->id,
+                    'publicity_firm_id' => $publicityFirm->id
+                ]);
 
                 $event->artists()->syncWithoutDetaching(
                     [
-                        $request->get('artist_id') => $request->only(['type', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id'])
+                        $request->get('artist_id') => $request->only(['type', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id', 'management_firm_id', 'publicity_firm_id'])
                     ]
                 );
 
@@ -180,6 +194,62 @@ class EventArtistController extends Controller
                     $request->get('id'),
                     $request->only(['type', 'email', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'notes', 'offer_expiration_date'])
                 );
+
+                $agency = Agency::find($oldData->pivot->agency_id);
+                if ($agency) {
+                    $agency->fill($request->get('agency'));
+                    if ($agency->isDirty()) {
+                        $agency->save();
+                    }
+                }
+
+                $managementFirm = ManagementFirm::find($oldData->pivot->management_firm_id);
+                if ($managementFirm) {
+                    $managementFirm->fill($request->get('management_firm'));
+                    if ($managementFirm->isDirty()) {
+                        $managementFirm->save();
+                    }
+                }
+
+                $publicityFirm = PublicityFirm::find($oldData->pivot->publicity_firm_id);
+                if ($publicityFirm) {
+                    $publicityFirm->fill($request->get('publicity_firm'));
+                    if ($publicityFirm->isDirty()) {
+                        $publicityFirm->save();
+                    }
+                }
+
+
+                $events = DB::table('artist_event')
+                    ->where('artist_id','!=', $id)
+                    ->where('event_id', '=', $eventId)
+                    ->where('hold_position', '>=', $request->input('hold_position'))
+                    ->orderBy('hold_position')
+                    ->get('id');
+                foreach ($events as $k=>$e) {
+                    $hold_position = $k+$request->input('hold_position');
+                    DB::table('artist_event')
+                        ->where('id', '=', $e->id)
+                        ->update(['hold_position' => $hold_position]);
+                }
+
+                // Notify related artists
+                $this->sendStatusAlert($event, $request->get('id'), $request->get('status'));
+
+                if ($oldData->pivot->status !== $request->get('status')) {
+                    // Log status activity
+                    activity()
+                        ->inLog('Artist Status')
+                        ->on($event)
+                        ->withProperties([
+                            'old' => Event::ARTIST_STATUS[$oldData->pivot->status],
+                            'new' => Event::ARTIST_STATUS[$request->get('status')],
+                            'artist_name' => $oldData->name
+                        ])
+                        ->log('Artist status updated');
+                }
+
+
                 $this->setResponseVars("Artist updated");
                 \DB::commit();
             } catch (\Exception $exception) {
@@ -189,34 +259,6 @@ class EventArtistController extends Controller
                     null,
                     Response::HTTP_INTERNAL_SERVER_ERROR
                 );
-            }
-            $events = DB::table('artist_event')
-                ->where('artist_id','!=', $id)
-                ->where('event_id', '=', $eventId)
-                ->where('hold_position', '>=', $request->input('hold_position'))
-                ->orderBy('hold_position')
-                ->get('id');
-            foreach ($events as $k=>$e) {
-                $hold_position = $k+$request->input('hold_position');
-                DB::table('artist_event')
-                    ->where('id', '=', $e->id)
-                    ->update(['hold_position' => $hold_position]);
-            }
-
-            // Notify related artists
-            $this->sendStatusAlert($event, $request->get('id'), $request->get('status'));
-
-            if ($oldData->pivot->status !== $request->get('status')) {
-                // Log status activity
-                activity()
-                    ->inLog('Artist Status')
-                    ->on($event)
-                    ->withProperties([
-                        'old' => Event::ARTIST_STATUS[$oldData->pivot->status],
-                        'new' => Event::ARTIST_STATUS[$request->get('status')],
-                        'artist_name' => $oldData->name
-                    ])
-                    ->log('Artist status updated');
             }
         }
         return $this->apiResponse();
@@ -259,6 +301,7 @@ class EventArtistController extends Controller
 
     final private function sendStatusAlert(Event $event, $artistId, $status)
     {
+        return;
         $artistEventData = $event->artists()->where('artist_id', $artistId)->first();
 
         $agency = Agency::find($artistEventData->pivot->agency_id);
