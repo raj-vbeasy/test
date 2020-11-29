@@ -301,7 +301,6 @@ class EventArtistController extends Controller
 
     final private function sendStatusAlert(Event $event, $artistId, $status)
     {
-        return;
         $artistEventData = $event->artists()->where('artist_id', $artistId)->first();
 
         $agency = Agency::find($artistEventData->pivot->agency_id);
