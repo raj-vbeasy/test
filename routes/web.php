@@ -11,6 +11,10 @@
 |
 */
 
+Route::get('mutual-agreeable-date/{token}',function ($token) {
+    return view('mutual_agreeable_date', compact('token'));
+})->name('mad');
+Route::post('mutual-agreeable-date/{token}', 'Api\EventArtistController@updateRepresentativeMad');
 Route::get('/{vue_capture?}', function () {
     return view('index');
 })->where('vue_capture', '.*');

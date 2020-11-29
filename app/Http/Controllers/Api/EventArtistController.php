@@ -16,6 +16,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use DB;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class EventArtistController extends Controller
@@ -91,12 +93,13 @@ class EventArtistController extends Controller
                 $request->merge([
                     'agency_id' => $agency->id,
                     'management_firm_id' => $managementFirm->id,
-                    'publicity_firm_id' => $publicityFirm->id
+                    'publicity_firm_id' => $publicityFirm->id,
+                    'token' => str_ireplace('-', '',Str::uuid() . Str::random(20))
                 ]);
 
                 $event->artists()->syncWithoutDetaching(
                     [
-                        $request->get('artist_id') => $request->only(['type', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id', 'management_firm_id', 'publicity_firm_id'])
+                        $request->get('artist_id') => $request->only(['type', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id', 'management_firm_id', 'publicity_firm_id', 'token'])
                     ]
                 );
 
@@ -326,7 +329,8 @@ class EventArtistController extends Controller
                     'name' => $location->name,
                     'link' => 'https://maps.google.com/?q=indore',
                     'capacity' => $location->capacity
-                ]
+                ],
+                'url' => route('mad', ['token' => $artistEventData->pivot->token])
             ];
             switch($artistEventData->pivot->status) {
                 case 1:
@@ -349,7 +353,6 @@ class EventArtistController extends Controller
                 case 3:
                     if ($artistEventData->pivot->hold_position === 8) {
                         $content['view'] = 'emails.artist_status_update.mutually_agreeable_dates';
-                        $content['url'] = url('/');
                         $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                         ((new User())->fill([
@@ -359,7 +362,6 @@ class EventArtistController extends Controller
                     break;
                 case 4:
                     $content['view'] = 'emails.artist_status_update.not_available';
-                    $content['url'] = url('/');
 
                     ((new User())->fill([
                         'email' => $agency->email
@@ -368,7 +370,6 @@ class EventArtistController extends Controller
                 case 5:
                     $content['view'] = 'emails.artist_status_update.challenged.to';
                     $content['challenge_expiration_hours'] = $artistEventData->pivot->challenged_hours;
-                    $content['url'] = url('/');
                     $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                     ((new User())->fill([
@@ -388,7 +389,6 @@ class EventArtistController extends Controller
                 case 6:
                 case 10:
                     $content['view'] = 'emails.artist_status_update.hold_released';
-                    $content['url'] = url('/');
                     $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                     ((new User())->fill([
@@ -406,7 +406,7 @@ class EventArtistController extends Controller
                     break;
                 case 8:
                     $content['view'] = 'emails.artist_status_update.confirmed.artist';
-                    $content['url'] = url('/');
+
                     ((new User())->fill([
                         'email' => $agency->email
                     ]))->notify(new ArtistStatusUpdate($content));
@@ -429,7 +429,6 @@ class EventArtistController extends Controller
                     break;
                 case 9:
                     $content['view'] = 'emails.artist_status_update.declined';
-                    $content['url'] = url('/');
                     $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 
                     ((new User())->fill([
@@ -482,5 +481,35 @@ class EventArtistController extends Controller
                     break;
             }
         }
+    }
+
+    final public function updateRepresentativeMad(Request $request, $token)
+    {
+        $isDateRequired = strtolower($request->get('yes_no', 'no')) === 'yes';
+
+        $arr = [
+            'notes' => $request->get('notes', ''),
+            'dates' => []
+        ];
+
+        if ($isDateRequired) {
+            $flag = true;
+            foreach ($request->get('dates', []) as $date) {
+                if (!empty($date['month']) && !empty($date['day']) && !empty($date['year'])) {
+                    $arr['dates'][] = $date;
+                    $flag = false;
+                }
+            }
+
+            if ($flag) {
+                return redirect()->back()->withInput()->withErrors(['date' => 'Select one date at least']);
+            }
+        }
+
+        DB::table('artist_event')
+            ->where('token', $token)
+            ->update(['artist_representative_mad' => json_encode($arr)]);
+
+        return redirect()->back()->with(['success' => 'Data submitted successfully']);
     }
 }

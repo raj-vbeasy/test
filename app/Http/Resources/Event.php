@@ -95,7 +95,8 @@ class Event extends JsonResource
                     "publicist_email"=> "",
                     "publicist_name"=> "",
                     "publicist_phone"=> ""
-                ]
+                ],
+                'artist_representative_mad' => ($mad = $artist->pivot->artist_representative_mad) ? json_decode($mad) : ['dates' => [], 'notes' => '']
             ]);
         }
 

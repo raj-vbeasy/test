@@ -249,6 +249,109 @@
           </b-col>
         </b-row>
 
+        <b-row>
+          <b-col>
+            <b-form-group label="Status" label-for="artist_status">
+              <b-form-select v-model="form.status" :options="statuses"></b-form-select>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="form.status === 3 || form.status === 9">
+          <b-col>
+            <label v-if="form.status === 3">Mutually Agreed Date Note</label>
+            <label v-else>Reason</label>
+            <b-form-group label-for="date_notes">
+              <b-form-textarea
+                  class=""
+                  id="date_notes"
+                  v-model="form.date_notes"
+                  placeholder="Enter something..."
+                  rows="3"
+                  max-rows="6"
+              ></b-form-textarea>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="form.status === 5">
+          <b-col>
+            <b-form-group label-for="challenged_by" label="Challenged by Artist">
+              <b-select
+                  class=""
+                  id="date_notes"
+                  v-model="form.challenged_by"
+              >
+                <option selected="selected">Select challenged by artist</option>
+                <option v-for="artist in event.artists" :key="artist.id" :value="artist.id">{{ artist.name }}</option>
+              </b-select>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="form.status === 5">
+          <b-col>
+            <b-form-group label-for="challenged_hours" label="Hours Challenged Hold Expires In (like: 24,48,72)">
+              <b-form-input
+                  class="col-3"
+                  id="challenged_hours"
+                  v-model.number="form.challenged_hours"
+                  placeholder="0"></b-form-input>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="form.status === 7">
+          <b-col>
+            <b-form-group label-for="offer_expiration_date" label="Offer Expiration By">
+              <date-picker
+                  v-model="form.offer_expiration_date"
+                  :first-day-of-week="1"
+                  lang="en"
+                  confirm
+                  value-type="timestamp"
+                  format="MMM DD, YYYY dddd"></date-picker>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col>
+            <b-form-group label="Hold Position" label-for="artist_hold_position">
+              <b-form-select v-model="form.hold_position" :options="holdPositions"></b-form-select>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="representativeData.dates.length > 0">
+          <b-col>
+            <b-table :fields="representativeDataFields" :items="representativeData.dates"></b-table>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="representativeData.notes">
+          <b-col>
+            <p>
+              <strong>Artist Representative Notes:- </strong>{{ representativeData.notes }}
+            </p>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col>
+            <b-form-group label-for="notes" label="Notes">
+              <b-form-textarea
+                  class=""
+                  id="notes"
+                  v-model="form.notes"
+                  placeholder="Enter something..."
+                  rows="3"
+                  max-rows="6"
+              ></b-form-textarea>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
         <!-- Agency, management, publicity html -->
         <b-row>
           <b-col>
@@ -428,95 +531,6 @@
         </b-row>
         <!-- Agency, management, publicity html -->
 
-        <b-row>
-          <b-col>
-            <b-form-group label="Status" label-for="artist_status">
-              <b-form-select v-model="form.status" :options="statuses"></b-form-select>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row v-if="form.status === 3 || form.status === 9">
-          <b-col>
-            <label v-if="form.status === 3">Mutually Agreed Date Note</label>
-            <label v-else>Reason</label>
-            <b-form-group label-for="date_notes">
-              <b-form-textarea
-                  class=""
-                  id="date_notes"
-                  v-model="form.date_notes"
-                  placeholder="Enter something..."
-                  rows="3"
-                  max-rows="6"
-              ></b-form-textarea>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row v-if="form.status === 5">
-          <b-col>
-            <b-form-group label-for="challenged_by" label="Challenged by Artist">
-              <b-select
-                  class=""
-                  id="date_notes"
-                  v-model="form.challenged_by"
-              >
-                <option selected="selected">Select challenged by artist</option>
-                <option v-for="artist in event.artists" :key="artist.id" :value="artist.id">{{ artist.name }}</option>
-              </b-select>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row v-if="form.status === 5">
-          <b-col>
-            <b-form-group label-for="challenged_hours" label="Hours Challenged Hold Expires In (like: 24,48,72)">
-              <b-form-input
-                  class="col-3"
-                  id="challenged_hours"
-                  v-model.number="form.challenged_hours"
-                  placeholder="0"></b-form-input>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row v-if="form.status === 7">
-          <b-col>
-            <b-form-group label-for="offer_expiration_date" label="Offer Expiration By">
-              <date-picker
-                  v-model="form.offer_expiration_date"
-                  :first-day-of-week="1"
-                  lang="en"
-                  confirm
-                  value-type="timestamp"
-                  format="MMM DD, YYYY dddd"></date-picker>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col>
-            <b-form-group label="Hold Position" label-for="artist_hold_position">
-              <b-form-select v-model="form.hold_position" :options="holdPositions"></b-form-select>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col>
-            <b-form-group label-for="notes" label="Notes">
-              <b-form-textarea
-                  class=""
-                  id="notes"
-                  v-model="form.notes"
-                  placeholder="Enter something..."
-                  rows="3"
-                  max-rows="6"
-              ></b-form-textarea>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
         <b-row class="mb-5">
           <b-col>
             <b-button variant="outline-secondary float-right ml-2" @click="cancel">Cancel</b-button>
@@ -569,7 +583,25 @@ export default {
       holdPositionColor: [],
       modal: this.default('modal'),
       form: this.default('form'),
-      selectedRadio: 'agency'
+      selectedRadio: 'agency',
+      representativeDataFields: [
+        {
+          key: 'month',
+          label: 'Month'
+        },
+        {
+          key: 'day',
+          label: 'Day of Week'
+        },
+        {
+          key: 'year',
+          label: 'Year'
+        }
+      ],
+      representativeData: {
+        notes: '',
+        dates: []
+      }
     }
   },
   computed: {
@@ -632,6 +664,8 @@ export default {
       this.form.agency = cloneDeep(info.agency);
       this.form.management_firm = cloneDeep(info.management_firm);
       this.form.publicity_firm = cloneDeep(info.publicity_firm);
+
+      this.representativeData = cloneDeep(info.artist_representative_mad);
     },
     remove(info) {
       this.form.id = info.id;
@@ -671,6 +705,10 @@ export default {
     cancel() {
       this.modal = this.default('modal');
       this.form = this.default('form');
+      this.representativeData = cloneDeep({
+        notes: '',
+        dates: []
+      });
     },
     handle () {
       let loader = this.$loading.show();
