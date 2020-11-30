@@ -323,6 +323,11 @@
           </b-col>
         </b-row>
 
+        <b-row>
+          <b-col>
+            <h6>Explore Mutually Agreeable Dates for Future Consideration</h6>
+          </b-col>
+        </b-row>
         <b-row v-if="representativeData.dates.length > 0">
           <b-col>
             <b-table :fields="representativeDataFields" :items="representativeData.dates"></b-table>

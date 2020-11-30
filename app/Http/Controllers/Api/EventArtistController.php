@@ -237,7 +237,9 @@ class EventArtistController extends Controller
                 }
 
                 // Notify related artists
-                $this->sendStatusAlert($event, $request->get('id'), $request->get('status'));
+                if (($oldData->pivot->status !== $request->get('status')) || ($oldData->pivot->hold_position !== $request->get('hold_position'))) {
+                    $this->sendStatusAlert($event, $request->get('id'), $request->get('status'));
+                }
 
                 if ($oldData->pivot->status !== $request->get('status')) {
                     // Log status activity

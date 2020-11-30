@@ -148,37 +148,9 @@
                     <div class="s100">
                         <select name="dates[{{ $i }}][year]" id="year">
                             <option value=""> Select Year </option>
-                            <option value="2020">2020</option>
-                            <option value="2019">2021</option>
-                            <option value="2018">2022</option>
-                            <option value="2017">2023</option>
-                            <option value="2016">2024</option>
-                            <option value="2015">2025</option>
-                            <option value="2014">2026</option>
-                            <option value="2013">2027</option>
-                            <option value="2012">2028</option>
-                            <option value="2011">2029</option>
-                            <option value="2010">2030</option>
-                            <option value="2009">2031</option>
-                            <option value="2009">2032</option>
-                            <option value="2008">2033</option>
-                            <option value="2007">2034</option>
-                            <option value="2006">2035</option>
-                            <option value="2005">2036</option>
-                            <option value="2004">2037</option>
-                            <option value="2003">2038</option>
-                            <option value="2002">2039</option>
-                            <option value="2001">2040</option>
-                            <option value="2000">2041</option>
-                            <option value="1999">2042</option>
-                            <option value="1998">2043</option>
-                            <option value="1997">2044</option>
-                            <option value="1996">2045</option>
-                            <option value="1995">2046</option>
-                            <option value="1994">2047</option>
-                            <option value="1993">2048</option>
-                            <option value="1992">2049</option>
-                            <option value="1991">2050</option>
+                            @for($j = 2020; $j <= 2050; $j++)
+                                <option value="{{ $j }}">{{ $j }}</option>
+                            @endfor
                         </select>
                     </div>
 
