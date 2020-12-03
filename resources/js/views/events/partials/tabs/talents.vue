@@ -716,6 +716,97 @@ export default {
       });
     },
     handle () {
+      this.$swal.fire({
+        title: '',
+        text: 'Do you want to send email?',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        this.save(result.isConfirmed);
+      });
+    },
+    default (type) {
+      let result = {};
+      switch (type) {
+        case 'form':
+          result = {
+            id: '',
+            type: 'headliner',
+            promoter_profit_enable: false,
+            promoter_profit: 0,
+            status: null,
+            date_notes: '',
+            challenged_by: '',
+            challenged_hours: '',
+            hold_position: null,
+            amount: 0,
+            offer_expiration_date: null,
+            agency: {
+              name: '',
+              phone: '',
+              email: '',
+              agent_assistant_name: '',
+              agent_assistant_phone: ''
+            },
+            management_firm: {
+              name: '',
+              manager_name: '',
+              manager_phone: '',
+              manager_email: '',
+              manager_assistant_name: '',
+              manager_assistant_phone: '',
+              manager_assistant_email: ''
+            },
+            publicity_firm: {
+              name: '',
+              publicist_name: '',
+              publicist_phone: '',
+              publicist_email: '',
+              publicist_assistant_name: '',
+              publicist_assistant_phone: '',
+              publicist_assistant_email: ''
+            }
+          };
+          break;
+        case 'modal':
+          result = {
+            show: false,
+            title: '',
+            add: false,
+            edit: false,
+            delete: false
+          };
+          break;
+      }
+      return result;
+    },
+    fetchStatus (value, type) {
+      let returnValue = '';
+      let keyToMatch = type === 'key' ? 'text' : 'value';
+      let keyToReturn = type === 'key' ? 'value' : 'text';
+
+      for (let i = 0; i < this.statuses.length; i++) {
+        if (this.statuses[i][keyToMatch] === value) {
+          returnValue = this.statuses[i][keyToReturn];
+          break;
+        }
+      }
+      return returnValue;
+    },
+    fetchHoldPosition (value, type) {
+      let returnValue = '';
+      let keyToMatch = type === 'key' ? 'text' : 'value';
+      let keyToReturn = type === 'key' ? 'value' : 'text';
+
+      for (let i = 0; i < this.holdPositions.length; i++) {
+        if (this.holdPositions[i][keyToMatch] === value) {
+          returnValue = this.holdPositions[i][keyToReturn];
+          break;
+        }
+      }
+      return returnValue;
+    },
+    save (sendEmail = false) {
       let loader = this.$loading.show();
       let customRequest = null;
       if (this.modal.delete) {
@@ -723,7 +814,8 @@ export default {
       } else if (this.modal.edit) {
         let postParam = cloneDeep({
           ...this.form,
-          promoter_profit: this.form.promoter_profit_enable ? this.form.promoter_profit : 0
+          promoter_profit: this.form.promoter_profit_enable ? this.form.promoter_profit : 0,
+          send_email: sendEmail
         });
         customRequest = this.$http.put('events/' + this.event.id + '/artists/' + this.form.id.value, postParam);
       } else if (this.modal.add) {
@@ -731,7 +823,8 @@ export default {
           ...this.form,
           promoter_profit: this.form.promoter_profit_enable ? this.form.promoter_profit : 0,
           id: null,
-          artist_id: this.form.id.value
+          artist_id: this.form.id.value,
+          send_email: sendEmail
         });
         customRequest = this.$http.post('events/' + this.event.id + '/artists', postParam);
       }
@@ -821,87 +914,6 @@ export default {
       } else {
         loader.hide();
       }
-    },
-    default (type) {
-      let result = {};
-      switch (type) {
-        case 'form':
-          result = {
-            id: '',
-            type: 'headliner',
-            promoter_profit_enable: false,
-            promoter_profit: 0,
-            status: null,
-            date_notes: '',
-            challenged_by: '',
-            challenged_hours: '',
-            hold_position: null,
-            amount: 0,
-            offer_expiration_date: null,
-            agency: {
-              name: '',
-              phone: '',
-              email: '',
-              agent_assistant_name: '',
-              agent_assistant_phone: ''
-            },
-            management_firm: {
-              name: '',
-              manager_name: '',
-              manager_phone: '',
-              manager_email: '',
-              manager_assistant_name: '',
-              manager_assistant_phone: '',
-              manager_assistant_email: ''
-            },
-            publicity_firm: {
-              name: '',
-              publicist_name: '',
-              publicist_phone: '',
-              publicist_email: '',
-              publicist_assistant_name: '',
-              publicist_assistant_phone: '',
-              publicist_assistant_email: ''
-            }
-          };
-          break;
-        case 'modal':
-          result = {
-            show: false,
-            title: '',
-            add: false,
-            edit: false,
-            delete: false
-          };
-          break;
-      }
-      return result;
-    },
-    fetchStatus (value, type) {
-      let returnValue = '';
-      let keyToMatch = type === 'key' ? 'text' : 'value';
-      let keyToReturn = type === 'key' ? 'value' : 'text';
-
-      for (let i = 0; i < this.statuses.length; i++) {
-        if (this.statuses[i][keyToMatch] === value) {
-          returnValue = this.statuses[i][keyToReturn];
-          break;
-        }
-      }
-      return returnValue;
-    },
-    fetchHoldPosition (value, type) {
-      let returnValue = '';
-      let keyToMatch = type === 'key' ? 'text' : 'value';
-      let keyToReturn = type === 'key' ? 'value' : 'text';
-
-      for (let i = 0; i < this.holdPositions.length; i++) {
-        if (this.holdPositions[i][keyToMatch] === value) {
-          returnValue = this.holdPositions[i][keyToReturn];
-          break;
-        }
-      }
-      return returnValue;
     }
   },
   created() {
