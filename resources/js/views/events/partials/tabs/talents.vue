@@ -26,7 +26,8 @@
                 <hr v-if="headliner.status === 'Challenged By'">
                 <p v-if="headliner.status === 'Challenged By'">
                 <span>
-                  Challenged by Artist : {{ headliner.challenged.by }}<br>
+                  Hold position 1 ( {{ headliner.name }}) is challenged by Hold position 2 ({{ headliner.challenged.by }})
+                  <br>
                   Hours Challenged Hold Expires In : {{ headliner.challenged.hours }}
                 </span>
                 </p>
@@ -75,7 +76,10 @@
                 </p>
                 <hr v-if="support.status === 'Challenged By'">
                 <p v-if="support.status === 'Challenged By'">
-                  <span>Challenged by Artist : {{ support.challenged.by }}<br> Hours Challenged Hold Expires In : {{ support.challenged.hours }}</span>
+                  <span>
+                    Hold position 1 ( {{ support.name }}) is challenged by Hold position 2 ({{ support.challenged.by }})
+                    <br> Hours Challenged Hold Expires In : {{ support.challenged.hours }}
+                  </span>
                 </p>
                 <hr>
                 <b-card-text>
@@ -135,7 +139,8 @@
                 <hr v-if="artist.status === 'Challenged By'">
                 <p v-if="artist.status === 'Challenged By'">
                   <span>
-                    Challenged by Artist : {{ artist.challenged.by }}<br>
+                    Hold position 1 ( {{ artist.name }}) is challenged by Hold position 2 ({{ artist.challenged.by }})
+                    <br>
                     Hours Challenged Hold Expires In : {{ artist.challenged.hours }}
                   </span>
                 </p>
