@@ -86,7 +86,6 @@ class Event extends Model
         '3rd Hold (3H)',
         '4th Hold (4H)',
         '5th Hold (5H)',
-        'Archived Section',
         'Future Consideration',
     ];
 
@@ -113,7 +112,6 @@ class Event extends Model
         '3rd Hold (3H)' => ['background' => '#1155cc', 'color' => '#ffffff'],
         '4th Hold (4H)' => ['background' => '#8e7cc3', 'color' => '#000000'],
         '5th Hold (5H)' => ['background' => '#377369', 'color' => '#ffffff'],
-        'Archived Section' => ['background' => '#999999', 'color' => '#000000'],
         'Future Consideration' => ['background' => '#f0a714', 'color' => '#000000'],
     ];
 

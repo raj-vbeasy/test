@@ -209,22 +209,6 @@
 
         <b-row>
           <b-col>
-            <b-form-group label="Talent type" label-for="artist_type">
-              <b-form-radio
-                  v-model="form.type"
-                  name="artist_type"
-                  value="headliner">Headliner</b-form-radio>
-              <b-form-radio
-                  v-model="form.type"
-                  name="artist_type"
-                  value="support"
-                  class="ml-3">Support</b-form-radio>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col>
             <b-form-group label="Promoter Profit" label-for="promoter_profit_enable">
               <switches
                   v-model="form.promoter_profit_enable"
@@ -252,7 +236,23 @@
         <b-row>
           <b-col>
             <b-form-group label="Status" label-for="artist_status">
-              <b-form-select v-model="form.status" :options="statuses"></b-form-select>
+              <b-form-select v-model="form.status" :options="statuses" @input="setHoldPositions(form.status)"></b-form-select>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="form.type !== 'historical'">
+          <b-col>
+            <b-form-group label="Talent type" label-for="artist_type">
+              <b-form-radio
+                  v-model="form.type"
+                  name="artist_type"
+                  value="headliner">Headliner</b-form-radio>
+              <b-form-radio
+                  v-model="form.type"
+                  name="artist_type"
+                  value="support"
+                  class="ml-3">Support</b-form-radio>
             </b-form-group>
           </b-col>
         </b-row>
@@ -323,7 +323,7 @@
           </b-col>
         </b-row>
 
-        <b-row>
+        <b-row v-if="representativeData.dates.length > 0">
           <b-col>
             <h6>Explore Mutually Agreeable Dates for Future Consideration</h6>
           </b-col>
@@ -579,11 +579,8 @@ export default {
           value: null, text: 'Please select status'
         }
       ],
-      holdPositions: [
-        {
-          value: null, text: 'Please select hold position'
-        }
-      ],
+      holdPositions: [],
+      rawHoldPositions: [],
       statusColor: [],
       holdPositionColor: [],
       modal: this.default('modal'),
@@ -612,17 +609,17 @@ export default {
   computed: {
     headliners: function () {
       return this.artists.filter(function (artist) {
-        return artist.category === 'headliner';
+        return artist.type === 'headliner';
       }).sort(function(a, b){return a.hold_position_order - b.hold_position_order});
     },
     supports: function () {
       return this.artists.filter(function (artist) {
-        return artist.category === 'support';
+        return artist.type === 'support';
       }).sort(function(a, b){return a.hold_position_order - b.hold_position_order});
     },
     historical: function () {
       return this.artists.filter(function (artist) {
-        return artist.category === 'historical';
+        return artist.type === 'historical';
       }).sort(function(a, b){return a.hold_position_order - b.hold_position_order});
     }
   },
@@ -648,6 +645,7 @@ export default {
       this.modal.show = true;
       this.modal.title = 'Add Artist';
       this.modal.add = true;
+      this.setHoldPositions();
     },
     edit(info) {
       this.modal.show = true;
@@ -671,6 +669,8 @@ export default {
       this.form.publicity_firm = cloneDeep(info.publicity_firm);
 
       this.representativeData = cloneDeep(info.artist_representative_mad);
+
+      this.setHoldPositions(this.form.status);
     },
     remove(info) {
       this.form.id = info.id;
@@ -858,7 +858,8 @@ export default {
                     hold_position_color: this.holdPositionColor[this.fetchHoldPosition(this.form.hold_position, 'value')],
                     agency: this.form.agency,
                     management_firm: this.form.management_firm,
-                    publicity_firm: this.form.publicity_firm
+                    publicity_firm: this.form.publicity_firm,
+                    artist_representative_mad: {'dates': [], 'notes': ''}
                   }
                 });
               } else if (this.modal.edit) {
@@ -914,6 +915,72 @@ export default {
       } else {
         loader.hide();
       }
+    },
+    setHoldPositions (status) {
+      this.holdPositions = [{
+        value: null, text: 'Please select hold position'
+      }];
+      let hidePositions = [];
+
+      switch (status) {
+        case 0:
+          hidePositions.push(1);
+          this.form.type = 'headliner';
+          break;
+        case 1:
+          hidePositions.push(1,2,3,4,5,6);
+          this.form.type = 'historical';
+          break;
+        case 2:
+          hidePositions.push(1,7);
+          this.form.type = 'headliner';
+          break;
+        case 3:
+          hidePositions.push(2,3,4,5,6);
+          this.form.type = 'historical';
+          break;
+        case 4:
+          hidePositions.push(1,2,3,4,5,6);
+          this.form.type = 'historical';
+          break;
+        case 5:
+          hidePositions.push(0,1,4,5,6,7);
+          this.form.type = 'headliner';
+          break;
+        case 6:
+          hidePositions.push(1);
+          this.form.type = 'historical';
+          break;
+        case 7:
+          hidePositions.push(0,2,3,4,5,6,7);
+          this.form.type = 'headliner';
+          break;
+        case 8:
+          hidePositions.push(0,2,3,4,5,6,7);
+          this.form.type = 'headliner';
+          break;
+        case 9:
+          hidePositions.push(2,3,4,5,6);
+          this.form.type = 'historical';
+          break;
+        case 10:
+          hidePositions.push(1,2,3,4,5,6);
+          this.form.type = 'historical';
+          break;
+        case 11:
+          hidePositions.push(2,3,4,5,6);
+          this.form.type = 'historical';
+          break;
+      }
+
+      for (let i = 0; i < this.rawHoldPositions.length; i++) {
+        if ((hidePositions.length === 0) || !hidePositions.includes(i)) {
+          this.holdPositions.push({
+            value: i,
+            text: this.rawHoldPositions[i]
+          });
+        }
+      }
     }
   },
   created() {
@@ -929,12 +996,7 @@ export default {
           }
 
           if (response.data.data.hasOwnProperty('hold_positions')) {
-            for (let i = 0; i < response.data.data.hold_positions.length; i++) {
-              this.holdPositions.push({
-                text: response.data.data.hold_positions[i],
-                value: i
-              });
-            }
+            this.rawHoldPositions = cloneDeep(response.data.data.hold_positions);
           }
 
           if (response.data.data.hasOwnProperty('status_colors')) {
