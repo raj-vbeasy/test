@@ -26,8 +26,8 @@
                 <hr v-if="headliner.status === 'Challenged By'">
                 <p v-if="headliner.status === 'Challenged By'">
                 <span>
-                  Challenged by Artist : {{ headliner.challenged_by_artist[0]['name'] }}<br>
-                  Hours Challenged Hold Expires In : {{ headliner.challenged_hours }}
+                  Challenged by Artist : {{ headliner.challenged.by }}<br>
+                  Hours Challenged Hold Expires In : {{ headliner.challenged.hours }}
                 </span>
                 </p>
                 <hr>
@@ -75,7 +75,7 @@
                 </p>
                 <hr v-if="support.status === 'Challenged By'">
                 <p v-if="support.status === 'Challenged By'">
-                  <span>Challenged by Artist : {{ support.challenged_by_artist[0]['name'] }}<br> Hours Challenged Hold Expires In : {{ support.challenged_hours }}</span>
+                  <span>Challenged by Artist : {{ support.challenged.by }}<br> Hours Challenged Hold Expires In : {{ support.challenged.hours }}</span>
                 </p>
                 <hr>
                 <b-card-text>
@@ -658,8 +658,8 @@ export default {
       this.form.promoter_profit = Number(info.promoter_profit);
       this.form.status = this.fetchStatus(info.status, 'key');
       this.form.date_notes = info.date_notes;
-      this.form.challenged_by = info.challenged_by;
-      this.form.challenged_hours = info.challenged_hours;
+      this.form.challenged_by = info.challenged.by;
+      this.form.challenged_hours = info.challenged.hours;
       this.form.hold_position = this.fetchHoldPosition(info.hold_position, 'key');
       this.form.notes = info.notes;
       this.form.amount = info.amount;
