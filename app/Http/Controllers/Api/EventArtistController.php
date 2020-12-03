@@ -357,7 +357,7 @@ class EventArtistController extends Controller
                     ]))->notify(new ArtistStatusUpdate($content));
                     break;
                 case 3:
-                    if ($artistEventData->pivot->hold_position === 8) {
+                    if ($artistEventData->pivot->hold_position === 7) {
                         $content['view'] = 'emails.artist_status_update.mutually_agreeable_dates';
                         $content['artist']['hold_position'] = Event::HOLD_POSITION[$artistEventData->pivot->hold_position];
 

@@ -192,7 +192,6 @@ export default {
           }
           break;
         case 'add':
-          console.log(args);
           this.event.artists.push({
             'challenged': [],
             ...args.data
