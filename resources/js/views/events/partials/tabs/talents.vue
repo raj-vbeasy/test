@@ -387,7 +387,10 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="agent_phone" label="Agent Phone:">
+            <b-form-group label-for="agent_phone">
+              <template slot="label">
+                Agent Phone: <a v-if="form.agency.agent_phone" :href="'tel:' + form.agency.agent_phone"><i class="fa fa-phone"></i></a>
+              </template>
               <b-form-input
                   id="agent_phone"
                   v-model="form.agency.agent_phone"
@@ -395,7 +398,10 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="agent_email" label="Agent Email:">
+            <b-form-group label-for="agent_email">
+              <template slot="label">
+                Agent Email: <a v-if="form.agency.agent_email" :href="'mailto:' + form.agency.agent_email"><i class="fa fa-envelope"></i></a>
+              </template>
               <b-form-input
                   id="agent_email"
                   v-model="form.agency.agent_email"
@@ -411,7 +417,10 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="agent_assistant_phone" label="Agent Assistant Phone:">
+            <b-form-group label-for="agent_assistant_phone">
+              <template slot="label">
+                Agent Assistant Phone: <a v-if="form.agency.agent_assistant_phone" :href="'tel:' + form.agency.agent_assistant_phone"><i class="fa fa-phone"></i></a>
+              </template>
               <b-form-input
                   id="agent_assistant_phone"
                   v-model="form.agency.agent_assistant_phone"
@@ -438,7 +447,10 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="manager_phone" label="Manager Phone:">
+            <b-form-group label-for="manager_phone">
+              <template slot="label">
+                Manager Phone: <a v-if="form.management_firm.manager_phone" :href="'tel:' + form.management_firm.manager_phone"><i class="fa fa-phone"></i></a>
+              </template>
               <b-form-input
                   id="manager_phone"
                   v-model="form.management_firm.manager_phone"
@@ -446,7 +458,10 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="manager_email" label="Manger Email:">
+            <b-form-group label-for="manager_email">
+              <template slot="label">
+                Manager Email: <a v-if="form.management_firm.manager_email" :href="'mailto:' + form.management_firm.manager_email"><i class="fa fa-envelope"></i></a>
+              </template>
               <b-form-input
                   id="manager_email"
                   v-model="form.management_firm.manager_email"
@@ -462,7 +477,11 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="manager_assistant_phone" label="Manager Assistant Phone:">
+            <b-form-group label-for="manager_assistant_phone">
+              <template slot="label">
+                Manager Assistant Phone: <a v-if="form.management_firm.manager_assistant_phone"
+                                            :href="'tel:' + form.management_firm.manager_assistant_phone"><i class="fa fa-phone"></i></a>
+              </template>
               <b-form-input
                   id="manager_assistant_phone"
                   v-model="form.management_firm.manager_assistant_phone"
@@ -470,7 +489,11 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="manager_assistant_email" label="Manager Assistant Email:">
+            <b-form-group label-for="manager_assistant_email">
+              <template slot="label">
+                Manager Assistant Email: <a v-if="form.management_firm.manager_assistant_email"
+                                            :href="'mailto:' + form.management_firm.manager_assistant_email"><i class="fa fa-envelope"></i></a>
+              </template>
               <b-form-input
                   id="manager_assistant_email"
                   v-model="form.management_firm.manager_assistant_email"
@@ -497,7 +520,11 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="publicist_phone" label="Publicist Phone:">
+            <b-form-group label-for="publicist_phone">
+              <template slot="label">
+                Publicist Phone: <a v-if="form.publicity_firm.publicist_phone"
+                                            :href="'tel:' + form.publicity_firm.publicist_phone"><i class="fa fa-phone"></i></a>
+              </template>
               <b-form-input
                   id="publicist_phone"
                   v-model="form.publicity_firm.publicist_phone"
@@ -505,7 +532,11 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="publicist_email" label="Publicist Email:">
+            <b-form-group label-for="publicist_email">
+              <template slot="label">
+                Publicist Email: <a v-if="form.publicity_firm.publicist_email"
+                                    :href="'mailto:' + form.publicity_firm.publicist_email"><i class="fa fa-envelope"></i></a>
+              </template>
               <b-form-input
                   id="publicist_email"
                   v-model="form.publicity_firm.publicist_email"
@@ -521,7 +552,11 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="publicist_assistant_phone" label="Publicist Assistant Phone:">
+            <b-form-group label-for="publicist_assistant_phone">
+              <template slot="label">
+                Publicist Assistant Phone: <a v-if="form.publicity_firm.publicist_assistant_phone"
+                                    :href="'tel:' + form.publicity_firm.publicist_assistant_phone"><i class="fa fa-phone"></i></a>
+              </template>
               <b-form-input
                   id="publicist_assistant_phone"
                   v-model="form.publicity_firm.publicist_assistant_phone"
@@ -529,7 +564,11 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="publicist_assistant_email" label="Publicist Assistant Email:">
+            <b-form-group label-for="publicist_assistant_email">
+              <template slot="label">
+                Publicist Assistant Email: <a v-if="form.publicity_firm.publicist_assistant_email"
+                                    :href="'mailto:' + form.publicity_firm.publicist_assistant_email"><i class="fa fa-envelope"></i></a>
+              </template>
               <b-form-input
                   id="publicist_assistant_email"
                   v-model="form.publicity_firm.publicist_assistant_email"
