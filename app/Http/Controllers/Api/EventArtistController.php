@@ -54,7 +54,15 @@ class EventArtistController extends Controller
             'artist_id' => 'required|exists:artists,id',
             'amount' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'agency.name' => 'required',
-            'agency.email' => 'required|email',
+            'agency.agent_name' => 'required',
+            'agency.agent_email' => 'required|email',
+            'publicity_firm.facebook' => 'url|nullable',
+            'publicity_firm.twitter' => 'url|nullable',
+            'publicity_firm.instagram' => 'url|nullable',
+            'publicity_firm.website' => 'url|nullable',
+            'publicity_firm.apple_music' => 'url|nullable',
+            'publicity_firm.spotify' => 'url|nullable',
+            'publicity_firm.sound_cloud' => 'url|nullable',
             'status' => [
                 'required',
                 function ($attribute, $value, $fail) {
@@ -74,8 +82,16 @@ class EventArtistController extends Controller
         ];
         $this->validationMessages = [
             'agency.name.required' => 'Agency name is required',
-            'agency.email.required' => 'Agency email is required',
-            'agency.email.email' => 'Please enter valid agency email'
+            'agency.agent_name.required' => 'Agent name is required',
+            'agency.agent_email.required' => 'Agent email is required',
+            'agency.agent_email.email' => 'Please enter valid agent email',
+            'publicity_firm.facebook.url' => 'Please enter valid facebook link',
+            'publicity_firm.twitter.url' => 'Please enter valid twitter link',
+            'publicity_firm.instagram.url' => 'Please enter valid instagram link',
+            'publicity_firm.website.url' => 'Please enter valid website link',
+            'publicity_firm.apple_music.url' => 'Please enter valid apple music link',
+            'publicity_firm.spotify.url' => 'Please enter valid spotify link',
+            'publicity_firm.sound_cloud.url' => 'Please enter valid sound cloud link'
         ];
         $this->validateApiRequest();
         if ($this->isInputValid) {
