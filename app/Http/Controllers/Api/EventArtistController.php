@@ -165,7 +165,15 @@ class EventArtistController extends Controller
             'event_id' => 'exists:events,id',
             'id' => 'exists:artists',
             'agency.name' => 'required',
-            'agency.email' => 'required|email',
+            'agency.agent_name' => 'required',
+            'agency.agent_email' => 'required|email',
+            'publicity_firm.facebook' => 'url|nullable',
+            'publicity_firm.twitter' => 'url|nullable',
+            'publicity_firm.instagram' => 'url|nullable',
+            'publicity_firm.website' => 'url|nullable',
+            'publicity_firm.apple_music' => 'url|nullable',
+            'publicity_firm.spotify' => 'url|nullable',
+            'publicity_firm.sound_cloud' => 'url|nullable',
             'status' => [
                 'required',
                 function ($attribute, $value, $fail) {

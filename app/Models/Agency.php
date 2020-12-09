@@ -30,5 +30,5 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Agency extends Model
 {
-    protected $fillable = ['name', 'phone', 'email', 'agent_assistant_name', 'agent_assistant_phone'];
+    protected $fillable = ['name', 'agent_name', 'agent_phone', 'agent_email', 'agent_assistant_name', 'agent_assistant_phone'];
 }

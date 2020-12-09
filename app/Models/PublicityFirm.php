@@ -41,6 +41,13 @@ class PublicityFirm extends Model
         'publicist_email',
         'publicist_assistant_name',
         'publicist_assistant_phone',
-        'publicist_assistant_email'
+        'publicist_assistant_email',
+        'facebook',
+        'twitter',
+        'instagram',
+        'website',
+        'apple_music',
+        'spotify',
+        'sound_cloud'
     ];
 }

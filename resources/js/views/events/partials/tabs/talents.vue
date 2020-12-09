@@ -382,19 +382,24 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="agency_phone" label="Agency Phone:">
-              <b-form-input
-                  id="agency_phone"
-                  v-model="form.agency.phone"
-                  placeholder="Enter Agency Phone"></b-form-input>
+            <b-form-group label-for="agent_name" label="Agent Name:">
+              <b-form-input id="agent_name" v-model="form.agency.agent_name" placeholder="Enter Agent Name"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="agency_email" label="Agency Email:">
+            <b-form-group label-for="agent_phone" label="Agent Phone:">
               <b-form-input
-                  id="agency_email"
-                  v-model="form.agency.email"
-                  placeholder="Enter Agency Email"></b-form-input>
+                  id="agent_phone"
+                  v-model="form.agency.agent_phone"
+                  placeholder="Enter Agent Phone"></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12">
+            <b-form-group label-for="agent_email" label="Agent Email:">
+              <b-form-input
+                  id="agent_email"
+                  v-model="form.agency.agent_email"
+                  placeholder="Enter Agent Email"></b-form-input>
             </b-form-group>
           </b-col>
           <b-col cols="12">
@@ -538,6 +543,65 @@
                   placeholder="Upload Doc"></b-form-file>
             </b-form-group>
           </b-col>
+
+          <!-- Social Links -->
+          <b-col cols="12">
+            <b-form-group label-for="publicist_facebook" label="Facebook:">
+              <b-form-input
+                  id="publicist_facebook"
+                  v-model="form.publicity_firm.facebook"
+                  placeholder="Enter Facebook Link"></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12">
+            <b-form-group label-for="publicist_twitter" label="Twitter:">
+              <b-form-input
+                  id="publicist_twitter"
+                  v-model="form.publicity_firm.twitter"
+                  placeholder="Enter Twitter Link"></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12">
+            <b-form-group label-for="publicist_instagram" label="Instagram:">
+              <b-form-input
+                  id="publicist_instagram"
+                  v-model="form.publicity_firm.instagram"
+                  placeholder="Enter Instagram Link"></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12">
+            <b-form-group label-for="publicist_website" label="Website:">
+              <b-form-input
+                  id="publicist_website"
+                  v-model="form.publicity_firm.website"
+                  placeholder="Enter Website Link"></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12">
+            <b-form-group label-for="publicist_apple_music" label="Apple Music:">
+              <b-form-input
+                  id="publicist_apple_music"
+                  v-model="form.publicity_firm.apple_music"
+                  placeholder="Enter Apple Music Link"></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12">
+            <b-form-group label-for="publicist_spotify" label="Spotify:">
+              <b-form-input
+                  id="publicist_spotify"
+                  v-model="form.publicity_firm.spotify"
+                  placeholder="Enter Spotify Link"></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col cols="12">
+            <b-form-group label-for="publicist_sound_cloud" label="Sound Cloud:">
+              <b-form-input
+                  id="publicist_sound_cloud"
+                  v-model="form.publicity_firm.sound_cloud"
+                  placeholder="Enter Sound Cloud Link"></b-form-input>
+            </b-form-group>
+          </b-col>
+          <!-- Social Links -->
         </b-row>
         <!-- Agency, management, publicity html -->
 
@@ -721,12 +785,23 @@ export default {
       });
     },
     handle () {
-      this.$swal.fire({
+      let params = {
         title: '',
-        text: 'Do you want to send email?',
+        text: 'You have changed the Status and/or the artist\'s Hold position. Do you want to send an email to update the artist\'s representative?',
         confirmButtonText: 'Yes',
         cancelButtonText: 'No'
-      }).then((result) => {
+      };
+      if (this.form.status === 11) {
+        params = {
+          icon: 'info',
+          showCancelButton: false,
+          title: '',
+          text: 'This status is for emergency purposes only such as event cancellation, postponement, facility disasters, artist sickness or unforeseen circumstances. A custom email needs to be drafted.',
+          confirmButtonText: 'Okay'
+        };
+      }
+
+      this.$swal.fire(params).then((result) => {
         this.save(result.isConfirmed);
       });
     },
@@ -748,8 +823,9 @@ export default {
             offer_expiration_date: null,
             agency: {
               name: '',
-              phone: '',
-              email: '',
+              agent_name: '',
+              agent_phone: '',
+              agent_email: '',
               agent_assistant_name: '',
               agent_assistant_phone: ''
             },
@@ -769,7 +845,14 @@ export default {
               publicist_email: '',
               publicist_assistant_name: '',
               publicist_assistant_phone: '',
-              publicist_assistant_email: ''
+              publicist_assistant_email: '',
+              facebook: "",
+              twitter: "",
+              instagram: "",
+              website: "",
+              apple_music: "",
+              spotify: "",
+              sound_cloud: ""
             }
           };
           break;
@@ -799,17 +882,15 @@ export default {
       return returnValue;
     },
     fetchHoldPosition (value, type) {
-      let returnValue = '';
-      let keyToMatch = type === 'key' ? 'text' : 'value';
-      let keyToReturn = type === 'key' ? 'value' : 'text';
-
-      for (let i = 0; i < this.holdPositions.length; i++) {
-        if (this.holdPositions[i][keyToMatch] === value) {
-          returnValue = this.holdPositions[i][keyToReturn];
-          break;
+      if (type === 'key') {
+        for (let i = 0; i < this.rawHoldPositions.length; i++) {
+          if (this.rawHoldPositions[i] === value) {
+            return i;
+          }
         }
+      } else {
+        return this.rawHoldPositions[value];
       }
-      return returnValue;
     },
     save (sendEmail = false) {
       let loader = this.$loading.show();
@@ -929,11 +1010,11 @@ export default {
 
       switch (status) {
         case 0:
-          hidePositions.push(1);
+          hidePositions.push(1,2,3,4,5,6,7);
           this.form.type = 'headliner';
           break;
         case 1:
-          hidePositions.push(1,2,3,4,5,6);
+          hidePositions.push(1,2,3,4,5,6,7);
           this.form.type = 'historical';
           break;
         case 2:
@@ -973,7 +1054,7 @@ export default {
           this.form.type = 'historical';
           break;
         case 11:
-          hidePositions.push(2,3,4,5,6);
+          hidePositions.push(0,2,3,4,5,6,7);
           this.form.type = 'historical';
           break;
       }

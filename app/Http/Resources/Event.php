@@ -74,9 +74,10 @@ class Event extends JsonResource
                 'agency' => ($agency = Agency::find($artist->pivot->agency_id)) ? $agency->toArray() : [
                     "agent_assistant_name" => "",
                     "agent_assistant_phone" => "",
-                    "email" => "",
+                    "agent_email" => "",
                     "name" => "",
-                    "phone" => ""
+                    "agent_phone" => "",
+                    "agent_name" => ""
                 ],
                 'management_firm' => ($managementFirm = ManagementFirm::find($artist->pivot->management_firm_id)) ? $managementFirm->toArray() : [
                     "manager_assistant_email"=> "",
@@ -94,7 +95,14 @@ class Event extends JsonResource
                     "publicist_assistant_phone"=> "",
                     "publicist_email"=> "",
                     "publicist_name"=> "",
-                    "publicist_phone"=> ""
+                    "publicist_phone"=> "",
+                    'facebook'=> "",
+                    'twitter'=> "",
+                    'instagram'=> "",
+                    'website'=> "",
+                    'apple_music'=> "",
+                    'spotify'=> "",
+                    'sound_cloud'=> ""
                 ],
                 'artist_representative_mad' => ($mad = $artist->pivot->artist_representative_mad) ? json_decode($mad) : ['dates' => [], 'notes' => '']
             ]);

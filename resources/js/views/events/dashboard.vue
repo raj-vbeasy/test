@@ -42,7 +42,7 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Talents</span>
+                    <span class="d-none d-sm-inline-block">Talent</span>
                   </template>
                   <TalentsTab v-on:artistEvent="artistEvent" :event="event"/>
                 </b-tab>
@@ -52,7 +52,7 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Tasks</span>
+                    <span class="d-none d-sm-inline-block">Task</span>
                   </template>
                   <TasksTab v-on:taskEvent="taskEvent" :event="event"/>
                 </b-tab>
@@ -72,7 +72,7 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Contacts</span>
+                    <span class="d-none d-sm-inline-block">Contact</span>
                   </template>
                   <ContactsTab v-on:contactEvent="contactEvent" :event="event"/>
                 </b-tab>
@@ -82,7 +82,7 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Notes</span>
+                    <span class="d-none d-sm-inline-block">Note</span>
                   </template>
                   <NotesTab v-on:notesEvent="notesEvent" :event="event"/>
                 </b-tab>
@@ -92,7 +92,7 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Expenses</span>
+                    <span class="d-none d-sm-inline-block">Expense</span>
                   </template>
                   <ExpensesTab v-on:expenseEvent="expenseEvent" :event="event"/>
                 </b-tab>
@@ -102,7 +102,7 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Settlements</span>
+                    <span class="d-none d-sm-inline-block">Settlement</span>
                   </template>
                   <SettlementTab/>
                 </b-tab>
@@ -131,7 +131,7 @@ import appConfig from "@/app.config.json"
 import moment from 'moment';
 import "moment-timezone";
 import { cloneDeep } from 'lodash';
-import DashboardTab from '@/views/events/partials/tabs/dashboard';
+import DashboardTab from './partials/tabs/dashboard';
 import RunOfShowTab from "./partials/tabs/run-of-show";
 import ContactsTab from "./partials/tabs/contacts";
 import ExpensesTab from "./partials/tabs/expenses";
