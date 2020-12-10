@@ -114,7 +114,7 @@
                 <b-card-header v-if="artist.status === 'Challenged By'">
                   <vue-countdown-timer
                       :start-time="artist.challenged.updated_from"
-                      :end-time="artist.challenged.updated_to"
+                      :end-time="artist.challenged.updated_to.date"
                       :interval="1000"
                       :start-label="'Start:'"
                       :end-label="'End:'"
@@ -662,10 +662,12 @@ import VueCountdownTimer from 'vuejs-countdown-timer';
 import Multiselect from 'vue-multiselect';
 import Switches from "vue-switches";
 import DatePicker from 'vue2-datepicker';
+import Vue from 'vue';
+Vue.use(VueCountdownTimer);
 
 export default {
   name: "talent-tab",
-  components: { VueCountdownTimer, Multiselect, Switches, DatePicker },
+  components: { Multiselect, Switches, DatePicker },
   props: {
     event: [Object]
   },
