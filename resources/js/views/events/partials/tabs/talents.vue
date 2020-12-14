@@ -1047,7 +1047,7 @@ export default {
 
                   for (let i = 0; i < this.artists.length; i++) {
                     let currPos = this.fetchHoldPosition(this.artists[i].hold_position, 'key');
-                    if ((this.artists[i].id !== this.form.id) && posToUpdate.includes(currPos) && (currPos > oldPosition)) {
+                    if ((this.artists[i].id !== this.form.id.value) && posToUpdate.includes(currPos) && (currPos > oldPosition)) {
                       let posName = this.fetchHoldPosition(currPos - 1, 'value')
                       this.$emit('artistEvent', {
                         type: 'update',
@@ -1062,10 +1062,46 @@ export default {
                   }
                 }
               } else if (this.modal.delete) {
+                let oldPosition = null,
+                    updateArtist = false;
+                for (let i = 0; i < this.artists.length; i++) {
+                  if (this.artists[i].id === this.form.id) {
+                    // Update other artists hold positions
+                    oldPosition = this.fetchHoldPosition(this.artists[i].hold_position, 'key');
+                    if ([2,3,4,5,6].includes(oldPosition)) {
+                      updateArtist = true;
+                    }
+                    break;
+                  }
+                }
+
+                if (updateArtist === true) {
+                  let posToUpdate = [];
+                  for (let i = 6; i > oldPosition; i--) {
+                    posToUpdate.push(i);
+                  }
+
+                  for (let i = 0; i < this.artists.length; i++) {
+                    let currPos = this.fetchHoldPosition(this.artists[i].hold_position, 'key');
+                    if ((this.artists[i].id !== this.form.id) && posToUpdate.includes(currPos) && (currPos > oldPosition)) {
+                      let posName = this.fetchHoldPosition(currPos - 1, 'value')
+                      this.$emit('artistEvent', {
+                        type: 'update',
+                        id: this.artists[i].id,
+                        data: {
+                          hold_position: posName,
+                          hold_position_order: currPos - 1,
+                          hold_position_color: this.holdPositionColor[posName],
+                        }
+                      });
+                    }
+                  }
+                }
+
                 this.$emit('artistEvent', {
                   type: 'remove',
                   id: this.form.id
-                })
+                });
               }
               this.cancel();
               this.$toastr.fire({
