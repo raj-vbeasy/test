@@ -2,7 +2,7 @@
   <div>
     <b-row class="mb-5">
       <b-col>
-        <b-button variant="outline-primary" v-on:click="add">Add Talent</b-button>
+        <b-button variant="outline-primary" v-if="initiated" v-on:click="add">Add Talent</b-button>
       </b-col>
     </b-row>
 
@@ -323,7 +323,7 @@
         <b-row>
           <b-col>
             <b-form-group label="Hold Position" label-for="artist_hold_position">
-              <b-form-select v-model="form.hold_position" :options="holdPositions"></b-form-select>
+              <b-form-select v-model="form.hold_position" :options="holdPositions" :disabled="form.status === 6"></b-form-select>
             </b-form-group>
           </b-col>
         </b-row>
@@ -674,7 +674,9 @@ export default {
   watch: {
     event: {
       handler: function() {
-        this.setData();
+        if (this.initiated) {
+          this.setData();
+        }
       },
       deep: true
     }
@@ -691,6 +693,7 @@ export default {
       ],
       holdPositions: [],
       rawHoldPositions: [],
+      assignedHoldPositions: [],
       statusColor: [],
       holdPositionColor: [],
       modal: this.default('modal'),
@@ -713,7 +716,8 @@ export default {
       representativeData: {
         notes: '',
         dates: []
-      }
+      },
+      initiated: false
     }
   },
   computed: {
@@ -755,6 +759,7 @@ export default {
       this.modal.show = true;
       this.modal.title = 'Add Artist';
       this.modal.add = true;
+      this.setAssignedHoldPositions();
       this.setHoldPositions();
     },
     edit(info) {
@@ -780,6 +785,7 @@ export default {
 
       this.representativeData = cloneDeep(info.artist_representative_mad);
 
+      this.setAssignedHoldPositions();
       this.setHoldPositions(this.form.status);
     },
     remove(info) {
@@ -990,8 +996,13 @@ export default {
                   }
                 });
               } else if (this.modal.edit) {
+                let oldPosition = null,
+                    updateArtist = false;
                 for (let i = 0; i < this.artists.length; i++) {
                   if (this.artists[i].id === this.form.id.value) {
+                    // Update other artists hold positions
+                    oldPosition = this.fetchHoldPosition(this.artists[i].hold_position, 'key');
+
                     this.$emit('artistEvent', {
                       type: 'update',
                       id: this.form.id.value,
@@ -1018,7 +1029,36 @@ export default {
                         publicity_firm: this.form.publicity_firm
                       }
                     });
+
+                    if ([2,3,4,5,6].includes(oldPosition)) {
+                      if (oldPosition !== this.form.hold_position) {
+                        updateArtist = true;
+                      }
+                    }
                     break;
+                  }
+                }
+
+                if (updateArtist === true) {
+                  let posToUpdate = [];
+                  for (let i = 6; i > oldPosition; i--) {
+                    posToUpdate.push(i);
+                  }
+
+                  for (let i = 0; i < this.artists.length; i++) {
+                    let currPos = this.fetchHoldPosition(this.artists[i].hold_position, 'key');
+                    if ((this.artists[i].id !== this.form.id) && posToUpdate.includes(currPos) && (currPos > oldPosition)) {
+                      let posName = this.fetchHoldPosition(currPos - 1, 'value')
+                      this.$emit('artistEvent', {
+                        type: 'update',
+                        id: this.artists[i].id,
+                        data: {
+                          hold_position: posName,
+                          hold_position_order: currPos - 1,
+                          hold_position_color: this.holdPositionColor[posName],
+                        }
+                      });
+                    }
                   }
                 }
               } else if (this.modal.delete) {
@@ -1043,7 +1083,13 @@ export default {
         loader.hide();
       }
     },
-    setHoldPositions (status) {
+    setHoldPositions (status = null) {
+      if (status === 6) {
+        return;
+      }
+      if (this.form.id === '') {
+        this.form.hold_position = null;
+      }
       this.holdPositions = [{
         value: null, text: 'Please select hold position'
       }];
@@ -1059,7 +1105,7 @@ export default {
           this.form.type = 'historical';
           break;
         case 2:
-          hidePositions.push(1,7);
+          hidePositions.push(1,7, ...this.assignedHoldPositions);
           this.form.type = 'headliner';
           break;
         case 3:
@@ -1098,7 +1144,14 @@ export default {
           hidePositions.push(0,2,3,4,5,6,7);
           this.form.type = 'historical';
           break;
+        default:
+          if (this.assignedHoldPositions.length > 0) {
+            hidePositions.push(...this.assignedHoldPositions);
+          }
+          break;
       }
+
+      let selectionExists = false;
 
       for (let i = 0; i < this.rawHoldPositions.length; i++) {
         if ((hidePositions.length === 0) || !hidePositions.includes(i)) {
@@ -1106,6 +1159,21 @@ export default {
             value: i,
             text: this.rawHoldPositions[i]
           });
+          if (i === this.form.hold_position) {
+            selectionExists = true;
+          }
+        }
+      }
+      if (selectionExists === false) {
+        this.form.hold_position = null;
+      }
+    },
+    setAssignedHoldPositions () {
+      this.assignedHoldPositions = [];
+      let artistId = this.form.id !== '' ? this.form.id.value : '';
+      for (let i = 0; i < this.artists.length; i++) {
+        if (artistId !== this.artists[i].id) {
+          this.assignedHoldPositions.push(this.fetchHoldPosition(this.artists[i].hold_position, 'key'));
         }
       }
     }
@@ -1140,11 +1208,11 @@ export default {
             icon: 'error',
             title: error.response.data.message
           });
+        })
+        .then(() => {
+          this.initiated = true;
+          this.setData();
         });
-
-    window.setInterval(() => {
-      this.count++;
-    },800);
   }
 }
 </script>

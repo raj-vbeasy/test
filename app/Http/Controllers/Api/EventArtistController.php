@@ -119,20 +119,6 @@ class EventArtistController extends Controller
                     ]
                 );
 
-                $id=$event->id;
-                $events = DB::table('artist_event')
-                    ->where('artist_id','!=', $id)
-                    ->where('event_id', '=', $eventId)
-                    ->where('hold_position', '>=', $request->input('hold_position'))
-                    ->orderBy('hold_position')
-                    ->get('id');
-                foreach ($events as $k=>$e) {
-                    $hold_position = $k+$request->input('hold_position');
-                    DB::table('artist_event')
-                        ->where('id', '=', $e->id)
-                        ->update(['hold_position' => $hold_position]);
-                }
-
                 // Notify related artists
                 if ($request->get('send_email', false)) {
                     $this->sendStatusAlert($event, $request->get('artist_id'), $request->get('status'));
@@ -207,6 +193,20 @@ class EventArtistController extends Controller
                 }
             ]
         ];
+        $this->validationMessages = [
+            'agency.name.required' => 'Agency name is required',
+            'agency.agent_name.required' => 'Agent name is required',
+            'agency.agent_email.required' => 'Agent email is required',
+            'agency.agent_email.email' => 'Please enter valid agent email',
+            'publicity_firm.facebook.url' => 'Please enter valid facebook link',
+            'publicity_firm.twitter.url' => 'Please enter valid twitter link',
+            'publicity_firm.instagram.url' => 'Please enter valid instagram link',
+            'publicity_firm.website.url' => 'Please enter valid website link',
+            'publicity_firm.apple_music.url' => 'Please enter valid apple music link',
+            'publicity_firm.spotify.url' => 'Please enter valid spotify link',
+            'publicity_firm.sound_cloud.url' => 'Please enter valid sound cloud link'
+        ];
+
         $this->validateApiRequest();
 
         if ($this->isInputValid) {
@@ -248,18 +248,15 @@ class EventArtistController extends Controller
                     }
                 }
 
-
-                $events = DB::table('artist_event')
-                    ->where('artist_id','!=', $id)
-                    ->where('event_id', '=', $eventId)
-                    ->where('hold_position', '>=', $request->input('hold_position'))
-                    ->orderBy('hold_position')
-                    ->get('id');
-                foreach ($events as $k=>$e) {
-                    $hold_position = $k+$request->input('hold_position');
-                    DB::table('artist_event')
-                        ->where('id', '=', $e->id)
-                        ->update(['hold_position' => $hold_position]);
+                if (in_array($oldData->pivot->hold_position, [2,3,4,5,6])) {
+                    if ($oldData->pivot->hold_position !== $request->get('hold_position')) {
+                        DB::table('artist_event')
+                            ->where('artist_id','!=', $id)
+                            ->where('event_id', '=', $eventId)
+                            ->whereIn('hold_position', [2,3,4,5,6])
+                            ->where('hold_position', '>', $oldData->pivot->hold_position)
+                            ->decrement('hold_position');
+                    }
                 }
 
                 // Notify related artists
