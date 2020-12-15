@@ -27,6 +27,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Agency wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Agency whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $agent_name
+ * @property string|null $agent_phone
+ * @property string $agent_email
+ * @method static \Illuminate\Database\Eloquent\Builder|Agency whereAgentEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agency whereAgentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Agency whereAgentPhone($value)
  */
 class Agency extends Model
 {

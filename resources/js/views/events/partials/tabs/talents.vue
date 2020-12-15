@@ -28,6 +28,21 @@
                       :seconds-txt="'Sec'">
                   </vue-countdown-timer>
                 </b-card-header>
+                <b-card-header v-if="[5, 12].includes(fetchStatus(headliner.status, 'key')) && !!event.challenge">
+                  <vue-countdown-timer
+                      :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                      :end-time="event.challenge.end_at"
+                      :interval="1000"
+                      :start-label="'Start:'"
+                      :end-label="'Challenge Expires In:-'"
+                      label-position="begin"
+                      :end-text="'Event Ended!'"
+                      :day-txt="'Days'"
+                      :hour-txt="':'"
+                      :minutes-txt="':'"
+                      :seconds-txt="''">
+                  </vue-countdown-timer>
+                </b-card-header>
                 <b-card-title>
                   <span v-if="headliner.status === 'Archived' || headliner.status === 'Released By Artist' || headliner.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ headliner.status }}</span>
                   <span v-else class="artist_status_text" :style="headliner.status_color">{{ headliner.status }}</span>
@@ -38,13 +53,11 @@
                 <p v-if="headliner.status === 'Mutually Agreed Date' || headliner.status === 'Declined'">
                   <span>{{ headliner.date_notes }}</span>
                 </p>
-                <hr v-if="headliner.status === 'Challenged By'">
-                <p v-if="headliner.status === 'Challenged By'">
-                <span>
-                  Hold position 1 ( {{ headliner.name }}) is challenged by Hold position 2 ({{ headliner.challenged.by }})
-                  <br>
-                  Hours Challenged Hold Expires In : {{ headliner.challenged.hours }}
-                </span>
+                <hr v-if="[5, 12].includes(fetchStatus(headliner.status, 'key'))">
+                <p v-if="[5, 12].includes(fetchStatus(headliner.status, 'key')) && !!event.challenge">
+                  <span>
+                    Hold position 1 ( {{ event.challenge.to.name }}) is challenged by Hold position 2 ({{ event.challenge.by.name }})
+                  </span>
                 </p>
                 <hr>
                 <b-card-text>
@@ -94,6 +107,21 @@
                       :seconds-txt="'Sec'">
                   </vue-countdown-timer>
                 </b-card-header>
+                <b-card-header v-if="[5, 12].includes(fetchStatus(support.status, 'key')) && !!event.challenge">
+                  <vue-countdown-timer
+                      :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                      :end-time="event.challenge.end_at"
+                      :interval="1000"
+                      :start-label="'Start:'"
+                      :end-label="'Challenge Expires In:-'"
+                      label-position="begin"
+                      :end-text="'Event Ended!'"
+                      :day-txt="'Days'"
+                      :hour-txt="':'"
+                      :minutes-txt="':'"
+                      :seconds-txt="''">
+                  </vue-countdown-timer>
+                </b-card-header>
                 <b-card-title>
                   <span v-if="support.status === 'Archived' || support.status === 'Released By Artist' || support.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ support.status }}</span>
                   <span v-else class="artist_status_text" :style="support.status_color">{{ support.status }}</span>
@@ -104,11 +132,10 @@
                 <p v-if="support.status === 'Mutually Agreed Date'">
                   <span>{{ support.date_notes }}</span>
                 </p>
-                <hr v-if="support.status === 'Challenged By'">
-                <p v-if="support.status === 'Challenged By'">
+                <hr v-if="[5,12].includes(fetchStatus(support.status, 'key'))">
+                <p v-if="[5,12].includes(fetchStatus(support.status, 'key')) && !!event.challenge">
                   <span>
-                    Hold position 1 ( {{ support.name }}) is challenged by Hold position 2 ({{ support.challenged.by }})
-                    <br> Hours Challenged Hold Expires In : {{ support.challenged.hours }}
+                    Hold position 1 ( {{ event.challenge.to.name }}) is challenged by Hold position 2 ({{ event.challenge.by.name }})
                   </span>
                 </p>
                 <hr>
@@ -141,21 +168,6 @@
           <b-row class="mt-4">
             <b-col md="4" v-for="artist in historical" :key="artist.id">
               <b-card :title="artist.title" style="box-shadow: 1px 1px 8px 0">
-                <b-card-header v-if="artist.status === 'Challenged By'">
-                  <vue-countdown-timer
-                      :start-time="artist.challenged.updated_from"
-                      :end-time="artist.challenged.updated_to.date"
-                      :interval="1000"
-                      :start-label="'Start:'"
-                      :end-label="'End:'"
-                      label-position="begin"
-                      :end-text="'Event Ended!'"
-                      :day-txt="'Days'"
-                      :hour-txt="'Hours'"
-                      :minutes-txt="'Min'"
-                      :seconds-txt="'Sec'">
-                  </vue-countdown-timer>
-                </b-card-header>
                 <b-card-title>
                   <span v-if="artist.status === 'Archived' || artist.status === 'Released By Artist' || artist.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ artist.status }}</span>
                   <span v-else class="artist_status_text" :style="artist.status_color">{{ artist.status }}</span>
@@ -165,14 +177,6 @@
                 <hr v-if="artist.status === 'Mutually Agreed Date'">
                 <p v-if="artist.status === 'Mutually Agreed Date'">
                   <span>{{ artist.date_notes }}</span>
-                </p>
-                <hr v-if="artist.status === 'Challenged By'">
-                <p v-if="artist.status === 'Challenged By'">
-                  <span>
-                    Hold position 1 ( {{ artist.name }}) is challenged by Hold position 2 ({{ artist.challenged.by }})
-                    <br>
-                    Hours Challenged Hold Expires In : {{ artist.challenged.hours }}
-                  </span>
                 </p>
                 <hr>
                 <b-card-text>
@@ -271,8 +275,20 @@
         <b-row>
           <b-col>
             <b-form-group label="Status" label-for="artist_status">
-              <b-form-select v-model="form.status" :options="statuses" @input="setHoldPositions(form.status)"></b-form-select>
+              <b-form-select v-model="form.status" :options="statuses" @input="setChallengeData();setHoldPositions(form.status)"></b-form-select>
             </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="form.status === 5">
+          <b-col>
+            <h5 style="padding: 5px 0;background-color: yellow">{{ firstHoldArtistName }}</h5>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="form.status === 12">
+          <b-col>
+            <h5 style="padding: 5px 0;background-color: yellow">{{ secondHoldArtistName }}</h5>
           </b-col>
         </b-row>
 
@@ -306,12 +322,6 @@
                   max-rows="6"
               ></b-form-textarea>
             </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row v-if="form.status === 5">
-          <b-col>
-            <h5></h5>
           </b-col>
         </b-row>
 
@@ -684,20 +694,19 @@ import { cloneDeep } from 'lodash';
 import VueCountdownTimer from 'vuejs-countdown-timer';
 import Multiselect from 'vue-multiselect';
 import Switches from "vue-switches";
-import DatePicker from 'vue2-datepicker';
 import Vue from 'vue';
+import moment from "moment";
 Vue.use(VueCountdownTimer);
 
 export default {
   name: "talent-tab",
-  components: { Multiselect, Switches, DatePicker },
+  components: { Multiselect, Switches },
   props: {
     event: [Object]
   },
   watch: {
     event: {
       handler: function() {
-        console.log(this.currentUtcDate('YYYY-MM-DD HH:mm:ss'))
         if (this.initiated) {
           this.setData();
         }
@@ -738,7 +747,19 @@ export default {
         notes: '',
         dates: []
       },
-      initiated: false
+      initiated: false,
+      challengeData: {
+        to: {
+          name: '',
+          id: ''
+        },
+        by: {
+          name: '',
+          id: ''
+        },
+        hours: null,
+        timestamp: null
+      }
     }
   },
   computed: {
@@ -756,6 +777,26 @@ export default {
       return this.artists.filter(function (artist) {
         return artist.type === 'historical';
       }).sort(function(a, b){return a.hold_position_order - b.hold_position_order});
+    },
+    firstHoldArtistName: function () {
+      let name = '';
+      for (let i = 0; i < this.artists.length; i++) {
+        if (this.fetchHoldPosition(this.artists[i].hold_position, 'key') === 2) {
+          name = this.artists[i].name
+          break;
+        }
+      }
+      return name;
+    },
+    secondHoldArtistName: function () {
+      let name = '';
+      for (let i = 0; i < this.artists.length; i++) {
+        if (this.fetchHoldPosition(this.artists[i].hold_position, 'key') === 3) {
+          name = this.artists[i].name
+          break;
+        }
+      }
+      return name;
     }
   },
   methods: {
@@ -795,8 +836,10 @@ export default {
       this.form.promoter_profit = Number(info.promoter_profit);
       this.form.status = this.fetchStatus(info.status, 'key');
       this.form.date_notes = info.date_notes;
-      this.form.challenged_by = info.challenged.by;
-      this.form.challenged_hours = info.challenged.hours;
+      if (info.challenged) {
+        this.form.challenged_by = info.challenged.by;
+        this.form.challenged_hours = info.challenged.hours;
+      }
       this.form.hold_position = this.fetchHoldPosition(info.hold_position, 'key');
       this.form.notes = info.notes;
       this.form.amount = info.amount;
@@ -847,6 +890,7 @@ export default {
       }
     },
     cancel() {
+      this.filteredArtists = [];
       this.modal = this.default('modal');
       this.form = this.default('form');
       this.representativeData = cloneDeep({
@@ -887,7 +931,7 @@ export default {
             status: null,
             date_notes: '',
             challenged_by: '',
-            challenged_hours: '',
+            challenged_hours: 0,
             hold_position: null,
             amount: 0,
             offer_expiration_time: 0,
@@ -998,12 +1042,6 @@ export default {
                     promoter_profit: this.form.promoter_profit_enable ? this.form.promoter_profit : 0,
                     status: this.fetchStatus(this.form.status, 'value'),
                     date_notes: this.form.date_notes,
-                    challenged: {
-                      by: this.form.challenged_by,
-                      hours: this.form.challenged_hours,
-                      updated_from: '',
-                      updated_to: ''
-                    },
                     hold_position: this.fetchHoldPosition(this.form.hold_position, 'value'),
                     notes: this.form.notes,
                     amount: this.form.amount,
@@ -1024,6 +1062,29 @@ export default {
                     // Update other artists hold positions
                     oldPosition = this.fetchHoldPosition(this.artists[i].hold_position, 'key');
 
+                    if (this.fetchStatus(this.artists[i].status, 'key') === 5) {
+                      let firstHoldPosArtist = this.artists.find(val => {
+                        return this.fetchHoldPosition(val.hold_position, 'key') === 2;
+                      });
+
+                      this.$emit('artistEvent', {
+                        type: 'update',
+                        id: firstHoldPosArtist.id,
+                        data: {
+                          status: this.fetchStatus(12, 'value'),
+                          status_color: this.statusColor[this.fetchStatus(12, 'value')]
+                        }
+                      });
+
+                      this.$emit('eventUpdate', {
+                        challenge: {
+                          to: {id: firstHoldPosArtist.id, name: firstHoldPosArtist.name},
+                          by: {id: this.artists[i].id, name: this.artists[i].name},
+                          end_at: moment.utc().add(this.form.challenged_hours, 'hours').format('YYYY-MM-DD HH:mm:ss')
+                        }
+                      });
+                    }
+
                     this.$emit('artistEvent', {
                       type: 'update',
                       id: this.form.id.value,
@@ -1033,12 +1094,6 @@ export default {
                         promoter_profit: this.promoter_profit_enable ? this.form.promoter_profit : 0,
                         status: this.fetchStatus(this.form.status, 'value'),
                         date_notes: this.form.date_notes,
-                        challenged: {
-                          by: this.form.challenged_by,
-                          hours: this.form.challenged_hours,
-                          updated_from: '',
-                          updated_to: ''
-                        },
                         hold_position: this.fetchHoldPosition(this.form.hold_position, 'value'),
                         notes: this.form.notes,
                         amount: this.form.amount,
@@ -1047,7 +1102,8 @@ export default {
                         hold_position_color: this.holdPositionColor[this.fetchHoldPosition(this.form.hold_position, 'value')],
                         agency: this.form.agency,
                         management_firm: this.form.management_firm,
-                        publicity_firm: this.form.publicity_firm
+                        publicity_firm: this.form.publicity_firm,
+                        offer_expiration_date: this.form.status === 7 ? moment.utc().add(this.form.offer_expiration_time, 'hours').format('YYYY-MM-DD HH:mm:ss') : null
                       }
                     });
 
@@ -1254,6 +1310,21 @@ export default {
           });
         }
       }
+    },
+    setChallengeData () {
+      if (this.event.challenge === null) {
+        this.challengeData = cloneDeep(this.event.challenge);
+      } else {
+        for (let i = 0; i < this.artists.length; i++) {
+          let tempPos = this.fetchHoldPosition(this.artists[i].status, 'key');
+          if (tempPos === 2) {
+            // this.challengeData
+          } else if (tempPos === 3) {
+
+          }
+        }
+      }
+      // this.challengeData;
     }
   },
   created() {

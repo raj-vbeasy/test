@@ -31,6 +31,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm wherePublicistPhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $facebook
+ * @property string|null $twitter
+ * @property string|null $instagram
+ * @property string|null $website
+ * @property string|null $apple_music
+ * @property string|null $spotify
+ * @property string|null $sound_cloud
+ * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm whereAppleMusic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm whereFacebook($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm whereInstagram($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm whereSoundCloud($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm whereSpotify($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm whereTwitter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PublicityFirm whereWebsite($value)
  */
 class PublicityFirm extends Model
 {

@@ -44,7 +44,7 @@
                     </span>
                     <span class="d-none d-sm-inline-block">Talent</span>
                   </template>
-                  <TalentsTab v-on:artistEvent="artistEvent" :event="event"/>
+                  <TalentsTab v-on:artistEvent="artistEvent" v-on:eventUpdate="eventUpdate" :event="event"/>
                 </b-tab>
 
                 <b-tab>
@@ -343,6 +343,13 @@ export default {
             }
           }
           break;
+      }
+    },
+    eventUpdate (args) {
+      for (const arg in args) {
+        if (args.hasOwnProperty(arg)) {
+          this.event[arg] = cloneDeep(args[arg]);
+        }
       }
     }
   },

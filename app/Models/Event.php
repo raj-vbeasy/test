@@ -56,11 +56,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $artists_historical_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Artist[] $artists_support
  * @property-read int|null $artists_support_count
+ * @property array $challenge
+ * @method static \Illuminate\Database\Eloquent\Builder|Event whereChallenge($value)
  */
 class Event extends Model
 {
     protected $fillable = [
-        'name', 'email', 'performance_location_id', 'promoter', 'date', 'status'
+        'name', 'email', 'performance_location_id', 'promoter', 'date', 'status', 'challenge'
     ];
 
     const ARTIST_STATUS = [
@@ -76,6 +78,7 @@ class Event extends Model
         'Declined',
         'Hold Rescinded by Venue',
         'Request to Withdraw Offer',
+        'Challenged By'
     ];
 
     const HOLD_POSITION = [
@@ -95,13 +98,14 @@ class Event extends Model
         'Available' => ['background' => '#377369', 'color' => '#ffffff'],
         'Mutually Agreed Date' => ['background' => '#f0a714', 'color' => '#000000'],
         'Not Available' => ['background' => '#ff0000', 'color' => '#ffffff'],
-        'Challenged By' => ['background' => '#8e7cc3', 'color' => '#000000'],
+        'Initiating Challenge' => ['background' => '#8e7cc3', 'color' => '#000000'],
         'Hold Released by Artist' => ['background' => '#999999', 'color' => '#000000'],
         'Offer Collaboration' => ['background' => '#78d0a0', 'color' => '#000000'],
         'Confirmed' => ['background' => '#38761d', 'color' => '#ffffff'],
         'Declined' => ['background' => '#ff0000', 'color' => '#ffffff'],
         'Hold Rescinded by Venue' => ['background' => '#999999', 'color' => '#000000'],
         'Request to Withdraw Offer' => ['background' => '#ff0000', 'color' => '#ffffff'],
+        'Challenged By' => ['background' => '#8e7cc3', 'color' => '#000000']
     ];
 
     const HOLD_POSITION_COLOR = [
@@ -116,6 +120,10 @@ class Event extends Model
     ];
 
     protected $dates = ['date'];
+
+    protected $casts = [
+        'challenge' => 'array'
+    ];
 
     final public function performanceLocation(): BelongsTo
     {

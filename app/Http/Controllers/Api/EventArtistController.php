@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Notifications\ArtistStatusUpdate;
 use App\Traits\HandleApiRequestAndResponse;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -200,6 +201,15 @@ class EventArtistController extends Controller
                         $fail('Offer expiration time should be greater than 0');
                     }
                 }
+            ],
+            'challenged_hours' => [
+                'required_if:status,5',
+                'integer',
+                function ($attribute, $value, $fail) use ($request){
+                    if (($request->get('status') === 5) && ($value <= 0)) {
+                        $fail('Challenged hours should be greater than 0');
+                    }
+                }
             ]
         ];
         $this->validationMessages = [
@@ -224,13 +234,40 @@ class EventArtistController extends Controller
 
             \DB::beginTransaction();
             try {
+                // Update event for challenge
+                if (($request->get('status') === 5) && ($challengedHours = $request->get('challenged_hours',0))) {
+                    $firstHoldArtist = $event->artists()
+                        ->where(function (Builder $builder) use ($request){
+                            $builder->where([
+                                'hold_position' => 2,
+                                'status' => 2
+                            ]);
+                        })->first();
+                    if ($firstHoldArtist) {
+                        $event->challenge = [
+                            'to' => [
+                                'name' => $firstHoldArtist->name,
+                                'id' => $firstHoldArtist->id
+                            ],
+                            'by' => [
+                                'name' => $oldData->name,
+                                'id' => $oldData->id
+                            ],
+                            'end_at' => Carbon::now()->addHours($challengedHours)->format('Y-m-d H:i:s')
+                        ];
+                        if ($event->save()) {
+                            $event->artists()->updateExistingPivot($firstHoldArtist->id, ['status' => 12]);
+                        }
+                    }
+                } else {
+                    $event->challenge = null;
+                }
+
                 $offerExpirationDate = null;
                 if (($request->get('status') === 7) && ($offerExpireHours = $request->get('offer_expiration_time'))) {
                     $offerExpirationDate = Carbon::now()->addHours($offerExpireHours)->format('Y-m-d H:i:s');
-                    $request->merge([
-                        'offer_expiration_date' => $offerExpirationDate
-                    ]);
                 }
+                $request->merge(['offer_expiration_date' => $offerExpirationDate]);
 
                 $event->artists()->updateExistingPivot(
                     $request->get('id'),
