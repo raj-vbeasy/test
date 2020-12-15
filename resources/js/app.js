@@ -77,7 +77,9 @@ Vue.use({
 
 Vue.mixin({
   methods: {
-    formatDate: (timestamp, format) => moment.utc(timestamp).local().format(format)
+    formatDate: (timestamp, format) => moment.utc(timestamp).local().format(format),
+    currentUtcDate: (format) => moment.utc().format(format),
+    currentLocalDate: (format) => moment.utc().local().format(format)
   },
   filters: {
     capitalize: function (value) {

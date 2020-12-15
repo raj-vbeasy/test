@@ -191,6 +191,15 @@ class EventArtistController extends Controller
                         $fail($attribute.' is invalid.');
                     }
                 }
+            ],
+            'offer_expiration_time' => [
+                'required_if:status,7',
+                'integer',
+                function ($attribute, $value, $fail) use ($request){
+                    if (($request->get('status') === 7) && ($value <= 0)) {
+                        $fail('Offer expiration time should be greater than 0');
+                    }
+                }
             ]
         ];
         $this->validationMessages = [
@@ -215,8 +224,12 @@ class EventArtistController extends Controller
 
             \DB::beginTransaction();
             try {
-                if ($request->get('offer_expiration_date')) {
-                    $request->merge(['offer_expiration_date' => Carbon::createFromTimestampMs($request->get('offer_expiration_date'))->format('Y-m-d H:i:s')]);
+                $offerExpirationDate = null;
+                if (($request->get('status') === 7) && ($offerExpireHours = $request->get('offer_expiration_time'))) {
+                    $offerExpirationDate = Carbon::now()->addHours($offerExpireHours)->format('Y-m-d H:i:s');
+                    $request->merge([
+                        'offer_expiration_date' => $offerExpirationDate
+                    ]);
                 }
 
                 $event->artists()->updateExistingPivot(

@@ -69,7 +69,7 @@ class Event extends Model
         'Available',
         'Mutually Agreed Date',
         'Not Available',
-        'Challenged By',
+        'Initiating Challenge',
         'Hold Released by Artist',
         'Offer Collaboration',
         'Confirmed',

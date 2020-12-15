@@ -13,6 +13,21 @@
           <b-row class="mt-4">
             <b-col md="4" v-for="headliner in headliners" :key="headliner.id">
               <b-card :title="headliner.title" style="box-shadow: 1px 1px 8px 0">
+                <b-card-header v-if="fetchStatus(headliner.status,'key') === 7">
+                  <vue-countdown-timer
+                      :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                      :end-time="headliner.offer_expiration_date"
+                      :interval="1000"
+                      :start-label="'Start:'"
+                      :end-label="'End:'"
+                      label-position="begin"
+                      :end-text="'Offer Expired'"
+                      :day-txt="'Days'"
+                      :hour-txt="'Hours'"
+                      :minutes-txt="'Min'"
+                      :seconds-txt="'Sec'">
+                  </vue-countdown-timer>
+                </b-card-header>
                 <b-card-title>
                   <span v-if="headliner.status === 'Archived' || headliner.status === 'Released By Artist' || headliner.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ headliner.status }}</span>
                   <span v-else class="artist_status_text" :style="headliner.status_color">{{ headliner.status }}</span>
@@ -64,6 +79,21 @@
           <b-row class="mt-4">
             <b-col md="4" v-for="support in supports" :key="support.id">
               <b-card :title="support.title" style="box-shadow: 1px 1px 8px 0">
+                <b-card-header v-if="fetchStatus(support.status,'key') === 7">
+                  <vue-countdown-timer
+                      :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                      :end-time="support.offer_expiration_date"
+                      :interval="1000"
+                      :start-label="'Start:'"
+                      :end-label="'End:'"
+                      label-position="begin"
+                      :end-text="'Offer Expired'"
+                      :day-txt="'Days'"
+                      :hour-txt="'Hours'"
+                      :minutes-txt="'Min'"
+                      :seconds-txt="'Sec'">
+                  </vue-countdown-timer>
+                </b-card-header>
                 <b-card-title>
                   <span v-if="support.status === 'Archived' || support.status === 'Released By Artist' || support.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ support.status }}</span>
                   <span v-else class="artist_status_text" :style="support.status_color">{{ support.status }}</span>
@@ -281,16 +311,7 @@
 
         <b-row v-if="form.status === 5">
           <b-col>
-            <b-form-group label-for="challenged_by" label="Challenged by Artist">
-              <b-select
-                  class=""
-                  id="date_notes"
-                  v-model="form.challenged_by"
-              >
-                <option selected="selected">Select challenged by artist</option>
-                <option v-for="artist in event.artists" :key="artist.id" :value="artist.id">{{ artist.name }}</option>
-              </b-select>
-            </b-form-group>
+            <h5></h5>
           </b-col>
         </b-row>
 
@@ -298,24 +319,26 @@
           <b-col>
             <b-form-group label-for="challenged_hours" label="Hours Challenged Hold Expires In (like: 24,48,72)">
               <b-form-input
+                  type="number"
                   class="col-3"
                   id="challenged_hours"
                   v-model.number="form.challenged_hours"
-                  placeholder="0"></b-form-input>
+                  placeholder="0"
+                  min="0"></b-form-input>
             </b-form-group>
           </b-col>
         </b-row>
 
         <b-row v-if="form.status === 7">
           <b-col>
-            <b-form-group label-for="offer_expiration_date" label="Offer Expiration By">
-              <date-picker
-                  v-model="form.offer_expiration_date"
-                  :first-day-of-week="1"
-                  lang="en"
-                  confirm
-                  value-type="timestamp"
-                  format="MMM DD, YYYY dddd"></date-picker>
+            <b-form-group label-for="offer_expiration_time" label="Offer Expires In (like: 24,48,72)">
+              <b-form-input
+                  type="number"
+                  class="col-3"
+                  id="offer_expiration_time"
+                  v-model.number="form.offer_expiration_time"
+                  placeholder="24"
+                  min="0"></b-form-input>
             </b-form-group>
           </b-col>
         </b-row>
@@ -323,7 +346,7 @@
         <b-row>
           <b-col>
             <b-form-group label="Hold Position" label-for="artist_hold_position">
-              <b-form-select v-model="form.hold_position" :options="holdPositions" :disabled="form.status === 6"></b-form-select>
+              <b-form-select v-model="form.hold_position" :options="holdPositions" :disabled="[5,6].includes(form.status)"></b-form-select>
             </b-form-group>
           </b-col>
         </b-row>
@@ -674,6 +697,7 @@ export default {
   watch: {
     event: {
       handler: function() {
+        console.log(this.currentUtcDate('YYYY-MM-DD HH:mm:ss'))
         if (this.initiated) {
           this.setData();
         }
@@ -686,11 +710,8 @@ export default {
       artists: [],
       filteredArtists: [],
       isSearching: false,
-      statuses: [
-        {
-          value: null, text: 'Please select status'
-        }
-      ],
+      statuses: [],
+      rawStatuses: [],
       holdPositions: [],
       rawHoldPositions: [],
       assignedHoldPositions: [],
@@ -759,6 +780,7 @@ export default {
       this.modal.show = true;
       this.modal.title = 'Add Artist';
       this.modal.add = true;
+      this.setStatuses();
       this.setAssignedHoldPositions();
       this.setHoldPositions();
     },
@@ -785,6 +807,7 @@ export default {
 
       this.representativeData = cloneDeep(info.artist_representative_mad);
 
+      this.setStatuses();
       this.setAssignedHoldPositions();
       this.setHoldPositions(this.form.status);
     },
@@ -867,7 +890,7 @@ export default {
             challenged_hours: '',
             hold_position: null,
             amount: 0,
-            offer_expiration_date: null,
+            offer_expiration_time: 0,
             agency: {
               name: '',
               agent_name: '',
@@ -916,17 +939,15 @@ export default {
       return result;
     },
     fetchStatus (value, type) {
-      let returnValue = '';
-      let keyToMatch = type === 'key' ? 'text' : 'value';
-      let keyToReturn = type === 'key' ? 'value' : 'text';
-
-      for (let i = 0; i < this.statuses.length; i++) {
-        if (this.statuses[i][keyToMatch] === value) {
-          returnValue = this.statuses[i][keyToReturn];
-          break;
+      if (type === 'key') {
+        for (let i = 0; i < this.rawStatuses.length; i++) {
+          if (this.rawStatuses[i] === value) {
+            return i;
+          }
         }
+      } else {
+        return this.rawStatuses[value];
       }
-      return returnValue;
     },
     fetchHoldPosition (value, type) {
       if (type === 'key') {
@@ -1212,18 +1233,34 @@ export default {
           this.assignedHoldPositions.push(this.fetchHoldPosition(this.artists[i].hold_position, 'key'));
         }
       }
+    },
+    setStatuses () {
+      this.statuses = [{
+        value: null, text: 'Please select status'
+      }];
+
+      let firstHoldPresent = false;
+      for (let i = 0; i < this.artists.length; i++) {
+        if (this.fetchHoldPosition(this.artists[i].hold_position, 'key') === 2) {
+          firstHoldPresent = true;
+        }
+      }
+
+      for (let i = 0; i < this.rawStatuses.length; i++) {
+        if ((i !== 5) || (firstHoldPresent && (this.form.hold_position === 3))) {
+          this.statuses.push({
+            value: i,
+            text: this.rawStatuses[i]
+          });
+        }
+      }
     }
   },
   created() {
     this.$http.get('events/' + this.$route.params.id + '/artists/create')
         .then(response => {
           if (response.data.data.hasOwnProperty('statuses')) {
-            for (let i = 0; i < response.data.data.statuses.length; i++) {
-              this.statuses.push({
-                value: i,
-                text: response.data.data.statuses[i]
-              });
-            }
+            this.rawStatuses = cloneDeep(response.data.data.statuses);
           }
 
           if (response.data.data.hasOwnProperty('hold_positions')) {

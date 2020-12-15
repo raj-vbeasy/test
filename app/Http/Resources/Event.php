@@ -104,7 +104,8 @@ class Event extends JsonResource
                     'spotify'=> "",
                     'sound_cloud'=> ""
                 ],
-                'artist_representative_mad' => ($mad = $artist->pivot->artist_representative_mad) ? json_decode($mad) : ['dates' => [], 'notes' => '']
+                'artist_representative_mad' => ($mad = $artist->pivot->artist_representative_mad) ? json_decode($mad) : ['dates' => [], 'notes' => ''],
+                'offer_expiration_date' => $artist->pivot->status === 7 ? $artist->pivot->offer_expiration_date : null
             ]);
         }
 
