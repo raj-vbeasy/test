@@ -64,7 +64,7 @@ class Event extends JsonResource
                     "manager_phone"=> "",
                     "name"=> ""
                 ],
-                'publicity_firm' => ($publicityFirm = PublicityFirm::find($artist->pivot->publicity_firm_id)) ? $publicityFirm->toArray() : [
+                'publicity_firm' => ($publicityFirm = PublicityFirm::find($artist->pivot->publicity_firm_id)) ? array_merge($publicityFirm->toArray(), ['sound_cloud' => $artist->description]) : [
                     "name"=> "",
                     "publicist_assistant_email"=> "",
                     "publicist_assistant_name"=> "",
@@ -78,7 +78,7 @@ class Event extends JsonResource
                     'website'=> "",
                     'apple_music'=> "",
                     'spotify'=> "",
-                    'sound_cloud'=> ""
+                    'sound_cloud'=> $artist->description
                 ],
                 'artist_representative_mad' => ($mad = $artist->pivot->artist_representative_mad) ? json_decode($mad) : ['dates' => [], 'notes' => ''],
                 'offer_expiration_date' => $artist->pivot->status === 7 ? $artist->pivot->offer_expiration_date : null

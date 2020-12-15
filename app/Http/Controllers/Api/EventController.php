@@ -109,7 +109,7 @@ class EventController extends Controller
         $event = Event::with([
             'performanceLocation:id,name,capacity,location,tax_rate,facility_fee,timezone_id,currency,event_template',
             'stages:id,name,status',
-            'artists:id,name,image_url',
+            'artists:id,name,image_url,description',
             'activities:id,event_id,artist_id,stage_id,crew,start,end,description,type',
             'activities.stage:id,name',
             'activities.artist:id,name,image_url',

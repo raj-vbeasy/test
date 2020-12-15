@@ -666,11 +666,11 @@
             </b-form-group>
           </b-col>
           <b-col cols="12">
-            <b-form-group label-for="publicist_sound_cloud" label="Sound Cloud:">
-              <b-form-input
+            <b-form-group label-for="publicist_sound_cloud" label="Description:">
+              <b-form-textarea
                   id="publicist_sound_cloud"
                   v-model="form.publicity_firm.sound_cloud"
-                  placeholder="Enter Sound Cloud Link"></b-form-input>
+                  placeholder="Enter Description" rows="5"></b-form-textarea>
             </b-form-group>
           </b-col>
           <!-- Social Links -->
