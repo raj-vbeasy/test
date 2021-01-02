@@ -174,6 +174,7 @@ class EventArtistController extends Controller
             'publicity_firm.website' => 'url|nullable',
             'publicity_firm.apple_music' => 'url|nullable',
             'publicity_firm.spotify' => 'url|nullable',
+            'cancellation_terms' => 'required_if:status,10,11|nullable',
             'status' => [
                 'required',
                 function ($attribute, $value, $fail) {
@@ -219,7 +220,8 @@ class EventArtistController extends Controller
             'publicity_firm.instagram.url' => 'Please enter valid instagram link',
             'publicity_firm.website.url' => 'Please enter valid website link',
             'publicity_firm.apple_music.url' => 'Please enter valid apple music link',
-            'publicity_firm.spotify.url' => 'Please enter valid spotify link'
+            'publicity_firm.spotify.url' => 'Please enter valid spotify link',
+            'cancellation_terms.required_if' => 'Please enter cancellation terms'
         ];
 
         $this->validateApiRequest();
@@ -267,7 +269,10 @@ class EventArtistController extends Controller
 
                 $event->artists()->updateExistingPivot(
                     $request->get('id'),
-                    $request->only(['type', 'email', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'notes', 'offer_expiration_date'])
+                    $request->only([
+                        'type', 'email', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours',
+                        'hold_position', 'notes', 'offer_expiration_date', 'cancellation_terms'
+                    ])
                 );
 
                 $agency = Agency::find($oldData->pivot->agency_id);

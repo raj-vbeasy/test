@@ -81,7 +81,8 @@ class Event extends JsonResource
                     'sound_cloud'=> $artist->description
                 ],
                 'artist_representative_mad' => ($mad = $artist->pivot->artist_representative_mad) ? json_decode($mad) : ['dates' => [], 'notes' => ''],
-                'offer_expiration_date' => $artist->pivot->status === 7 ? $artist->pivot->offer_expiration_date : null
+                'offer_expiration_date' => $artist->pivot->status === 7 ? $artist->pivot->offer_expiration_date : null,
+                'cancellation_terms' => $artist->pivot->cancellation_terms
             ]);
         }
 

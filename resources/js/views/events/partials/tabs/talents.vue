@@ -280,6 +280,21 @@
           </b-col>
         </b-row>
 
+        <b-row v-if="form.status === 10 || form.status === 11">
+          <b-col>
+            <b-form-group label-for="cancellation_terms" label="Cancellation Terms">
+              <b-form-textarea
+                  class=""
+                  id="cancellation_terms"
+                  v-model="form.cancellation_terms"
+                  placeholder="Ex: deposit, full refund or partial refund and Artist and Venue will reconsider Mutually Agreeable Date for 2022-2023"
+                  rows="3"
+                  max-rows="6"
+              ></b-form-textarea>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
         <b-row v-if="form.status === 5">
           <b-col>
             <h5 style="padding: 5px 0;background-color: yellow">{{ firstHoldArtistName }}</h5>
@@ -850,6 +865,7 @@ export default {
 
       this.representativeData = cloneDeep(info.artist_representative_mad);
 
+      this.form.cancellation_terms = info.cancellation_terms;
       this.setStatuses();
       this.setAssignedHoldPositions();
       this.setHoldPositions(this.form.status);
@@ -967,7 +983,8 @@ export default {
               apple_music: "",
               spotify: "",
               sound_cloud: ""
-            }
+            },
+            cancellation_terms: ''
           };
           break;
         case 'modal':
@@ -1103,7 +1120,8 @@ export default {
                         agency: this.form.agency,
                         management_firm: this.form.management_firm,
                         publicity_firm: this.form.publicity_firm,
-                        offer_expiration_date: this.form.status === 7 ? moment.utc().add(this.form.offer_expiration_time, 'hours').format('YYYY-MM-DD HH:mm:ss') : null
+                        offer_expiration_date: this.form.status === 7 ? moment.utc().add(this.form.offer_expiration_time, 'hours').format('YYYY-MM-DD HH:mm:ss') : null,
+                        cancellation_terms: this.form.cancellation_terms
                       }
                     });
 

@@ -144,30 +144,12 @@ class Event extends Model
 
     final public function artists(): BelongsToMany
     {
-        return $this->belongsToMany(Artist::class)->withPivot(['type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id', 'management_firm_id', 'publicity_firm_id', 'token', 'artist_representative_mad']);
-    }
-
-    final public function artists_headliners(): BelongsToMany
-    {
         return $this->belongsToMany(Artist::class)
-            ->where('type', '=','headliner')
-            ->whereNotIn('status',[3,5,8,11,12,13])
-            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date']);
-    }
-
-    final public function artists_support(): BelongsToMany
-    {
-        return $this->belongsToMany(Artist::class)
-            ->where('type', '=','support')
-            ->whereNotIn('status',[3,5,8,11,12,13])
-            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date']);
-    }
-
-    final public function artists_historical(): BelongsToMany
-    {
-        return $this->belongsToMany(Artist::class)
-            ->whereIn('status',[3,5,8,11,12,13])
-            ->withPivot(['type', 'email', 'promoter_profit', 'updated_at', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date']);
+            ->withPivot([
+                'type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by',
+                'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id',
+                'management_firm_id', 'publicity_firm_id', 'token', 'artist_representative_mad', 'cancellation_terms'
+            ]);
     }
 
     final public function contacts(): HasMany
