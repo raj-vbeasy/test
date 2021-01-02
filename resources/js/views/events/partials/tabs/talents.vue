@@ -1303,12 +1303,16 @@ export default {
       }
 
       for (let i = 0; i < this.rawStatuses.length; i++) {
-        if (i === 12 && this.modal.edit === true && this.form.status === 12) {
-          this.statuses.push({
-            value: i,
-            text: this.rawStatuses[i]
-          });
+        let canPush = false;
+        if (this.form.status === i) {
+          canPush = true;
+        } else if (i === 12 && this.modal.edit === true && this.form.status === 12) {
+          canPush = true;
         } else if ((i !== 12) && ((i !== 5) || (firstHoldPresent && (this.form.hold_position === 3)))) {
+          canPush = true;
+        }
+
+        if (canPush === true) {
           this.statuses.push({
             value: i,
             text: this.rawStatuses[i]

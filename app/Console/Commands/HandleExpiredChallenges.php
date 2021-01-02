@@ -40,7 +40,7 @@ class HandleExpiredChallenges extends Command
     public function handle()
     {
         $currentDate = Carbon::now()->format('Y-m-d H:i:s');
-        $events = Event::whereChallengeExpired(0)->whereRaw(
+        $events = Event::whereChallengeExpired(0)->whereNotNull('challenge')->whereRaw(
             "STR_TO_DATE(JSON_EXTRACT(challenge, '$.end_at'), '\"%Y-%m-%d %H:%i:%s\"') < '{$currentDate}'"
         )->with('artists')->has('artists')->get();
 
