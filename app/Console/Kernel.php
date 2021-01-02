@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('alert:offer-expiration')->daily();
+        $schedule->command('challenges:expired')->hourly();
     }
 
     /**

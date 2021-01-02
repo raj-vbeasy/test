@@ -61,7 +61,6 @@ class PublicityFirm extends Model
         'instagram',
         'website',
         'apple_music',
-        'spotify',
-        'sound_cloud'
+        'spotify'
     ];
 }

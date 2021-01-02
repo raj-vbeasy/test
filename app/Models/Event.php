@@ -58,11 +58,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $artists_support_count
  * @property array $challenge
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereChallenge($value)
+ * @property int $challenge_expired
+ * @method static \Illuminate\Database\Eloquent\Builder|Event whereChallengeExpired($value)
  */
 class Event extends Model
 {
     protected $fillable = [
-        'name', 'email', 'performance_location_id', 'promoter', 'date', 'status', 'challenge'
+        'name', 'email', 'performance_location_id', 'promoter', 'date', 'status', 'challenge', 'challenge_expired'
     ];
 
     const ARTIST_STATUS = [

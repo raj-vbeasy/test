@@ -16,7 +16,7 @@
                 <b-card-header v-if="fetchStatus(headliner.status,'key') === 7">
                   <vue-countdown-timer
                       :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
-                      :end-time="headliner.offer_expiration_date"
+                      :end-time="utcTimestamp(headliner.offer_expiration_date)"
                       :interval="1000"
                       :start-label="'Start:'"
                       :end-label="'End:'"
@@ -31,12 +31,12 @@
                 <b-card-header v-if="[5, 12].includes(fetchStatus(headliner.status, 'key')) && !!event.challenge">
                   <vue-countdown-timer
                       :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
-                      :end-time="event.challenge.end_at"
+                      :end-time="utcTimestamp(event.challenge.end_at)"
                       :interval="1000"
                       :start-label="'Start:'"
                       :end-label="'Challenge Expires In:-'"
                       label-position="begin"
-                      :end-text="'Event Ended!'"
+                      :end-text="'Challenge Expired!'"
                       :day-txt="'Days'"
                       :hour-txt="':'"
                       :minutes-txt="':'"
@@ -95,7 +95,7 @@
                 <b-card-header v-if="fetchStatus(support.status,'key') === 7">
                   <vue-countdown-timer
                       :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
-                      :end-time="support.offer_expiration_date"
+                      :end-time="utcTimestamp(support.offer_expiration_date)"
                       :interval="1000"
                       :start-label="'Start:'"
                       :end-label="'End:'"
@@ -110,12 +110,12 @@
                 <b-card-header v-if="[5, 12].includes(fetchStatus(support.status, 'key')) && !!event.challenge">
                   <vue-countdown-timer
                       :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
-                      :end-time="event.challenge.end_at"
+                      :end-time="utcTimestamp(event.challenge.end_at)"
                       :interval="1000"
                       :start-label="'Start:'"
                       :end-label="'Challenge Expires In:-'"
                       label-position="begin"
-                      :end-text="'Event Ended!'"
+                      :end-text="'Challenge Expired!'"
                       :day-txt="'Days'"
                       :hour-txt="':'"
                       :minutes-txt="':'"
@@ -1303,7 +1303,12 @@ export default {
       }
 
       for (let i = 0; i < this.rawStatuses.length; i++) {
-        if ((i !== 5) || (firstHoldPresent && (this.form.hold_position === 3))) {
+        if (i === 12 && this.modal.edit === true && this.form.status === 12) {
+          this.statuses.push({
+            value: i,
+            text: this.rawStatuses[i]
+          });
+        } else if ((i !== 12) && ((i !== 5) || (firstHoldPresent && (this.form.hold_position === 3)))) {
           this.statuses.push({
             value: i,
             text: this.rawStatuses[i]
