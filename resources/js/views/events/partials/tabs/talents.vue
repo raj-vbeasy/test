@@ -236,6 +236,14 @@
 
         <b-row>
           <b-col>
+            <b-form-group label-for="talent_stage" label="Stages">
+              <b-form-select v-model="form.status" :options="statuses" @input="setChallengeData();setHoldPositions(form.status)"></b-form-select>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col>
             <b-form-group label-for="talent_amount" label="Amount">
               <b-form-input
                   class="col-3"
@@ -774,7 +782,9 @@ export default {
         },
         hours: null,
         timestamp: null
-      }
+      },
+      stages: [],
+      timeSlots: []
     }
   },
   computed: {

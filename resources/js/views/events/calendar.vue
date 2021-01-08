@@ -315,8 +315,14 @@ export default {
         }
         this.event.date = moment(info.event.start).utc().valueOf();
         this.event.id = info.event.id;
-        this.event.time_slots = info.event.extendedProps.time_slots.length + 1;
-        this.event.time_slots = cloneDeep(info.event.extendedProps.time_slots);
+
+        this.total_time_slots = info.event.extendedProps.time_slots.length;
+        for (let i = 0; i < this.total_time_slots; i++) {
+          this.event.time_slots.push([
+            moment.utc(info.event.extendedProps.time_slots[i].start, 'HH:mm:ss').valueOf(),
+            moment.utc(info.event.extendedProps.time_slots[i].end, 'HH:mm:ss').valueOf()
+          ]);
+        }
         this.showModal = true;
         this.editing = true;
       }
@@ -395,10 +401,11 @@ export default {
                   backgroundColor: response.data.data.data[i].status === 'hold' ? 'blue' : 'green',
                   extendedProps: {
                     status: response.data.data.data[i].status,
-                    stages: response.data.data.data[i].stages,
-                    performance_location: response.data.data.data[i].performance_location,
+                    stages: cloneDeep(response.data.data.data[i].stages),
+                    performance_location: cloneDeep(response.data.data.data[i].performance_location),
                     email: response.data.data.data[i].email,
-                    promoter: response.data.data.data[i].promoter
+                    promoter: response.data.data.data[i].promoter,
+                    time_slots: cloneDeep(response.data.data.data[i].time_slots)
                   }
                 })
               }
