@@ -40,7 +40,7 @@ class EventController extends Controller
         if ($this->isInputValid) {
             $this->setResponseVars(
                 'List of Events',
-                Event::with(['performanceLocation', 'stages', 'notes'])
+                Event::with(['performanceLocation', 'stages', 'notes', 'timeSlots'])
                     ->whereBetween(
                         \DB::raw('DATE(date)'),
                         [
@@ -79,21 +79,51 @@ class EventController extends Controller
      */
     final public function store(Request $request): JsonResponse
     {
-        \DB::beginTransaction();
-        try {
-            $request->merge(
-                [
-                    'date' => Carbon::createFromTimestampMs($request->get('date'))
-                ]
-            );
-            $event = Event::create(array_filter($request->only((new Event())->getFillable())));
-            $event->stages()->sync($request->get('stages'));
-            \DB::commit();
-            $this->setResponseVars('Added new Event');
-        } catch (\Exception $exception) {
-            \DB::rollBack();
-            echo '<pre>'; print_r($exception->getMessage());
-            $this->setResponseVars('Something went wrong, please try again!');
+        $this->validationRules = [
+            'name' => 'required',
+            'email' => 'required|email',
+            'performance_location_id' => 'required|exists:performance_locations,id',
+            'stages' => 'required|array',
+            'time_slots' => 'required|array'
+        ];
+        $this->validationMessages = [
+            'name.required' => 'Please enter event name',
+            'email.numeric' => 'Please enter email',
+            'email.email' => 'Please enter valid email',
+            'performance_location_id.required' => 'Please select performance location',
+            'performance_location_id.exists' => 'Invalid Performance location',
+            'stages.required' => 'Please select at least 1 stage',
+            'stages.array' => 'Invalid stages',
+            'time_slots.required' => 'Please enter at least 1 time slot'
+        ];
+        $this->validateApiRequest();
+        if ($this->isInputValid) {
+            \DB::beginTransaction();
+            try {
+                $request->merge(
+                    [
+                        'date' => Carbon::createFromTimestampMs($request->get('date'))
+                    ]
+                );
+                $event = Event::create(array_filter($request->only((new Event())->getFillable())));
+                $event->stages()->sync($request->get('stages'));
+                $timeSlots = [];
+                foreach ($request->get('time_slots', []) as $timeSlot) {
+                    $timeSlots[] = [
+                        'start' => Carbon::createFromTimestampMs($timeSlot[0])->format('H:i:s'),
+                        'end' => Carbon::createFromTimestampMs($timeSlot[1])->format('H:i:s')
+                    ];
+                }
+                if ($timeSlots) {
+                    $event->timeSlots()->createMany($timeSlots);
+                }
+                \DB::commit();
+                $this->setResponseVars('Added new Event');
+            } catch (\Exception $exception) {
+                \DB::rollBack();
+                echo '<pre>'; print_r($exception->getMessage());
+                $this->setResponseVars('Something went wrong, please try again!');
+            }
         }
         return $this->apiResponse();
     }

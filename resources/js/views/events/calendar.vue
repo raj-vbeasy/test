@@ -162,6 +162,34 @@
           </b-col>
         </b-row>
 
+        <b-row v-for="idx in total_time_slots" :key="idx">
+          <b-col cols="10">
+            <b-form-group label="Time Slot">
+              <date-picker
+                  v-model="event.time_slots[idx - 1]"
+                  :range="true"
+                  type="time"
+                  lang="en"
+                  confirm
+                  :show-time-header="true"
+                  time-title-format="hh:mm A"
+                  format="hh:mm A"
+                  :show-second="false"
+                  value-type="timestamp"></date-picker>
+            </b-form-group>
+          </b-col>
+          <b-col cols="2">
+            <a href="javascript:void(0)" class="fas fa-minus-circle"
+               @click="total_time_slots--"
+               v-show="idx === total_time_slots"
+               style="font-size: 25px;line-height: 80px;"></a>
+            <a href="javascript:void(0)" class="fas fa-plus-circle"
+               @click="total_time_slots++"
+               v-show="idx === total_time_slots && total_time_slots <= 7"
+               style="font-size: 25px;line-height: 80px;"></a>
+          </b-col>
+        </b-row>
+
         <b-row class="mb-5">
           <b-col>
             <b-button variant="outline-secondary float-right ml-2" @click="cancelEventForm">Cancel</b-button>
@@ -184,10 +212,12 @@ import appConfig from "@/app.config.json";
 import Multiselect from "vue-multiselect";
 import moment from "moment";
 import "moment-timezone";
+import DatePicker from "vue2-datepicker";
+import {cloneDeep} from 'lodash';
 
 export default {
   name: "event-calendar",
-  components: { FullCalendar, Layout, PageHeader, Multiselect },
+  components: { FullCalendar, Layout, PageHeader, Multiselect, DatePicker },
   page: {
     title: "Events",
     meta: [{ name: "description", content: appConfig.description }]
@@ -238,7 +268,8 @@ export default {
           notes: ''
         },
         stages: [],
-        date: ''
+        date: '',
+        time_slots: []
       },
       editing: false,
       performanceLocations: [],
@@ -247,7 +278,8 @@ export default {
       submitted: false,
       formTitle: '',
       isLocationLoading: false,
-      isStagesLoading: false
+      isStagesLoading: false,
+      total_time_slots: 1
     }
   },
   methods: {
@@ -255,6 +287,7 @@ export default {
       this.event.date = moment(info.date).utc().valueOf()
       this.formTitle = 'Add New Event';
       this.showModal = true;
+      this.total_time_slots = 1;
     },
     eventClick (info) {
       if (info.event.extendedProps.status === 'confirmed') {
@@ -282,6 +315,8 @@ export default {
         }
         this.event.date = moment(info.event.start).utc().valueOf();
         this.event.id = info.event.id;
+        this.event.time_slots = info.event.extendedProps.time_slots.length + 1;
+        this.event.time_slots = cloneDeep(info.event.extendedProps.time_slots);
         this.showModal = true;
         this.editing = true;
       }
@@ -302,6 +337,11 @@ export default {
           } else if (key === 'promoter') {
             if (this.event[key].outside === true) {
               formData[key] = this.event[key].name
+            }
+          } else if (key === 'time_slots') {
+            formData[key] = [];
+            for (let i = 0; i < this.event.time_slots.length; i++) {
+              formData[key].push(this.event.time_slots[i]);
             }
           } else {
             formData[key] = this.event[key];
@@ -329,7 +369,7 @@ export default {
             this.$toastr.fire({
               toast: true,
               icon: 'error',
-              title: error.response.message
+              title: error.response.data.message
             });
           })
           .then(() => {
@@ -414,6 +454,8 @@ export default {
       this.event.primary_contact.notes = '';
       this.event.stages = [];
       this.event.date = '';
+      this.total_time_slots = 1;
+      this.event.time_slots = [];
     },
     dropEvent (dropInfo) {
       this.cancelEventForm();

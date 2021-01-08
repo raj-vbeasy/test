@@ -171,4 +171,9 @@ class Event extends Model
     {
         return $this->hasMany(EventExpense::class);
     }
+
+    final public function timeSlots(): HasMany
+    {
+        return $this->hasMany(EventTimeSlot::class);
+    }
 }
