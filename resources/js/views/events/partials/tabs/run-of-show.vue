@@ -6,7 +6,7 @@
         <br/>
 
         <b-card class="activity stage-activity" title="Stage Activity e.g. Bands, Announce, Awards, DJ" style="box-shadow: 1px 1px 8px 0">
-          <b-row class="mt-4">
+          <b-row class="mt-4" v-if="false">
             <b-col>
               <b-button variant="outline-primary" v-on:click="add('stage')">Add Stage Activity</b-button>
             </b-col>
@@ -247,7 +247,6 @@
 import DataTable from "@/views/utility/data-table";
 import DatePicker from "vue2-datepicker";
 import {cloneDeep} from "lodash";
-import moment from "moment";
 
 export default {
   name: "run-of-show-tab",

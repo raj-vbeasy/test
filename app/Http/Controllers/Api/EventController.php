@@ -143,7 +143,8 @@ class EventController extends Controller
             'activities:id,event_id,artist_id,stage_id,crew,start,end,description,type',
             'activities.stage:id,name',
             'activities.artist:id,name,image_url',
-            'expenses:id,event_id,crew,amount,description,description,datetime'
+            'expenses:id,event_id,crew,amount,description,description,datetime',
+            'timeSlots:id,event_id,start,end'
         ])
         ->select('id', 'name', 'email', 'performance_location_id', 'promoter', 'date', 'status', 'challenge')
         ->find($id);

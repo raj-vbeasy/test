@@ -99,6 +99,14 @@ class Event extends JsonResource
             }
             $activities[$activity->type][] = $activity;
         }
+
+        $timeSlots = [];
+        foreach ($this->resource->timeSlots as $timeSlot) {
+            array_push($timeSlots, [
+                Carbon::createFromFormat('H:i:s', $timeSlot->start)->valueOf(),
+                Carbon::createFromFormat('H:i:s', $timeSlot->end)->valueOf()
+            ]);
+        }
         return [
             'id' => $this->resource->id,
             'name' => $this->resource->name,
@@ -114,7 +122,8 @@ class Event extends JsonResource
             'tasks' => $this->resource->tasks,
             'activities' => $activities,
             'expenses' => $this->resource->expenses,
-            'challenge' => $this->resource->challenge
+            'challenge' => $this->resource->challenge,
+            'time_slots' => $timeSlots
         ];
     }
 }

@@ -34,6 +34,9 @@
         title-class="text-black font-18"
         body-class="p-3"
         hide-footer
+        :no-close-on-backdrop="true"
+        :no-close-on-esc="true"
+        :hide-header-close="true"
     >
       <b-form @submit.prevent="handleEvent">
         <b-row>
@@ -287,7 +290,6 @@ export default {
       this.event.date = moment(info.date).utc().valueOf()
       this.formTitle = 'Add New Event';
       this.showModal = true;
-      this.total_time_slots = 1;
     },
     eventClick (info) {
       if (info.event.extendedProps.status === 'confirmed') {

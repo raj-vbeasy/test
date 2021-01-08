@@ -118,6 +118,10 @@ class EventArtistController extends Controller
                     ]
                 );
 
+                if ($stagesTimeSlots = $request->get('stages_time_slots', [])) {
+                    $this->syncStagesActivity($event, $request->get('artist_id'), $stagesTimeSlots);
+                }
+
                 // Notify related artists
                 if ($request->get('send_email', false)) {
                     $this->sendStatusAlert($event, $request->get('artist_id'), $request->get('status'));
@@ -308,6 +312,10 @@ class EventArtistController extends Controller
                             ->where('hold_position', '>', $oldData->pivot->hold_position)
                             ->decrement('hold_position');
                     }
+                }
+
+                if ($stagesTimeSlots = $request->get('stages_time_slots', [])) {
+                    $this->syncStagesActivity($event, $request->get('id'), $stagesTimeSlots);
                 }
 
                 // Notify related artists
@@ -589,5 +597,34 @@ class EventArtistController extends Controller
             ->update(['artist_representative_mad' => json_encode($arr)]);
 
         return redirect()->back()->with(['success' => 'Data submitted successfully']);
+    }
+
+    /**
+     * @param Event $event
+     * @param int $artistId
+     * @param array $stagesTimeSlots
+     */
+    final public function syncStagesActivity(Event $event, int $artistId, array $stagesTimeSlots = [])
+    {
+        foreach ($stagesTimeSlots as $stagesTimeSlot) {
+            $stageId = $stagesTimeSlot['stage']['id'];
+            foreach ($stagesTimeSlot['time_slots'] as $timeSlot) {
+                $event->activities()->updateOrCreate(
+                    [
+                        'stage_id' => $stageId,
+                        'artist_id' => $artistId,
+                        'start' => $timeSlot['start'],
+                        'end' => $timeSlot['end']
+                    ],
+                    [
+                        'cell_phone' => '',
+                        'radio_channel' => '',
+                        'email' => '',
+                        'description' => '',
+                        'type' => 'stage'
+                    ]
+                );
+            }
+        }
     }
 }

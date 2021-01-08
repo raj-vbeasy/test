@@ -234,10 +234,39 @@
           </b-col>
         </b-row>
 
+        <b-row v-if="form.stages_time_slots.length > 0">
+          <b-col cols="12">
+            <h6>Selected Stages:</h6>
+          </b-col>
+          <b-col cols="12" v-for="(val, idx) in form.stages_time_slots" :key="idx">
+            <p v-if="val.time_slots.length > 0">
+              {{ val.stage.name }}:
+              <span v-for="(slot, index) in val.time_slots" :key="index">
+                {{ formatDate(slot.start, 'hh:mm A') }} - {{ formatDate(slot.end, 'hh:mm A') }}
+                <span v-if="index+1 < val.time_slots.length">, </span>
+              </span>
+            </p>
+          </b-col>
+        </b-row>
+
         <b-row>
           <b-col>
             <b-form-group label-for="talent_stage" label="Stages">
-              <b-form-select v-model="form.status" :options="statuses" @input="setChallengeData();setHoldPositions(form.status)"></b-form-select>
+              <b-form-select v-model="selectedStage" :options="stages" @input="showTimeSlotsForStage()"></b-form-select>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="selectedStage !== null">
+          <b-col>
+            <b-form-group label="Time Slots:">
+              <b-form-checkbox-group
+                  id="checkbox-group-1"
+                  v-model="selectedTimeSlots"
+                  :options="timeSlots"
+                  name="time_slots"
+                  @input="updateTimeSlotsForStage()"
+              ></b-form-checkbox-group>
             </b-form-group>
           </b-col>
         </b-row>
@@ -784,7 +813,9 @@ export default {
         timestamp: null
       },
       stages: [],
-      timeSlots: []
+      timeSlots: [],
+      selectedStage: null,
+      selectedTimeSlots: []
     }
   },
   computed: {
@@ -839,6 +870,26 @@ export default {
             }
           }
           return artist;
+        });
+      }
+
+      this.stages = [{
+        text: 'Select Stage',
+        value: null
+      }];
+      for (let i = 0; i < this.event.stages.length; i++) {
+        this.stages.push({
+          text: this.event.stages[i].name,
+          value: this.event.stages[i].id
+        });
+      }
+
+      this.timeSlots = [];
+      for (let i = 0; i < this.event.time_slots.length; i++) {
+        this.timeSlots.push({
+          text: moment.utc(this.event.time_slots[i][0]).local().format('hh:mm A') + ' - ' + moment.utc(this.event.time_slots[i][1]).local().format('hh:mm A'),
+          value: this.event.time_slots[i][0] + ',' + this.event.time_slots[i][1],
+          disabled: false
         });
       }
     },
@@ -994,7 +1045,8 @@ export default {
               spotify: "",
               sound_cloud: ""
             },
-            cancellation_terms: ''
+            cancellation_terms: '',
+            stages_time_slots: []
           };
           break;
         case 'modal':
@@ -1356,12 +1408,54 @@ export default {
           let tempPos = this.fetchHoldPosition(this.artists[i].status, 'key');
           if (tempPos === 2) {
             // this.challengeData
-          } else if (tempPos === 3) {
-
           }
         }
       }
       // this.challengeData;
+    },
+    updateTimeSlotsForStage () {
+      let idx = this.form.stages_time_slots.findIndex(val => {
+        return val.stage.id === this.selectedStage;
+      });
+
+      let timeSlots = [];
+      for (let i = 0; i < this.selectedTimeSlots.length; i++) {
+        let tempSlots = this.selectedTimeSlots[i].split(',');
+        timeSlots.push({
+          start: Number(tempSlots[0]),
+          end: Number(tempSlots[1])
+        })
+      }
+
+      if ((timeSlots.length === 0) && (idx > -1)) {
+        this.form.stages_time_slots.splice(idx, 1);
+      } else {
+        if (idx === -1) {
+          let tempStage = this.stages.find(stage => {
+            return stage.value === this.selectedStage;
+          });
+          this.form.stages_time_slots.push({
+            stage: {
+              id: tempStage.value,
+              name: tempStage.text
+            },
+            time_slots: cloneDeep(timeSlots)
+          });
+        } else {
+          this.form.stages_time_slots[idx].time_slots = cloneDeep(timeSlots);
+        }
+      }
+    },
+    showTimeSlotsForStage () {
+      let idx = this.form.stages_time_slots.findIndex(val => {
+        return val.stage.id === this.selectedStage;
+      });
+      this.selectedTimeSlots = [];
+      if (idx > -1) {
+        for (let i = 0; i < this.form.stages_time_slots[idx].time_slots.length; i++) {
+          this.selectedTimeSlots.push(this.form.stages_time_slots[idx].time_slots[i].start + ',' + this.form.stages_time_slots[idx].time_slots[i].end)
+        }
+      }
     }
   },
   created() {

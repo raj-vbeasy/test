@@ -69,7 +69,6 @@ class EventActivityController extends Controller
                     Response::HTTP_INTERNAL_SERVER_ERROR
                 );
                 return $this->apiResponse();
-                exit;
             }
             DB::beginTransaction();
             try {
