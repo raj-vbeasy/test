@@ -29,9 +29,51 @@ class Event extends JsonResource
     {
         $artists = [];
 
+        $activities = [
+            'stage' => [],
+            'other' => [],
+            'crew' => [],
+            'important' => []
+        ];
+
+        foreach ($this->resource->activities as $activity) {
+            if (in_array($activity->type, ['other', 'important'])) {
+                $activity->date = Carbon::createFromFormat('Y-m-d H:i:s', $activity->updated_at)->format('M d, Y');
+            }
+            $activities[$activity->type][] = $activity;
+        }
+
         foreach ($this->resource->artists as $artist) {
             $status = EventModel::ARTIST_STATUS[$artist->pivot->status];
             $holdPosition = EventModel::HOLD_POSITION[$artist->pivot->hold_position];
+
+            $myActivities = [];
+            foreach ($activities['stage'] as $activity) {
+                if ($activity->artist_id === $artist->id) {
+                    $flag = true;
+                    foreach ($myActivities as $myActivity) {
+                        if ($myActivity['stage']['id'] === $activity->stage->id) {
+                            $myActivity['time_slots'][] = [
+                                'start' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->start)->valueOf(),
+                                'end' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->end)->valueOf()
+                            ];
+                            $flag = false;
+                        }
+                    }
+
+                    if ($flag === true) {
+                        $myActivities[] = [
+                            'stage' => $activity->stage->toArray(),
+                            'time_slots' => [
+                                [
+                                    'start' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->start)->valueOf(),
+                                    'end' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->end)->valueOf()
+                                ]
+                            ]
+                        ];
+                    }
+                }
+            }
 
             array_push($artists, [
                 'id' => $artist->id,
@@ -82,22 +124,9 @@ class Event extends JsonResource
                 ],
                 'artist_representative_mad' => ($mad = $artist->pivot->artist_representative_mad) ? json_decode($mad) : ['dates' => [], 'notes' => ''],
                 'offer_expiration_date' => $artist->pivot->status === 7 ? $artist->pivot->offer_expiration_date : null,
-                'cancellation_terms' => $artist->pivot->cancellation_terms
+                'cancellation_terms' => $artist->pivot->cancellation_terms,
+                'myActivities' => $myActivities
             ]);
-        }
-
-        $activities = [
-            'stage' => [],
-            'other' => [],
-            'crew' => [],
-            'important' => []
-        ];
-
-        foreach ($this->resource->activities as $activity) {
-            if (in_array($activity->type, ['other', 'important'])) {
-                $activity->date = Carbon::createFromFormat('Y-m-d H:i:s', $activity->updated_at)->format('M d, Y');
-            }
-            $activities[$activity->type][] = $activity;
         }
 
         $timeSlots = [];
