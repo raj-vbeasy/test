@@ -944,6 +944,35 @@ export default {
 
         for (let j = 0; j < summary.length; j++) {
           if (activities[i].stage.id === summary[j].id) {
+            let isTimePresent = false;
+            for (let k = 0; k < summary[j].slots.length; k++) {
+              if (summary[j].slots[k].time === (this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end))) {
+                let isArtistPresent = false;
+                for (let l = 0; l < summary[j].slots[k].artists.length; l++) {
+                  if (summary[j].slots[k].artists[l].id === activities[i].artist_id) {
+                    isArtistPresent = true;
+                    break;
+                  }
+                }
+                if (isArtistPresent === false) {
+                  let tempArtist = this.artists.filter(artist => artist.id === activities[i].artist_id);
+                  if (tempArtist.length > 0) {
+                    summary[j].slots[k].artists.push(tempArtist[0]);
+                  }
+                }
+                isTimePresent = true;
+                break;
+              }
+            }
+
+            if (isTimePresent === false) {
+              summary[j].slots.push({
+                time: this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end),
+                formatted: this.anotherFormat(activities[i].start, 'HH:mm') + '-' + this.anotherFormat(activities[i].end, 'HH:mm'),
+                artists: this.artists.filter(artist => artist.id === activities[i].artist_id)
+              });
+            }
+
             flag = false;
             break;
           }
