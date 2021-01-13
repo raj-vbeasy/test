@@ -48,16 +48,18 @@ class Event extends JsonResource
             $holdPosition = EventModel::HOLD_POSITION[$artist->pivot->hold_position];
 
             $myActivities = [];
+
             foreach ($activities['stage'] as $activity) {
                 if ($activity->artist_id === $artist->id) {
                     $flag = true;
-                    foreach ($myActivities as $myActivity) {
+                    foreach ($myActivities as $key => $myActivity) {
                         if ($myActivity['stage']['id'] === $activity->stage->id) {
-                            $myActivity['time_slots'][] = [
+                            $myActivities[$key]['time_slots'][] = [
                                 'start' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->start)->valueOf(),
                                 'end' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->end)->valueOf()
                             ];
                             $flag = false;
+                            break;
                         }
                     }
 
@@ -125,7 +127,7 @@ class Event extends JsonResource
                 'artist_representative_mad' => ($mad = $artist->pivot->artist_representative_mad) ? json_decode($mad) : ['dates' => [], 'notes' => ''],
                 'offer_expiration_date' => $artist->pivot->status === 7 ? $artist->pivot->offer_expiration_date : null,
                 'cancellation_terms' => $artist->pivot->cancellation_terms,
-                'myActivities' => $myActivities
+                'my_activities' => $myActivities
             ]);
         }
 

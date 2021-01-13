@@ -18,7 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use DB;
 use Illuminate\Support\Str;
-use Illuminate\View\View;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class EventArtistController extends Controller
@@ -609,21 +608,30 @@ class EventArtistController extends Controller
         foreach ($stagesTimeSlots as $stagesTimeSlot) {
             $stageId = $stagesTimeSlot['stage']['id'];
             foreach ($stagesTimeSlot['time_slots'] as $timeSlot) {
-                $event->activities()->updateOrCreate(
+                $isPresent = $event->activities()->where(
                     [
                         'stage_id' => $stageId,
                         'artist_id' => $artistId,
-                        'start' => $timeSlot['start'],
-                        'end' => $timeSlot['end']
-                    ],
-                    [
-                        'cell_phone' => '',
-                        'radio_channel' => '',
-                        'email' => '',
-                        'description' => '',
+                        'start' => Carbon::createFromTimestampMs($timeSlot['start'])->format('Y-m-d H:i:s'),
+                        'end' => Carbon::createFromTimestampMs($timeSlot['end'])->format('Y-m-d H:i:s'),
                         'type' => 'stage'
                     ]
-                );
+                )->first();
+                if (!$isPresent) {
+                    $event->activities()->create(
+                        [
+                            'stage_id' => $stageId,
+                            'artist_id' => $artistId,
+                            'start' => $timeSlot['start'],
+                            'end' => $timeSlot['end'],
+                            'cell_phone' => '',
+                            'radio_channel' => '',
+                            'email' => '',
+                            'description' => '',
+                            'type' => 'stage'
+                        ]
+                    );
+                }
             }
         }
     }

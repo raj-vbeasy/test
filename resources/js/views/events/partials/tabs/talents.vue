@@ -67,10 +67,14 @@
                 </b-card-text>
                 <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
                   <p class="ml-5">{{ headliner.email }}</p>
-                  <b-card-sub-title class="ml-5" v-for="activity in headliner.activities" :key="activity.stage.id">
+                  <b-card-sub-title class="ml-5" v-for="(activity, idx) in headliner.my_activities" :key="activity.stage.id">
                     <b class="font-size-14">{{ activity.stage.name }} </b><br>
-                    Start:- {{ activity.start ? formatDate(activity.start, 'hh:mm A') : '' }} <br/>
-                    End  :- {{ activity.end ? formatDate(activity.end, 'hh:mm A') : '' }}<br/><br/>
+                    Time Slots:-
+                    <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
+                      {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
+                    </span>
+                    <br v-if="idx !== headliner.my_activities.length - 1"/>
+                    <br v-if="idx !== headliner.my_activities.length - 1"/>
                   </b-card-sub-title>
                   <span class="ml-5">
                   {{ headliner.notes }}
@@ -145,10 +149,14 @@
                   <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ support.amount }})</span>
                 </b-card-text>
                 <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
-                  <b-card-sub-title class="ml-5" v-for="activity in support.activities" :key="activity.stage.id">
+                  <b-card-sub-title class="ml-5" v-for="(activity, idx) in support.my_activities" :key="activity.stage.id">
                     <b class="font-size-14">{{ activity.stage.name }} </b><br>
-                    Start:- {{ activity.start ? formatDate(activity.start, 'hh:mm A') : '' }} <br/>
-                    End  :- {{ activity.end ? formatDate(activity.end, 'hh:mm A') : '' }}<br/><br/>
+                    Time Slots:-
+                    <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
+                      {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
+                    </span>
+                    <br v-if="idx !== support.my_activities.length - 1"/>
+                    <br v-if="idx !== support.my_activities.length - 1"/>
                   </b-card-sub-title>
                   <span class="ml-5">{{ support.notes }}</span>
                 </b-card-text>
@@ -185,10 +193,14 @@
                   <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ artist.amount }})</span>
                 </b-card-text>
                 <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
-                  <b-card-sub-title class="ml-5" v-for="activity in artist.activities" :key="activity.stage.id">
+                  <b-card-sub-title class="ml-5" v-for="(activity,idx) in artist.my_activities" :key="activity.stage.id">
                     <b class="font-size-14">{{ activity.stage.name }} </b><br>
-                    Start:- {{ activity.start ? formatDate(activity.start, 'hh:mm A') : '' }} <br/>
-                    End  :- {{ activity.end ? formatDate(activity.end, 'hh:mm A') : '' }}<br/><br/>
+                    Time Slots:-
+                    <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
+                      {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
+                    </span>
+                    <br v-if="idx !== artist.my_activities.length - 1"/>
+                    <br v-if="idx !== artist.my_activities.length - 1"/>
                   </b-card-sub-title>
                   <span class="ml-5">{{ artist.notes }}</span>
                 </b-card-text>
@@ -858,20 +870,8 @@ export default {
   },
   methods: {
     setData() {
-      let tempActivities = [];
-      if (this.event.hasOwnProperty('activities')) {
-        tempActivities = cloneDeep(this.event.activities['stage']);
-      }
       if (this.event.hasOwnProperty('artists')) {
-        this.artists = cloneDeep(this.event.artists).map(function (artist) {
-          artist.activities = [];
-          for (let i = 0; i < tempActivities.length; i++) {
-            if (tempActivities[i].artist_id === artist.id) {
-              artist.activities.push(tempActivities[i])
-            }
-          }
-          return artist;
-        });
+        this.artists = cloneDeep(this.event.artists);
       }
 
       this.stages = [{
@@ -927,7 +927,7 @@ export default {
       this.representativeData = cloneDeep(info.artist_representative_mad);
 
       this.form.cancellation_terms = info.cancellation_terms;
-      this.form.stages_time_slots = cloneDeep(info.myActivities);
+      this.form.stages_time_slots = cloneDeep(info.my_activities);
       this.setStatuses();
       this.setAssignedHoldPositions();
       this.setHoldPositions(this.form.status);
@@ -1134,7 +1134,7 @@ export default {
                     management_firm: this.form.management_firm,
                     publicity_firm: this.form.publicity_firm,
                     artist_representative_mad: {'dates': [], 'notes': ''},
-                    myActivities: this.form.stages_time_slots
+                    my_activities: this.form.stages_time_slots
                   }
                 });
               } else if (this.modal.edit) {
@@ -1188,7 +1188,7 @@ export default {
                         publicity_firm: this.form.publicity_firm,
                         offer_expiration_date: this.form.status === 7 ? moment.utc().add(this.form.offer_expiration_time, 'hours').format('YYYY-MM-DD HH:mm:ss') : null,
                         cancellation_terms: this.form.cancellation_terms,
-                        myActivities: this.form.stages_time_slots
+                        my_activities: this.form.stages_time_slots
                       }
                     });
 
