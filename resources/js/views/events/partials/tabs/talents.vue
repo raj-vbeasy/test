@@ -40,7 +40,7 @@
                                     href="javascript:void(0)"
                                     v-on:click="edit(artist)"
                                 >
-                                  {{ artist.name }}
+                                  {{ artist.hold_position }} - {{ artist.name }}
                                   <b-img :src="artist.image" rounded="circle" width="50px"></b-img>
                                 </b-list-group-item>
                               </b-list-group>
