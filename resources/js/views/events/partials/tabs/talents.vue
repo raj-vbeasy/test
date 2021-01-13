@@ -1,215 +1,282 @@
 <template>
   <div>
-    <b-row class="mb-5">
+    <b-row>
       <b-col>
-        <b-button variant="outline-primary" v-if="initiated" v-on:click="add">Add Talent</b-button>
-      </b-col>
-    </b-row>
+        <b-tabs justified nav-class="nav-tabs-custom" content-class="p-3 text-muted">
+          <b-tab>
+            <template v-slot:title>
+              <span class="d-inline-block d-sm-none">
+                <i class="fas fa-home"></i>
+              </span>
+              <span class="d-none d-sm-inline-block">Summary</span>
+            </template>
 
-    <b-row class="mt-3">
-      <b-col>
-        <b-card style="box-shadow: 1px 1px 8px 0">
-          <b-card-title class="talent_activity1">Headliners</b-card-title>
-          <b-row class="mt-4">
-            <b-col md="4" v-for="headliner in headliners" :key="headliner.id">
-              <b-card :title="headliner.title" style="box-shadow: 1px 1px 8px 0">
-                <b-card-header v-if="fetchStatus(headliner.status,'key') === 7">
-                  <vue-countdown-timer
-                      :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
-                      :end-time="utcTimestamp(headliner.offer_expiration_date)"
-                      :interval="1000"
-                      :start-label="'Start:'"
-                      :end-label="'End:'"
-                      label-position="begin"
-                      :end-text="'Offer Expired'"
-                      :day-txt="'Days'"
-                      :hour-txt="'Hours'"
-                      :minutes-txt="'Min'"
-                      :seconds-txt="'Sec'">
-                  </vue-countdown-timer>
-                </b-card-header>
-                <b-card-header v-if="[5, 12].includes(fetchStatus(headliner.status, 'key')) && !!event.challenge">
-                  <vue-countdown-timer
-                      :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
-                      :end-time="utcTimestamp(event.challenge.end_at)"
-                      :interval="1000"
-                      :start-label="'Start:'"
-                      :end-label="'Challenge Expires In:-'"
-                      label-position="begin"
-                      :end-text="'Challenge Expired!'"
-                      :day-txt="'Days'"
-                      :hour-txt="':'"
-                      :minutes-txt="':'"
-                      :seconds-txt="''">
-                  </vue-countdown-timer>
-                </b-card-header>
-                <b-card-title>
-                  <span v-if="headliner.status === 'Archived' || headliner.status === 'Released By Artist' || headliner.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ headliner.status }}</span>
-                  <span v-else class="artist_status_text" :style="headliner.status_color">{{ headliner.status }}</span>
-                  <span v-if="headliner.status === 'Declined' || headliner.status === 'Not Available' || headliner.status === 'Released By Artist' || headliner.status === 'Rescinded By Venue'" class="artist_hold_text" style="background-color:#808080;color:#000000">{{ headliner.hold_position }}</span>
-                  <span v-else class="artist_hold_text" :style="headliner.hold_position_color">{{ headliner.hold_position }}</span>
-                </b-card-title>
-                <hr v-if="headliner.status === 'Mutually Agreed Date' || headliner.status === 'Declined'">
-                <p v-if="headliner.status === 'Mutually Agreed Date' || headliner.status === 'Declined'">
-                  <span>{{ headliner.date_notes }}</span>
-                </p>
-                <hr v-if="[5, 12].includes(fetchStatus(headliner.status, 'key'))">
-                <p v-if="[5, 12].includes(fetchStatus(headliner.status, 'key')) && !!event.challenge">
+            <b-row class="mt-3">
+              <b-col>
+                <b-card class="activity stage-activity"
+                        :title="stage.name"
+                        v-for="stage in talentSummary"
+                        :key="stage.id"
+                        style="box-shadow: 1px 1px 8px 0"
+                >
+                  <b-row class="mt-4">
+                    <b-col>
+                      <b-tabs justified nav-class="nav-tabs-custom" content-class="p-3 text-muted">
+                        <b-tab v-for="(slotObj, idx) in stage.slots" :key="idx">
+                          <template v-slot:title>
+                            <span class="d-inline-block d-sm-none">
+                              <i class="fas fa-home"></i>
+                            </span>
+                            <span class="d-none d-sm-inline-block">{{ slotObj.formatted }}</span>
+                          </template>
+
+                          <b-row>
+                            <b-col>
+                              <b-list-group>
+                                <b-list-group-item
+                                    v-for="(artist, index) in slotObj.artists"
+                                    class="d-flex justify-content-between align-items-center"
+                                    :key="index"
+                                    href="javascript:void(0)"
+                                    v-on:click="edit(artist)"
+                                >
+                                  {{ artist.name }}
+                                  <b-img :src="artist.image" rounded="circle" width="50px"></b-img>
+                                </b-list-group-item>
+                              </b-list-group>
+                            </b-col>
+                          </b-row>
+                        </b-tab>
+                      </b-tabs>
+                    </b-col>
+                  </b-row>
+                </b-card>
+              </b-col>
+            </b-row>
+          </b-tab>
+
+          <b-tab>
+            <template v-slot:title>
+              <span class="d-inline-block d-sm-none">
+                <i class="fas fa-home"></i>
+              </span>
+              <span class="d-none d-sm-inline-block">Management</span>
+            </template>
+
+            <b-row class="mb-5">
+              <b-col>
+                <b-button variant="outline-primary" v-if="initiated" v-on:click="add">Add Talent</b-button>
+              </b-col>
+            </b-row>
+
+            <b-row class="mt-3">
+              <b-col>
+                <b-card style="box-shadow: 1px 1px 8px 0">
+                  <b-card-title class="talent_activity1">Headliners</b-card-title>
+                  <b-row class="mt-4">
+                    <b-col md="4" v-for="headliner in headliners" :key="headliner.id">
+                      <b-card :title="headliner.title" style="box-shadow: 1px 1px 8px 0">
+                        <b-card-header v-if="fetchStatus(headliner.status,'key') === 7">
+                          <vue-countdown-timer
+                              :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                              :end-time="utcTimestamp(headliner.offer_expiration_date)"
+                              :interval="1000"
+                              :start-label="'Start:'"
+                              :end-label="'End:'"
+                              label-position="begin"
+                              :end-text="'Offer Expired'"
+                              :day-txt="'Days'"
+                              :hour-txt="'Hours'"
+                              :minutes-txt="'Min'"
+                              :seconds-txt="'Sec'">
+                          </vue-countdown-timer>
+                        </b-card-header>
+                        <b-card-header v-if="[5, 12].includes(fetchStatus(headliner.status, 'key')) && !!event.challenge">
+                          <vue-countdown-timer
+                              :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                              :end-time="utcTimestamp(event.challenge.end_at)"
+                              :interval="1000"
+                              :start-label="'Start:'"
+                              :end-label="'Challenge Expires In:-'"
+                              label-position="begin"
+                              :end-text="'Challenge Expired!'"
+                              :day-txt="'Days'"
+                              :hour-txt="':'"
+                              :minutes-txt="':'"
+                              :seconds-txt="''">
+                          </vue-countdown-timer>
+                        </b-card-header>
+                        <b-card-title>
+                          <span v-if="headliner.status === 'Archived' || headliner.status === 'Released By Artist' || headliner.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ headliner.status }}</span>
+                          <span v-else class="artist_status_text" :style="headliner.status_color">{{ headliner.status }}</span>
+                          <span v-if="headliner.status === 'Declined' || headliner.status === 'Not Available' || headliner.status === 'Released By Artist' || headliner.status === 'Rescinded By Venue'" class="artist_hold_text" style="background-color:#808080;color:#000000">{{ headliner.hold_position }}</span>
+                          <span v-else class="artist_hold_text" :style="headliner.hold_position_color">{{ headliner.hold_position }}</span>
+                        </b-card-title>
+                        <hr v-if="headliner.status === 'Mutually Agreed Date' || headliner.status === 'Declined'">
+                        <p v-if="headliner.status === 'Mutually Agreed Date' || headliner.status === 'Declined'">
+                          <span>{{ headliner.date_notes }}</span>
+                        </p>
+                        <hr v-if="[5, 12].includes(fetchStatus(headliner.status, 'key'))">
+                        <p v-if="[5, 12].includes(fetchStatus(headliner.status, 'key')) && !!event.challenge">
                   <span>
                     Hold position 1 ( {{ event.challenge.to.name }}) is challenged by Hold position 2 ({{ event.challenge.by.name }})
                   </span>
-                </p>
-                <hr>
-                <b-card-text>
-                  <b-img :src="headliner.image" class="rounded-circle" width="50px" height="50px"></b-img>
-                  <span style="font-size: 16px">{{ headliner.name }}</span>
-                  <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ headliner.amount }})</span><br>
-                </b-card-text>
-                <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
-                  <p class="ml-5">{{ headliner.email }}</p>
-                  <b-card-sub-title class="ml-5" v-for="(activity, idx) in headliner.my_activities" :key="activity.stage.id">
-                    <b class="font-size-14">{{ activity.stage.name }} </b><br>
-                    Time Slots:-
-                    <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
+                        </p>
+                        <hr>
+                        <b-card-text>
+                          <b-img :src="headliner.image" class="rounded-circle" width="50px" height="50px"></b-img>
+                          <span style="font-size: 16px">{{ headliner.name }}</span>
+                          <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ headliner.amount }})</span><br>
+                        </b-card-text>
+                        <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
+                          <p class="ml-5">{{ headliner.email }}</p>
+                          <b-card-sub-title class="ml-5" v-for="(activity, idx) in headliner.my_activities" :key="activity.stage.id">
+                            <b class="font-size-14">{{ activity.stage.name }} </b><br>
+                            Time Slots:-
+                            <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
                       {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
                     </span>
-                    <br v-if="idx !== headliner.my_activities.length - 1"/>
-                    <br v-if="idx !== headliner.my_activities.length - 1"/>
-                  </b-card-sub-title>
-                  <span class="ml-5">
+                            <br v-if="idx !== headliner.my_activities.length - 1"/>
+                            <br v-if="idx !== headliner.my_activities.length - 1"/>
+                          </b-card-sub-title>
+                          <span class="ml-5">
                   {{ headliner.notes }}
                 </span>
-                </b-card-text>
-                <b-button v-on:click="edit(headliner)" variant="outline-primary">Edit</b-button>
-                <b-button v-on:click="remove(headliner)" variant="outline-danger">Delete</b-button>
-              </b-card>
-            </b-col>
-          </b-row>
-        </b-card>
-      </b-col>
-    </b-row>
+                        </b-card-text>
+                        <b-button v-on:click="edit(headliner)" variant="outline-primary">Edit</b-button>
+                        <b-button v-on:click="remove(headliner)" variant="outline-danger">Delete</b-button>
+                      </b-card>
+                    </b-col>
+                  </b-row>
+                </b-card>
+              </b-col>
+            </b-row>
 
-    <b-row class="mt-3">
-      <b-col>
-        <b-card style="box-shadow: 1px 1px 8px 0">
-          <b-card-title class="talent_activity2">Support</b-card-title>
-          <b-row class="mt-4">
-            <b-col md="4" v-for="support in supports" :key="support.id">
-              <b-card :title="support.title" style="box-shadow: 1px 1px 8px 0">
-                <b-card-header v-if="fetchStatus(support.status,'key') === 7">
-                  <vue-countdown-timer
-                      :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
-                      :end-time="utcTimestamp(support.offer_expiration_date)"
-                      :interval="1000"
-                      :start-label="'Start:'"
-                      :end-label="'End:'"
-                      label-position="begin"
-                      :end-text="'Offer Expired'"
-                      :day-txt="'Days'"
-                      :hour-txt="'Hours'"
-                      :minutes-txt="'Min'"
-                      :seconds-txt="'Sec'">
-                  </vue-countdown-timer>
-                </b-card-header>
-                <b-card-header v-if="[5, 12].includes(fetchStatus(support.status, 'key')) && !!event.challenge">
-                  <vue-countdown-timer
-                      :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
-                      :end-time="utcTimestamp(event.challenge.end_at)"
-                      :interval="1000"
-                      :start-label="'Start:'"
-                      :end-label="'Challenge Expires In:-'"
-                      label-position="begin"
-                      :end-text="'Challenge Expired!'"
-                      :day-txt="'Days'"
-                      :hour-txt="':'"
-                      :minutes-txt="':'"
-                      :seconds-txt="''">
-                  </vue-countdown-timer>
-                </b-card-header>
-                <b-card-title>
-                  <span v-if="support.status === 'Archived' || support.status === 'Released By Artist' || support.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ support.status }}</span>
-                  <span v-else class="artist_status_text" :style="support.status_color">{{ support.status }}</span>
-                  <span v-if="support.status === 'Declined' || support.status === 'Not Available' || support.status === 'Released By Artist' || support.status === 'Rescinded By Venue'" class="artist_hold_text" style="background-color:#808080;color:#000000">{{ support.hold_position }}</span>
-                  <span v-else class="artist_hold_text" :style="support.hold_position_color">{{ support.hold_position }}</span>
-                </b-card-title>
-                <hr v-if="support.status === 'Mutually Agreed Date'">
-                <p v-if="support.status === 'Mutually Agreed Date'">
-                  <span>{{ support.date_notes }}</span>
-                </p>
-                <hr v-if="[5,12].includes(fetchStatus(support.status, 'key'))">
-                <p v-if="[5,12].includes(fetchStatus(support.status, 'key')) && !!event.challenge">
+            <b-row class="mt-3">
+              <b-col>
+                <b-card style="box-shadow: 1px 1px 8px 0">
+                  <b-card-title class="talent_activity2">Support</b-card-title>
+                  <b-row class="mt-4">
+                    <b-col md="4" v-for="support in supports" :key="support.id">
+                      <b-card :title="support.title" style="box-shadow: 1px 1px 8px 0">
+                        <b-card-header v-if="fetchStatus(support.status,'key') === 7">
+                          <vue-countdown-timer
+                              :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                              :end-time="utcTimestamp(support.offer_expiration_date)"
+                              :interval="1000"
+                              :start-label="'Start:'"
+                              :end-label="'End:'"
+                              label-position="begin"
+                              :end-text="'Offer Expired'"
+                              :day-txt="'Days'"
+                              :hour-txt="'Hours'"
+                              :minutes-txt="'Min'"
+                              :seconds-txt="'Sec'">
+                          </vue-countdown-timer>
+                        </b-card-header>
+                        <b-card-header v-if="[5, 12].includes(fetchStatus(support.status, 'key')) && !!event.challenge">
+                          <vue-countdown-timer
+                              :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                              :end-time="utcTimestamp(event.challenge.end_at)"
+                              :interval="1000"
+                              :start-label="'Start:'"
+                              :end-label="'Challenge Expires In:-'"
+                              label-position="begin"
+                              :end-text="'Challenge Expired!'"
+                              :day-txt="'Days'"
+                              :hour-txt="':'"
+                              :minutes-txt="':'"
+                              :seconds-txt="''">
+                          </vue-countdown-timer>
+                        </b-card-header>
+                        <b-card-title>
+                          <span v-if="support.status === 'Archived' || support.status === 'Released By Artist' || support.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ support.status }}</span>
+                          <span v-else class="artist_status_text" :style="support.status_color">{{ support.status }}</span>
+                          <span v-if="support.status === 'Declined' || support.status === 'Not Available' || support.status === 'Released By Artist' || support.status === 'Rescinded By Venue'" class="artist_hold_text" style="background-color:#808080;color:#000000">{{ support.hold_position }}</span>
+                          <span v-else class="artist_hold_text" :style="support.hold_position_color">{{ support.hold_position }}</span>
+                        </b-card-title>
+                        <hr v-if="support.status === 'Mutually Agreed Date'">
+                        <p v-if="support.status === 'Mutually Agreed Date'">
+                          <span>{{ support.date_notes }}</span>
+                        </p>
+                        <hr v-if="[5,12].includes(fetchStatus(support.status, 'key'))">
+                        <p v-if="[5,12].includes(fetchStatus(support.status, 'key')) && !!event.challenge">
                   <span>
                     Hold position 1 ( {{ event.challenge.to.name }}) is challenged by Hold position 2 ({{ event.challenge.by.name }})
                   </span>
-                </p>
-                <hr>
-                <b-card-text>
-                  <b-img :src="support.image" class="rounded-circle" width="50px" height="50px"></b-img>
-                  <span style="font-size: 16px">{{ support.name }}</span>
-                  <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ support.amount }})</span>
-                </b-card-text>
-                <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
-                  <b-card-sub-title class="ml-5" v-for="(activity, idx) in support.my_activities" :key="activity.stage.id">
-                    <b class="font-size-14">{{ activity.stage.name }} </b><br>
-                    Time Slots:-
-                    <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
+                        </p>
+                        <hr>
+                        <b-card-text>
+                          <b-img :src="support.image" class="rounded-circle" width="50px" height="50px"></b-img>
+                          <span style="font-size: 16px">{{ support.name }}</span>
+                          <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ support.amount }})</span>
+                        </b-card-text>
+                        <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
+                          <b-card-sub-title class="ml-5" v-for="(activity, idx) in support.my_activities" :key="activity.stage.id">
+                            <b class="font-size-14">{{ activity.stage.name }} </b><br>
+                            Time Slots:-
+                            <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
                       {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
                     </span>
-                    <br v-if="idx !== support.my_activities.length - 1"/>
-                    <br v-if="idx !== support.my_activities.length - 1"/>
-                  </b-card-sub-title>
-                  <span class="ml-5">{{ support.notes }}</span>
-                </b-card-text>
-                <b-button v-on:click="edit(support)" variant="outline-primary">Edit</b-button>
-                <b-button v-on:click="remove(support)" variant="outline-danger">Delete</b-button>
-              </b-card>
-            </b-col>
-          </b-row>
-        </b-card>
-      </b-col>
-    </b-row>
+                            <br v-if="idx !== support.my_activities.length - 1"/>
+                            <br v-if="idx !== support.my_activities.length - 1"/>
+                          </b-card-sub-title>
+                          <span class="ml-5">{{ support.notes }}</span>
+                        </b-card-text>
+                        <b-button v-on:click="edit(support)" variant="outline-primary">Edit</b-button>
+                        <b-button v-on:click="remove(support)" variant="outline-danger">Delete</b-button>
+                      </b-card>
+                    </b-col>
+                  </b-row>
+                </b-card>
+              </b-col>
+            </b-row>
 
-    <b-row class="mt-3">
-      <b-col>
-        <b-card style="box-shadow: 1px 1px 8px 0">
-          <b-card-title class="talent_activity3">Historical</b-card-title>
-          <b-row class="mt-4">
-            <b-col md="4" v-for="artist in historical" :key="artist.id">
-              <b-card :title="artist.title" style="box-shadow: 1px 1px 8px 0">
-                <b-card-title>
-                  <span v-if="artist.status === 'Archived' || artist.status === 'Released By Artist' || artist.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ artist.status }}</span>
-                  <span v-else class="artist_status_text" :style="artist.status_color">{{ artist.status }}</span>
-                  <span v-if="artist.status === 'Declined' || artist.status === 'Not Available' || artist.status === 'Released By Artist' || artist.status === 'Rescinded By Venue'" class="artist_hold_text" style="background-color:#808080;color:#000000">{{ artist.hold_position }}</span>
-                  <span v-else class="artist_hold_text" :style="artist.hold_position_color">{{ artist.hold_position }}</span>
-                </b-card-title>
-                <hr v-if="artist.status === 'Mutually Agreed Date'">
-                <p v-if="artist.status === 'Mutually Agreed Date'">
-                  <span>{{ artist.date_notes }}</span>
-                </p>
-                <hr>
-                <b-card-text>
-                  <b-img :src="artist.image" class="rounded-circle" width="50px" height="50px"></b-img>
-                  <span style="font-size: 16px">{{ artist.name }}</span>
-                  <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ artist.amount }})</span>
-                </b-card-text>
-                <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
-                  <b-card-sub-title class="ml-5" v-for="(activity,idx) in artist.my_activities" :key="activity.stage.id">
-                    <b class="font-size-14">{{ activity.stage.name }} </b><br>
-                    Time Slots:-
-                    <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
+            <b-row class="mt-3">
+              <b-col>
+                <b-card style="box-shadow: 1px 1px 8px 0">
+                  <b-card-title class="talent_activity3">Historical</b-card-title>
+                  <b-row class="mt-4">
+                    <b-col md="4" v-for="artist in historical" :key="artist.id">
+                      <b-card :title="artist.title" style="box-shadow: 1px 1px 8px 0">
+                        <b-card-title>
+                          <span v-if="artist.status === 'Archived' || artist.status === 'Released By Artist' || artist.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ artist.status }}</span>
+                          <span v-else class="artist_status_text" :style="artist.status_color">{{ artist.status }}</span>
+                          <span v-if="artist.status === 'Declined' || artist.status === 'Not Available' || artist.status === 'Released By Artist' || artist.status === 'Rescinded By Venue'" class="artist_hold_text" style="background-color:#808080;color:#000000">{{ artist.hold_position }}</span>
+                          <span v-else class="artist_hold_text" :style="artist.hold_position_color">{{ artist.hold_position }}</span>
+                        </b-card-title>
+                        <hr v-if="artist.status === 'Mutually Agreed Date'">
+                        <p v-if="artist.status === 'Mutually Agreed Date'">
+                          <span>{{ artist.date_notes }}</span>
+                        </p>
+                        <hr>
+                        <b-card-text>
+                          <b-img :src="artist.image" class="rounded-circle" width="50px" height="50px"></b-img>
+                          <span style="font-size: 16px">{{ artist.name }}</span>
+                          <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ artist.amount }})</span>
+                        </b-card-text>
+                        <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
+                          <b-card-sub-title class="ml-5" v-for="(activity,idx) in artist.my_activities" :key="activity.stage.id">
+                            <b class="font-size-14">{{ activity.stage.name }} </b><br>
+                            Time Slots:-
+                            <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
                       {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
                     </span>
-                    <br v-if="idx !== artist.my_activities.length - 1"/>
-                    <br v-if="idx !== artist.my_activities.length - 1"/>
-                  </b-card-sub-title>
-                  <span class="ml-5">{{ artist.notes }}</span>
-                </b-card-text>
-                <b-button v-on:click="edit(artist)" variant="outline-primary">Edit</b-button>
-                <b-button v-on:click="remove(artist)" variant="outline-danger">Delete</b-button>
-              </b-card>
-            </b-col>
-          </b-row>
-        </b-card>
+                            <br v-if="idx !== artist.my_activities.length - 1"/>
+                            <br v-if="idx !== artist.my_activities.length - 1"/>
+                          </b-card-sub-title>
+                          <span class="ml-5">{{ artist.notes }}</span>
+                        </b-card-text>
+                        <b-button v-on:click="edit(artist)" variant="outline-primary">Edit</b-button>
+                        <b-button v-on:click="remove(artist)" variant="outline-danger">Delete</b-button>
+                      </b-card>
+                    </b-col>
+                  </b-row>
+                </b-card>
+              </b-col>
+            </b-row>
+          </b-tab>
+        </b-tabs>
       </b-col>
     </b-row>
 
@@ -828,7 +895,8 @@ export default {
       rawTimeSlots: [],
       timeSlots: [],
       selectedStage: null,
-      selectedTimeSlots: []
+      selectedTimeSlots: [],
+      activities: []
     }
   },
   computed: {
@@ -866,6 +934,36 @@ export default {
         }
       }
       return name;
+    },
+    talentSummary: function () {
+      let summary = [];
+      let activities = cloneDeep(this.activities.stage) || [];
+
+      for (let i = 0; i < activities.length; i++) {
+        let flag = true;
+
+        for (let j = 0; j < summary.length; j++) {
+          if (activities[i].stage.id === summary[j].id) {
+            flag = false;
+            break;
+          }
+        }
+
+        if (flag === true) {
+          summary.push({
+            ...activities[i].stage,
+            slots: [
+              {
+                time: this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end),
+                formatted: this.anotherFormat(activities[i].start, 'HH:mm') + '-' + this.anotherFormat(activities[i].end, 'HH:mm'),
+                artists: this.artists.filter(artist => artist.id === activities[i].artist_id)
+              }
+            ]
+          });
+        }
+      }
+      console.log(summary);
+      return summary;
     }
   },
   methods: {
@@ -892,6 +990,8 @@ export default {
           value: this.event.time_slots[i][0] + ',' + this.event.time_slots[i][1]
         });
       }
+
+      this.activities = cloneDeep(this.event.activities);
     },
     add() {
       this.modal.show = true;
