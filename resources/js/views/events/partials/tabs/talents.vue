@@ -896,7 +896,7 @@ export default {
       timeSlots: [],
       selectedStage: null,
       selectedTimeSlots: [],
-      activities: []
+      activities: {}
     }
   },
   computed: {
@@ -991,7 +991,7 @@ export default {
           });
         }
       }
-      console.log(summary);
+
       return summary;
     }
   },
@@ -1005,22 +1005,28 @@ export default {
         text: 'Select Stage',
         value: null
       }];
-      for (let i = 0; i < this.event.stages.length; i++) {
-        this.stages.push({
-          text: this.event.stages[i].name,
-          value: this.event.stages[i].id
-        });
+      if (this.event.hasOwnProperty('stages')) {
+        for (let i = 0; i < this.event.stages.length; i++) {
+          this.stages.push({
+            text: this.event.stages[i].name,
+            value: this.event.stages[i].id
+          });
+        }
       }
 
       this.rawTimeSlots = [];
-      for (let i = 0; i < this.event.time_slots.length; i++) {
-        this.rawTimeSlots.push({
-          text: moment.utc(this.event.time_slots[i][0]).local().format('hh:mm A') + ' - ' + moment.utc(this.event.time_slots[i][1]).local().format('hh:mm A'),
-          value: this.event.time_slots[i][0] + ',' + this.event.time_slots[i][1]
-        });
+      if (this.event.hasOwnProperty('time_slots')) {
+        for (let i = 0; i < this.event.time_slots.length; i++) {
+          this.rawTimeSlots.push({
+            text: moment.utc(this.event.time_slots[i][0]).local().format('hh:mm A') + ' - ' + moment.utc(this.event.time_slots[i][1]).local().format('hh:mm A'),
+            value: this.event.time_slots[i][0] + ',' + this.event.time_slots[i][1]
+          });
+        }
       }
 
-      this.activities = cloneDeep(this.event.activities);
+      if (this.event.hasOwnProperty('activities')) {
+        this.activities = cloneDeep(this.event.activities);
+      }
     },
     add() {
       this.modal.show = true;
