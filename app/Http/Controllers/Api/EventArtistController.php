@@ -580,7 +580,7 @@ class EventArtistController extends Controller
             $stageId = $stagesTimeSlot['stage']['id'];
 
             foreach ($stagesTimeSlot['slots'] as $slot) {
-                $isPresent = $event->activities()->where(
+                $activity = $event->activities()->where(
                     [
                         'stage_id' => $stageId,
                         'artist_id' => $artistId,
@@ -589,7 +589,7 @@ class EventArtistController extends Controller
                         'type' => 'stage'
                     ]
                 )->first();
-                if (!$isPresent) {
+                if (!$activity) {
                     $event->activities()->create(
                         [
                             'stage_id' => $stageId,
@@ -606,7 +606,7 @@ class EventArtistController extends Controller
                         ]
                     );
                 } else {
-                    $event->activities()->update([
+                    $activity->update([
                         'status' => $slot['status'],
                         'hold_position' => $slot['hold_position']
                     ]);
