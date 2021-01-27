@@ -140,7 +140,7 @@ class EventController extends Controller
             'performanceLocation:id,name,capacity,location,tax_rate,facility_fee,timezone_id,currency,event_template',
             'stages:id,name,status',
             'artists:id,name,image_url,description',
-            'activities:id,event_id,artist_id,stage_id,crew,start,end,description,type',
+            'activities:id,event_id,artist_id,stage_id,crew,start,end,description,type,status,hold_position',
             'activities.stage:id,name',
             'activities.artist:id,name,image_url',
             'expenses:id,event_id,crew,amount,description,description,datetime',

@@ -40,7 +40,7 @@
                                     href="javascript:void(0)"
                                     v-on:click="edit(artist)"
                                 >
-                                  {{ artist.hold_position }} - {{ artist.name }}
+                                  {{ (slotObj.status) }}({{ slotObj.hold_position }}) - {{ artist.name }}
                                   <b-img :src="artist.image" rounded="circle" width="50px"></b-img>
                                 </b-list-group-item>
                               </b-list-group>
@@ -133,15 +133,15 @@
                           <b-card-sub-title class="ml-5" v-for="(activity, idx) in headliner.my_activities" :key="activity.stage.id">
                             <b class="font-size-14">{{ activity.stage.name }} </b><br>
                             Time Slots:-
-                            <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
-                      {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
-                    </span>
+                            <span v-for="(time_slot, tsIdx) in activity.slots" :key="tsIdx">
+                              {{ formatDate(time_slot.time.start, 'hh:mm A') }} - {{ formatDate(time_slot.time.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.slots.length - 1">, </span>
+                            </span>
                             <br v-if="idx !== headliner.my_activities.length - 1"/>
                             <br v-if="idx !== headliner.my_activities.length - 1"/>
                           </b-card-sub-title>
                           <span class="ml-5">
-                  {{ headliner.notes }}
-                </span>
+                            {{ headliner.notes }}
+                          </span>
                         </b-card-text>
                         <b-button v-on:click="edit(headliner)" variant="outline-primary">Edit</b-button>
                         <b-button v-on:click="remove(headliner)" variant="outline-danger">Delete</b-button>
@@ -215,9 +215,9 @@
                           <b-card-sub-title class="ml-5" v-for="(activity, idx) in support.my_activities" :key="activity.stage.id">
                             <b class="font-size-14">{{ activity.stage.name }} </b><br>
                             Time Slots:-
-                            <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
-                      {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
-                    </span>
+                            <span v-for="(time_slot, tsIdx) in activity.slots" :key="tsIdx">
+                              {{ formatDate(time_slot.time.start, 'hh:mm A') }} - {{ formatDate(time_slot.time.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.slots.length - 1">, </span>
+                            </span>
                             <br v-if="idx !== support.my_activities.length - 1"/>
                             <br v-if="idx !== support.my_activities.length - 1"/>
                           </b-card-sub-title>
@@ -259,8 +259,8 @@
                           <b-card-sub-title class="ml-5" v-for="(activity,idx) in artist.my_activities" :key="activity.stage.id">
                             <b class="font-size-14">{{ activity.stage.name }} </b><br>
                             Time Slots:-
-                            <span v-for="(time_slot, tsIdx) in activity.time_slots" :key="tsIdx">
-                      {{ formatDate(time_slot.start, 'hh:mm A') }} - {{ formatDate(time_slot.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.time_slots.length - 1">, </span>
+                            <span v-for="(time_slot, tsIdx) in activity.slots" :key="tsIdx">
+                      {{ formatDate(time_slot.time.start, 'hh:mm A') }} - {{ formatDate(time_slot.time.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.slots.length - 1">, </span>
                     </span>
                             <br v-if="idx !== artist.my_activities.length - 1"/>
                             <br v-if="idx !== artist.my_activities.length - 1"/>
@@ -318,11 +318,12 @@
             <h6>Selected Stages:</h6>
           </b-col>
           <b-col cols="12" v-for="(val, idx) in form.stages_time_slots" :key="idx">
-            <p v-if="val.time_slots.length > 0">
+            <p v-if="val.slots.length > 0">
               {{ val.stage.name }}:
-              <span v-for="(slot, index) in val.time_slots" :key="index">
-                {{ formatDate(slot.start, 'hh:mm A') }} - {{ formatDate(slot.end, 'hh:mm A') }}
-                <span v-if="index+1 < val.time_slots.length">, </span>
+              <br/>
+              <span v-for="(slot, index) in val.slots" :key="index">
+                {{ formatDate(slot.time.start, 'hh:mm A') }} - {{ formatDate(slot.time.end, 'hh:mm A') }} | {{ fetchStatus(slot.status, 'value') }} - {{ fetchHoldPosition(slot.hold_position, 'value') }}
+                <br v-if="index+1 < val.slots.length" />
               </span>
             </p>
           </b-col>
@@ -344,7 +345,7 @@
                   v-model="selectedTimeSlots"
                   :options="timeSlots"
                   name="time_slots"
-                  @change="updateTimeSlotsForStage"
+                  @change.native="updateTimeSlotsForStage"
               ></b-form-checkbox-group>
             </b-form-group>
           </b-col>
@@ -384,14 +385,6 @@
                   id="promoter_profit"
                   v-model.number="form.promoter_profit"
                   placeholder="0%"></b-form-input>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col>
-            <b-form-group label="Status" label-for="artist_status">
-              <b-form-select v-model="form.status" :options="statuses" @input="setChallengeData();setHoldPositions(form.status)"></b-form-select>
             </b-form-group>
           </b-col>
         </b-row>
@@ -480,14 +473,6 @@
                   v-model.number="form.offer_expiration_time"
                   placeholder="24"
                   min="0"></b-form-input>
-            </b-form-group>
-          </b-col>
-        </b-row>
-
-        <b-row>
-          <b-col>
-            <b-form-group label="Hold Position" label-for="artist_hold_position">
-              <b-form-select v-model="form.hold_position" :options="holdPositions" :disabled="[5,6].includes(form.status)"></b-form-select>
             </b-form-group>
           </b-col>
         </b-row>
@@ -816,6 +801,40 @@
         </b-row>
       </b-form>
     </b-modal>
+
+    <b-modal
+        v-model="showStatusModal"
+        :title="'Update Status and hold position'"
+        title-class="text-black font-18"
+        body-class="p-3"
+        hide-footer
+        :no-close-on-backdrop="true"
+        :no-close-on-esc="true"
+        :hide-header-close="true"
+    >
+      <b-row>
+        <b-col>
+          <b-form-group label="Status" label-for="artist_status">
+            <b-form-select v-model="statusForm.status" :options="statuses" @input="setChallengeData();setHoldPositions(form.status)"></b-form-select>
+          </b-form-group>
+        </b-col>
+      </b-row>
+
+      <b-row>
+        <b-col>
+          <b-form-group label="Hold Position" label-for="artist_hold_position">
+            <b-form-select v-model="statusForm.hold_position" :options="holdPositions" :disabled="[5,6].includes(form.status)"></b-form-select>
+          </b-form-group>
+        </b-col>
+      </b-row>
+
+      <b-row class="mb-5">
+        <b-col>
+          <b-button variant="outline-secondary float-right ml-2" @click="cancelStatusModal">Cancel</b-button>
+          <b-button variant="outline-info float-right" @click="saveStatus">Submit</b-button>
+        </b-col>
+      </b-row>
+    </b-modal>
   </div>
 </template>
 
@@ -896,7 +915,9 @@ export default {
       timeSlots: [],
       selectedStage: null,
       selectedTimeSlots: [],
-      activities: {}
+      activities: {},
+      showStatusModal: false,
+      statusForm: this.default('statusForm')
     }
   },
   computed: {
@@ -969,7 +990,9 @@ export default {
               summary[j].slots.push({
                 time: this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end),
                 formatted: this.anotherFormat(activities[i].start, 'HH:mm') + '-' + this.anotherFormat(activities[i].end, 'HH:mm'),
-                artists: this.artists.filter(artist => artist.id === activities[i].artist_id)
+                artists: this.artists.filter(artist => artist.id === activities[i].artist_id),
+                status: this.fetchStatus(activities[i].status, 'value'),
+                hold_position: this.fetchHoldPosition(activities[i].hold_position, 'value')
               });
             }
 
@@ -985,13 +1008,14 @@ export default {
               {
                 time: this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end),
                 formatted: this.anotherFormat(activities[i].start, 'HH:mm') + '-' + this.anotherFormat(activities[i].end, 'HH:mm'),
-                artists: this.artists.filter(artist => artist.id === activities[i].artist_id)
+                artists: this.artists.filter(artist => artist.id === activities[i].artist_id),
+                status: this.fetchStatus(activities[i].status, 'value'),
+                hold_position: this.fetchHoldPosition(activities[i].hold_position, 'value')
               }
             ]
           });
         }
       }
-
       return summary;
     }
   },
@@ -1106,6 +1130,7 @@ export default {
       this.filteredArtists = [];
       this.modal = this.default('modal');
       this.form = this.default('form');
+      this.statusForm = this.default('statusForm');
       this.representativeData = cloneDeep({
         notes: '',
         dates: []
@@ -1143,11 +1168,9 @@ export default {
             type: 'headliner',
             promoter_profit_enable: false,
             promoter_profit: 0,
-            status: null,
             date_notes: '',
             challenged_by: '',
             challenged_hours: 0,
-            hold_position: null,
             amount: 0,
             offer_expiration_time: 0,
             agency: {
@@ -1195,6 +1218,13 @@ export default {
             edit: false,
             delete: false
           };
+          break;
+        case 'statusForm':
+          result = {
+            status: null,
+            hold_position: null,
+            time: null
+          }
           break;
       }
       return result;
@@ -1257,9 +1287,7 @@ export default {
                     type: this.form.type,
                     category: [0,3,4,6,9,10,11].includes(this.form.status) ? 'historical' : this.form.type,
                     promoter_profit: this.form.promoter_profit_enable ? this.form.promoter_profit : 0,
-                    status: this.fetchStatus(this.form.status, 'value'),
                     date_notes: this.form.date_notes,
-                    hold_position: this.fetchHoldPosition(this.form.hold_position, 'value'),
                     notes: this.form.notes,
                     amount: this.form.amount,
                     status_color: this.statusColor[this.fetchStatus(this.form.status, 'value')],
@@ -1310,9 +1338,7 @@ export default {
                         type: this.form.type,
                         category: [0,3,4,6,9,10,11].includes(this.form.status) ? 'historical' : this.form.type,
                         promoter_profit: this.promoter_profit_enable ? this.form.promoter_profit : 0,
-                        status: this.fetchStatus(this.form.status, 'value'),
                         date_notes: this.form.date_notes,
-                        hold_position: this.fetchHoldPosition(this.form.hold_position, 'value'),
                         notes: this.form.notes,
                         amount: this.form.amount,
                         status_color: this.statusColor[this.fetchStatus(this.form.status, 'value')],
@@ -1553,37 +1579,32 @@ export default {
       }
       // this.challengeData;
     },
-    async updateTimeSlotsForStage () {
-      await this.$nextTick();
-      let idx = this.form.stages_time_slots.findIndex(val => {
-        return val.stage.id === this.selectedStage;
-      });
-
-      let timeSlots = [];
-      for (let i = 0; i < this.selectedTimeSlots.length; i++) {
-        let tempSlots = this.selectedTimeSlots[i].split(',');
-        timeSlots.push({
-          start: Number(tempSlots[0]),
-          end: Number(tempSlots[1])
-        })
-      }
-
-      if ((timeSlots.length === 0) && (idx > -1)) {
-        this.form.stages_time_slots.splice(idx, 1);
+    async updateTimeSlotsForStage (e) {
+      if (e.target.checked === true) {
+        this.showStatusModal = true;
+        this.statusForm.time = e.target.value;
       } else {
-        if (idx === -1) {
-          let tempStage = this.stages.find(stage => {
-            return stage.value === this.selectedStage;
-          });
-          this.form.stages_time_slots.push({
-            stage: {
-              id: tempStage.value,
-              name: tempStage.text
-            },
-            time_slots: cloneDeep(timeSlots)
-          });
-        } else {
-          this.form.stages_time_slots[idx].time_slots = cloneDeep(timeSlots);
+        for (let i = 0; i < this.form.stages_time_slots.length; i++) {
+          if (this.form.stages_time_slots[i].stage.id === this.selectedStage) {
+            for (let j = 0; j < this.form.stages_time_slots[i].slots.length; j++) {
+              let timeSlotStr = this.form.stages_time_slots[i].slots[j].time.start + ',' + this.form.stages_time_slots[i].slots[j].time.end;
+              if (timeSlotStr === e.target.value) {
+                this.form.stages_time_slots[i].slots.splice(j, 1);
+
+                for (let k = 0; k < this.selectedTimeSlots.length; k++) {
+                  if (this.selectedTimeSlots[k] === timeSlotStr) {
+                    this.selectedTimeSlots.splice(k, 1);
+                    break;
+                  }
+                }
+                break;
+              }
+            }
+            if (this.form.stages_time_slots[i].time_slots.length === 0) {
+              this.form.stages_time_slots.splice(i, 1);
+            }
+            break;
+          }
         }
       }
     },
@@ -1592,28 +1613,121 @@ export default {
       this.timeSlots = [];
       this.selectedTimeSlots = [];
 
-      for (let i = 0; i < this.rawTimeSlots.length; i++) {
-        let flag = true;
+      let occupiedSlots = [],
+          selectedSlots = [];
 
-        for (let j = 0; j < this.form.stages_time_slots.length; j++) {
-          let isSameStage = this.form.stages_time_slots[j].stage.id === this.selectedStage;
-
-          for (let k = 0; k < this.form.stages_time_slots[j].time_slots.length; k++) {
-            let timeslotStr = this.form.stages_time_slots[j].time_slots[k].start + ',' + this.form.stages_time_slots[j].time_slots[k].end;
-
-            if (this.rawTimeSlots[i].value === timeslotStr) {
-              if (isSameStage === true) {
-                this.selectedTimeSlots.push(this.rawTimeSlots[i].value);
-              } else {
-                flag = false;
-              }
+      for (let i = 0; i < this.form.stages_time_slots.length; i++) {
+        for (let j = 0; j < this.form.stages_time_slots[i].slots.length; j++) {
+          let tempTimes = this.form.stages_time_slots[i].slots[j].time.start + ',' + this.form.stages_time_slots[i].slots[j].time.end;
+          if (this.form.stages_time_slots[i].stage.id === this.selectedStage) {
+            if (!selectedSlots.includes(tempTimes)) {
+              selectedSlots.push(tempTimes);
+            }
+          } else {
+            if (!occupiedSlots.includes(tempTimes)) {
+              occupiedSlots.push(tempTimes);
             }
           }
         }
+      }
 
-        if (flag === true) {
+      for (let i = 0; i < this.rawTimeSlots.length; i++) {
+        if (!occupiedSlots.includes(this.rawTimeSlots[i].value)) {
           this.timeSlots.push(cloneDeep(this.rawTimeSlots[i]));
         }
+        if (selectedSlots.includes(this.rawTimeSlots[i].value)) {
+          this.selectedTimeSlots.push(this.rawTimeSlots[i].value);
+        }
+      }
+    },
+    cancelStatusModal () {
+      let totalStagesTimeSlots = this.form.stages_time_slots.length;
+      if (totalStagesTimeSlots > 0) {
+        for (let i = 0; i < totalStagesTimeSlots; i++) {
+          if (this.form.stages_time_slots[i].stage.id === this.selectedStage) {
+            for (let j = 0; j < this.form.stages_time_slots[i].slots.length; j++) {
+              let timeSlotStr = this.form.stages_time_slots[i].slots[j].time.start + ',' + this.form.stages_time_slots[i].slots[j].time.end;
+
+              if (timeSlotStr === this.statusForm.time) {
+                this.form.stages_time_slots[i].slots.splice(j, 1);
+                break;
+              }
+            }
+            if (this.form.stages_time_slots[i].slots.length === 0) {
+              this.form.stages_time_slots.splice(i, 1);
+            }
+            break;
+          }
+        }
+
+        for (let i = 0; i < this.selectedTimeSlots.length; i++) {
+          if (this.selectedTimeSlots[i] === this.statusForm.time) {
+            this.selectedTimeSlots.splice(i, 1);
+            break;
+          }
+        }
+      } else {
+        this.selectedTimeSlots = [];
+      }
+      this.statusForm = this.default('statusForm')
+      this.showStatusModal = false;
+    },
+    saveStatus () {
+      if (this.statusForm.status === null) {
+        this.$toastr.fire({
+          toast: true,
+          icon: 'error',
+          title: 'Please select status'
+        });
+      } else if (this.statusForm.hold_position === null) {
+        this.$toastr.fire({
+          toast: true,
+          icon: 'error',
+          title: 'Please select hold position'
+        });
+      } else {
+        let insertNew = true;
+        let totalStagesTimeSlots = this.form.stages_time_slots.length;
+        let time = this.statusForm.time.split(',');
+
+        for (let i = 0; i < totalStagesTimeSlots; i++) {
+          if (this.form.stages_time_slots[i].stage.id === this.selectedStage) {
+            this.form.stages_time_slots[i].slots.push({
+              time: {
+                start: Number(time[0]),
+                end: Number(time[1])
+              },
+              status: this.statusForm.status,
+              hold_position: this.statusForm.hold_position
+            });
+            insertNew = false;
+          }
+        }
+
+        if (insertNew === true) {
+          let tempStage = this.stages.find(stage => {
+            return stage.value === this.selectedStage;
+          });
+          this.form.stages_time_slots.push({
+            stage: {
+              id: tempStage.value,
+              name: tempStage.text
+            },
+            slots: [
+              {
+                time: {
+                  start: Number(time[0]),
+                  end: Number(time[1])
+                },
+                status: this.statusForm.status,
+                hold_position: this.statusForm.hold_position
+              }
+            ]
+          });
+        }
+
+        this.showStatusModal = false;
+        this.statusForm = this.default('statusForm');
       }
     }
   },

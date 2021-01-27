@@ -44,9 +44,6 @@ class Event extends JsonResource
         }
 
         foreach ($this->resource->artists as $artist) {
-            $status = EventModel::ARTIST_STATUS[$artist->pivot->status];
-            $holdPosition = EventModel::HOLD_POSITION[$artist->pivot->hold_position];
-
             $myActivities = [];
 
             foreach ($activities['stage'] as $activity) {
@@ -54,9 +51,13 @@ class Event extends JsonResource
                     $flag = true;
                     foreach ($myActivities as $key => $myActivity) {
                         if ($myActivity['stage']['id'] === $activity->stage->id) {
-                            $myActivities[$key]['time_slots'][] = [
-                                'start' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->start)->valueOf(),
-                                'end' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->end)->valueOf()
+                            $myActivities[$key]['slots'][] = [
+                                'time' => [
+                                    'start' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->start)->valueOf(),
+                                    'end' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->end)->valueOf()
+                                ],
+                                'status' => $activity->status,
+                                'hold_position' => $activity->hold_position
                             ];
                             $flag = false;
                             break;
@@ -66,10 +67,14 @@ class Event extends JsonResource
                     if ($flag === true) {
                         $myActivities[] = [
                             'stage' => $activity->stage->toArray(),
-                            'time_slots' => [
+                            'slots' => [
                                 [
-                                    'start' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->start)->valueOf(),
-                                    'end' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->end)->valueOf()
+                                    'time' => [
+                                        'start' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->start)->valueOf(),
+                                        'end' => Carbon::createFromFormat('Y-m-d H:i:s', $activity->end)->valueOf()
+                                    ],
+                                    'status' => $activity->status,
+                                    'hold_position' => $activity->hold_position
                                 ]
                             ]
                         ];
@@ -83,11 +88,9 @@ class Event extends JsonResource
                 'image' => $artist->image_url,
                 'type' => $artist->pivot->type,
                 'promoter_profit' => $artist->pivot->promoter_profit,
-                'status' => $status,
-                'status_color' => EventModel::STATUS_COLOR[$status],
-                'hold_position' => $holdPosition,
+                'status_color' => EventModel::STATUS_COLOR['--'],
                 'hold_position_order' => $artist->pivot->hold_position,
-                'hold_position_color' => EventModel::HOLD_POSITION_COLOR[$holdPosition],
+                'hold_position_color' => EventModel::HOLD_POSITION_COLOR['--'],
                 'amount' => $artist->pivot->amount,
                 'notes' => $artist->pivot->notes,
                 'date_notes' => $artist->pivot->date_notes,

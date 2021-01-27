@@ -146,9 +146,9 @@ class Event extends Model
     {
         return $this->belongsToMany(Artist::class)
             ->withPivot([
-                'type', 'email', 'updated_at', 'promoter_profit', 'status', 'date_notes', 'challenged_by',
-                'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id',
-                'management_firm_id', 'publicity_firm_id', 'token', 'artist_representative_mad', 'cancellation_terms'
+                'type', 'email', 'updated_at', 'promoter_profit', 'date_notes', 'challenged_by',
+                'challenged_hours', 'amount', 'notes', 'agency_id', 'management_firm_id', 'publicity_firm_id', 'token',
+                'artist_representative_mad', 'cancellation_terms'
             ]);
     }
 

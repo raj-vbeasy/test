@@ -46,7 +46,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class EventActivity extends Model
 {
-    protected $fillable = ['artist_id', 'crew', 'stage_id', 'cell_phone', 'radio_channel', 'email', 'start', 'end', 'description', 'type'];
+    protected $fillable = [
+        'artist_id', 'crew', 'stage_id', 'cell_phone', 'radio_channel', 'email', 'start', 'end', 'description', 'type',
+        'status', 'offer_expiration_date', 'hold_position'
+    ];
 
     final public function artist(): BelongsTo
     {

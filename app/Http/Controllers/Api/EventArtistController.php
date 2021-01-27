@@ -61,23 +61,7 @@ class EventArtistController extends Controller
             'publicity_firm.instagram' => 'url|nullable',
             'publicity_firm.website' => 'url|nullable',
             'publicity_firm.apple_music' => 'url|nullable',
-            'publicity_firm.spotify' => 'url|nullable',
-            'status' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    if (empty(Event::ARTIST_STATUS[$value])) {
-                        $fail($attribute.' is invalid.');
-                    }
-                }
-            ],
-            'hold_position' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    if (empty(Event::HOLD_POSITION[$value])) {
-                        $fail($attribute.' is invalid.');
-                    }
-                }
-            ]
+            'publicity_firm.spotify' => 'url|nullable'
         ];
         $this->validationMessages = [
             'agency.name.required' => 'Agency name is required',
@@ -113,7 +97,10 @@ class EventArtistController extends Controller
 
                 $event->artists()->syncWithoutDetaching(
                     [
-                        $request->get('artist_id') => $request->only(['type', 'promoter_profit', 'status', 'date_notes', 'challenged_by', 'challenged_hours', 'hold_position', 'amount', 'notes', 'offer_expiration_date', 'agency_id', 'management_firm_id', 'publicity_firm_id', 'token'])
+                        $request->get('artist_id') => $request->only([
+                            'type', 'promoter_profit', 'date_notes', 'challenged_by', 'challenged_hours',
+                            'amount', 'notes', 'agency_id', 'management_firm_id', 'publicity_firm_id', 'token'
+                        ])
                     ]
                 );
 
@@ -123,19 +110,19 @@ class EventArtistController extends Controller
 
                 // Notify related artists
                 if ($request->get('send_email', false)) {
-                    $this->sendStatusAlert($event, $request->get('artist_id'), $request->get('status'));
+//                    $this->sendStatusAlert($event, $request->get('artist_id'), $request->get('status'));
                 }
 
                 // Log status activity
-                activity()
-                    ->inLog('Artist Status')
-                    ->on($event)
-                    ->withProperties([
-                        'old' => '',
-                        'new' => Event::ARTIST_STATUS[$request->get('status')],
-                        'artist_name' => ($event->artists()->where('artist_id', $request->get('artist_id'))->first())->name
-                    ])
-                    ->log('Added artist with status "'.Event::ARTIST_STATUS[$request->get('status')].'"');
+//                activity()
+//                    ->inLog('Artist Status')
+//                    ->on($event)
+//                    ->withProperties([
+//                        'old' => '',
+//                        'new' => Event::ARTIST_STATUS[$request->get('status')],
+//                        'artist_name' => ($event->artists()->where('artist_id', $request->get('artist_id'))->first())->name
+//                    ])
+//                    ->log('Added artist with status "'.Event::ARTIST_STATUS[$request->get('status')].'"');
 
                 $this->setResponseVars("Artist added");
                 \DB::commit();
@@ -178,22 +165,6 @@ class EventArtistController extends Controller
             'publicity_firm.apple_music' => 'url|nullable',
             'publicity_firm.spotify' => 'url|nullable',
             'cancellation_terms' => 'required_if:status,10,11|nullable',
-            'status' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    if (empty(Event::ARTIST_STATUS[$value])) {
-                        $fail($attribute.' is invalid.');
-                    }
-                }
-            ],
-            'hold_position' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    if (empty(Event::HOLD_POSITION[$value])) {
-                        $fail($attribute.' is invalid.');
-                    }
-                }
-            ],
             'offer_expiration_time' => [
                 'required_if:status,7',
                 'integer',
@@ -607,13 +578,14 @@ class EventArtistController extends Controller
     {
         foreach ($stagesTimeSlots as $stagesTimeSlot) {
             $stageId = $stagesTimeSlot['stage']['id'];
-            foreach ($stagesTimeSlot['time_slots'] as $timeSlot) {
+
+            foreach ($stagesTimeSlot['slots'] as $slot) {
                 $isPresent = $event->activities()->where(
                     [
                         'stage_id' => $stageId,
                         'artist_id' => $artistId,
-                        'start' => Carbon::createFromTimestampMs($timeSlot['start'])->format('Y-m-d H:i:s'),
-                        'end' => Carbon::createFromTimestampMs($timeSlot['end'])->format('Y-m-d H:i:s'),
+                        'start' => Carbon::createFromTimestampMs($slot['time']['start'])->format('Y-m-d H:i:s'),
+                        'end' => Carbon::createFromTimestampMs($slot['time']['end'])->format('Y-m-d H:i:s'),
                         'type' => 'stage'
                     ]
                 )->first();
@@ -622,15 +594,22 @@ class EventArtistController extends Controller
                         [
                             'stage_id' => $stageId,
                             'artist_id' => $artistId,
-                            'start' => $timeSlot['start'],
-                            'end' => $timeSlot['end'],
+                            'start' => $slot['time']['start'],
+                            'end' => $slot['time']['end'],
                             'cell_phone' => '',
                             'radio_channel' => '',
                             'email' => '',
                             'description' => '',
-                            'type' => 'stage'
+                            'type' => 'stage',
+                            'status' => $slot['status'],
+                            'hold_position' => $slot['hold_position']
                         ]
                     );
+                } else {
+                    $event->activities()->update([
+                        'status' => $slot['status'],
+                        'hold_position' => $slot['hold_position']
+                    ]);
                 }
             }
         }
