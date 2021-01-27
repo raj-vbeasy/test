@@ -40,7 +40,7 @@
                                     href="javascript:void(0)"
                                     v-on:click="edit(artist)"
                                 >
-                                  {{ (slotObj.status) }}({{ slotObj.hold_position }}) - {{ artist.name }}
+                                  {{ (artist.status) }}({{ artist.hold_position }}) - {{ artist.name }}
                                   <b-img :src="artist.image" rounded="circle" width="50px"></b-img>
                                 </b-list-group-item>
                               </b-list-group>
@@ -976,10 +976,31 @@ export default {
                   }
                 }
                 if (isArtistPresent === false) {
-                  let tempArtist = this.artists.filter(artist => artist.id === activities[i].artist_id);
-                  if (tempArtist.length > 0) {
-                    summary[j].slots[k].artists.push(tempArtist[0]);
+                  let tempArtist = {};
+                  for (let l = 0; l < this.artists.length; l++) {
+                    if (this.artists[l].id === activities[i].artist_id) {
+                      let tempArtistStatus = null,
+                          tempArtistHoldPosition = null;
+
+                      for (let m = 0; m < this.artists[l].my_activities.length; m++) {
+                        if (this.artists[l].my_activities[m].stage.id === activities[i].stage.id) {
+                          for (let n = 0; n < this.artists[l].my_activities[m].slots.length; n++) {
+                            let tempTimeStr = this.artists[l].my_activities[m].slots[n].time.start + ',' + this.artists[l].my_activities[m].slots[n].time.end;
+                            if (tempTimeStr === (this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end))) {
+                              tempArtistStatus = this.fetchStatus(this.artists[l].my_activities[m].slots[n].status, 'value');
+                              tempArtistHoldPosition = this.fetchHoldPosition(this.artists[l].my_activities[m].slots[n].hold_position, 'value')
+                            }
+                          }
+                        }
+                      }
+                      tempArtist = cloneDeep({
+                        ...this.artists[l],
+                        status: tempArtistStatus,
+                        hold_position: tempArtistHoldPosition
+                      });
+                    }
                   }
+                  summary[j].slots[k].artists.push(tempArtist);
                 }
                 isTimePresent = true;
                 break;
@@ -987,12 +1008,35 @@ export default {
             }
 
             if (isTimePresent === false) {
+              let tempArtistList = [];
+              for (let k = 0; k < this.artists.length; k++) {
+                if (this.artists[k].id === activities[i].artist_id) {
+                  let tempArtistStatus = null,
+                      tempArtistHoldPosition = null;
+
+                  for (let l = 0; l < this.artists[k].my_activities.length; l++) {
+                    if (this.artists[k].my_activities[l].stage.id === activities[i].stage.id) {
+                      for (let m = 0; m < this.artists[k].my_activities[l].slots.length; m++) {
+                        let tempTimeStr = this.artists[k].my_activities[l].slots[m].time.start + ',' + this.artists[k].my_activities[l].slots[m].time.end;
+                        if (tempTimeStr === (this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end))) {
+                          tempArtistStatus = this.fetchStatus(this.artists[k].my_activities[l].slots[m].status, 'value');
+                          tempArtistHoldPosition = this.fetchHoldPosition(this.artists[k].my_activities[l].slots[m].hold_position, 'value')
+                        }
+                      }
+                    }
+                  }
+                  tempArtistList.push(cloneDeep({
+                    ...this.artists[k],
+                    status: tempArtistStatus,
+                    hold_position: tempArtistHoldPosition
+                  }));
+                }
+              }
+
               summary[j].slots.push({
                 time: this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end),
                 formatted: this.anotherFormat(activities[i].start, 'HH:mm') + '-' + this.anotherFormat(activities[i].end, 'HH:mm'),
-                artists: this.artists.filter(artist => artist.id === activities[i].artist_id),
-                status: this.fetchStatus(activities[i].status, 'value'),
-                hold_position: this.fetchHoldPosition(activities[i].hold_position, 'value')
+                artists: tempArtistList
               });
             }
 
@@ -1002,20 +1046,44 @@ export default {
         }
 
         if (flag === true) {
+          let tempArtistList = [];
+          for (let j = 0; j < this.artists.length; j++) {
+            if (this.artists[j].id === activities[i].artist_id) {
+              let tempArtistStatus = null,
+                  tempArtistHoldPosition = null;
+
+              for (let k = 0; k < this.artists[j].my_activities.length; k++) {
+                if (this.artists[j].my_activities[k].stage.id === activities[i].stage.id) {
+                  for (let l = 0; l < this.artists[j].my_activities[k].slots.length; l++) {
+                    let tempTimeStr = this.artists[j].my_activities[k].slots[l].time.start + ',' + this.artists[j].my_activities[k].slots[l].time.end;
+                    if (tempTimeStr === (this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end))) {
+                      tempArtistStatus = this.fetchStatus(this.artists[j].my_activities[k].slots[l].status, 'value');
+                      tempArtistHoldPosition = this.fetchHoldPosition(this.artists[j].my_activities[k].slots[l].hold_position, 'value')
+                    }
+                  }
+                }
+              }
+              tempArtistList.push(cloneDeep({
+                ...this.artists[j],
+                status: tempArtistStatus,
+                hold_position: tempArtistHoldPosition
+              }));
+            }
+          }
+
           summary.push({
             ...activities[i].stage,
             slots: [
               {
                 time: this.utcTimestamp(activities[i].start) + ',' + this.utcTimestamp(activities[i].end),
                 formatted: this.anotherFormat(activities[i].start, 'HH:mm') + '-' + this.anotherFormat(activities[i].end, 'HH:mm'),
-                artists: this.artists.filter(artist => artist.id === activities[i].artist_id),
-                status: this.fetchStatus(activities[i].status, 'value'),
-                hold_position: this.fetchHoldPosition(activities[i].hold_position, 'value')
+                artists: tempArtistList
               }
             ]
           });
         }
       }
+      console.log(summary);
       return summary;
     }
   },
