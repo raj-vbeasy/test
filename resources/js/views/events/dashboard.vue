@@ -52,9 +52,9 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Task</span>
+                    <span class="d-none d-sm-inline-block">Run of show</span>
                   </template>
-                  <TasksTab v-on:taskEvent="taskEvent" :event="event"/>
+                  <RunOfShowTab v-on:runOfShowEvent="runOfShowEvent" :event="event"/>
                 </b-tab>
 
                 <b-tab>
@@ -62,9 +62,9 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Run of show</span>
+                    <span class="d-none d-sm-inline-block">Task</span>
                   </template>
-                  <RunOfShowTab v-on:runOfShowEvent="runOfShowEvent" :event="event"/>
+                  <TasksTab v-on:taskEvent="taskEvent" :event="event"/>
                 </b-tab>
 
                 <b-tab>
@@ -92,22 +92,36 @@
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Expense</span>
+                    <span class="d-none d-sm-inline-block">Finance</span>
                   </template>
-                  <ExpensesTab v-on:expenseEvent="expenseEvent" :event="event"/>
-                </b-tab>
-
-                <b-tab>
-                  <template v-slot:title>
+                  <b-row>
+                    <b-col>
+                      <b-tabs justified nav-class="nav-tabs-custom" content-class="p-3 text-muted">
+                        <b-tab>
+                          <template v-slot:title>
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
                     </span>
-                    <span class="d-none d-sm-inline-block">Settlement</span>
-                  </template>
-                  <SettlementTab/>
+                            <span class="d-none d-sm-inline-block">Expense</span>
+                          </template>
+                          <ExpensesTab v-on:expenseEvent="expenseEvent" :event="event"/>
+                        </b-tab>
+
+                        <b-tab>
+                          <template v-slot:title>
+                    <span class="d-inline-block d-sm-none">
+                      <i class="fas fa-home"></i>
+                    </span>
+                            <span class="d-none d-sm-inline-block">Settlement</span>
+                          </template>
+                          <SettlementTab/>
+                        </b-tab>
+                      </b-tabs>
+                    </b-col>
+                  </b-row>
                 </b-tab>
 
-                <b-tab>
+                <b-tab v-if="false">
                   <template v-slot:title>
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
