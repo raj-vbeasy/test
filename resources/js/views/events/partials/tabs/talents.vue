@@ -15,7 +15,7 @@
               <b-col>
                 <b-card class="activity stage-activity"
                         :title="stage.name"
-                        v-for="stage in talentSummary"
+                        v-for="(stage, summaryIdx) in talentSummary"
                         :key="stage.id"
                         style="box-shadow: 1px 1px 8px 0"
                 >
@@ -36,9 +36,12 @@
                                 <b-list-group-item
                                     v-for="(artist, index) in slotObj.artists"
                                     class="d-flex justify-content-between align-items-center"
+                                    v-bind:id="'slot_popover_summary_' + summaryIdx + '_slot_' + idx + '_artist_' + index"
                                     :key="index"
                                     href="javascript:void(0)"
                                     v-on:click="edit(artist)"
+                                    v-on:mouseenter="onSlotEnter"
+                                    v-on:mouseleave="onSlotLeave"
                                 >
                                   {{ (artist.status) }}({{ artist.hold_position }}) - {{ artist.name }}
                                   <b-img :src="artist.image" rounded="circle" width="50px"></b-img>
@@ -835,6 +838,21 @@
         </b-col>
       </b-row>
     </b-modal>
+
+    <b-popover
+        :target="popover.target"
+        :show.sync="popover.show"
+        triggers="hover"
+        placement="auto"
+        @show="popoverOnShow"
+        @hidden="popoverOnHidden"
+    >
+      <b-row>
+        <b-col>
+          <h1>Test</h1>
+        </b-col>
+      </b-row>
+    </b-popover>
   </div>
 </template>
 
@@ -917,7 +935,12 @@ export default {
       selectedTimeSlots: [],
       activities: {},
       showStatusModal: false,
-      statusForm: this.default('statusForm')
+      statusForm: this.default('statusForm'),
+      popover: {
+        target: '',
+        show: false,
+        artist: {}
+      }
     }
   },
   computed: {
@@ -1083,7 +1106,7 @@ export default {
           });
         }
       }
-      console.log(summary);
+
       return summary;
     }
   },
@@ -1797,6 +1820,25 @@ export default {
         this.showStatusModal = false;
         this.statusForm = this.default('statusForm');
       }
+    },
+    popoverOnShow () {
+      console.log('in');
+    },
+    popoverOnHidden () {
+      console.log('insd');
+    },
+    onSlotEnter (e) {
+      this.popover.target = e.target.id;
+      this.popover.show = true;
+      console.log(e.target.id);
+      console.log(this.popover.show);
+      console.log(this.popover.target);
+    },
+    onSlotLeave () {
+      this.popover.target = '';
+      this.popover.show = false;
+      console.log(this.popover.show);
+      console.log(this.popover.target);
     }
   },
   created() {
