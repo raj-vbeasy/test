@@ -77,7 +77,7 @@
                   <ContactsTab v-on:contactEvent="contactEvent" :event="event"/>
                 </b-tab>
 
-                <b-tab>
+                <b-tab v-if="false">
                   <template v-slot:title>
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>
