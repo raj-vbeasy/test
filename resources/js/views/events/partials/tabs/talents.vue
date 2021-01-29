@@ -40,11 +40,90 @@
                                     :key="index"
                                     href="javascript:void(0)"
                                     v-on:click="edit(artist)"
-                                    v-on:mouseenter="onSlotEnter"
-                                    v-on:mouseleave="onSlotLeave"
                                 >
                                   {{ (artist.status) }}({{ artist.hold_position }}) - {{ artist.name }}
                                   <b-img :src="artist.image" rounded="circle" width="50px"></b-img>
+                                  <b-popover
+                                      :target="'slot_popover_summary_' + summaryIdx + '_slot_' + idx + '_artist_' + index"
+                                      triggers="hover"
+                                      placement="auto"
+                                  >
+                                    <b-row>
+                                      <b-col>
+                                        <b-card title="Test Title" style="box-shadow: 1px 1px 8px 0">
+                                          <b-card-header v-if="fetchStatus(artist.status,'key') === 7">
+                                            <vue-countdown-timer
+                                                :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                                                :end-time="utcTimestamp(artist.offer_expiration_date)"
+                                                :interval="1000"
+                                                :start-label="'Start:'"
+                                                :end-label="'End:'"
+                                                label-position="begin"
+                                                :end-text="'Offer Expired'"
+                                                :day-txt="'Days'"
+                                                :hour-txt="'Hours'"
+                                                :minutes-txt="'Min'"
+                                                :seconds-txt="'Sec'">
+                                            </vue-countdown-timer>
+                                          </b-card-header>
+                                          <b-card-header v-if="[5, 12].includes(fetchStatus(artist.status, 'key')) && !!event.challenge">
+                                            <vue-countdown-timer
+                                                :start-time="currentUtcDate('YYYY-MM-DD HH:mm:ss')"
+                                                :end-time="utcTimestamp(event.challenge.end_at)"
+                                                :interval="1000"
+                                                :start-label="'Start:'"
+                                                :end-label="'Challenge Expires In:-'"
+                                                label-position="begin"
+                                                :end-text="'Challenge Expired!'"
+                                                :day-txt="'Days'"
+                                                :hour-txt="':'"
+                                                :minutes-txt="':'"
+                                                :seconds-txt="''">
+                                            </vue-countdown-timer>
+                                          </b-card-header>
+                                          <b-card-title>
+                                            <span v-if="artist.status === 'Archived' || artist.status === 'Released By Artist' || artist.status === 'Rescinded By Venue'" class="artist_status_text" style="background-color:#ffffff;color:#808080">{{ artist.status }}</span>
+                                            <span v-else class="artist_status_text" :style="artist.status_color">{{ artist.status }}</span>
+                                            <span v-if="artist.status === 'Declined' || artist.status === 'Not Available' || artist.status === 'Released By Artist' || artist.status === 'Rescinded By Venue'" class="artist_hold_text" style="background-color:#808080;color:#000000">{{ artist.hold_position }}</span>
+                                            <span v-else class="artist_hold_text" :style="artist.hold_position_color">{{ artist.hold_position }}</span>
+                                          </b-card-title>
+                                          <hr v-if="artist.status === 'Mutually Agreed Date' || artist.status === 'Declined'">
+                                          <p v-if="artist.status === 'Mutually Agreed Date' || artist.status === 'Declined'">
+                                            <span>{{ artist.date_notes }}</span>
+                                          </p>
+                                          <hr v-if="[5, 12].includes(fetchStatus(artist.status, 'key'))">
+                                          <p v-if="[5, 12].includes(fetchStatus(artist.status, 'key')) && !!event.challenge">
+                  <span>
+                    Hold position 1 ( {{ event.challenge.to.name }}) is challenged by Hold position 2 ({{ event.challenge.by.name }})
+                  </span>
+                                          </p>
+                                          <hr>
+                                          <b-card-text>
+                                            <b-img :src="artist.image" class="rounded-circle" width="50px" height="50px"></b-img>
+                                            <span style="font-size: 16px">{{ artist.name }}</span>
+                                            <span class="ml-1" :style="{fontWeight: 'bold', color: 'royalblue'}">(${{ artist.amount }})</span><br>
+                                          </b-card-text>
+                                          <b-card-text class="ml-2 mb-4" style="margin-top: -20px;">
+                                            <p class="ml-5">{{ artist.email }}</p>
+                                            <b-card-sub-title class="ml-5" v-for="(activity, idx) in artist.my_activities" :key="activity.stage.id">
+                                              <b class="font-size-14">{{ activity.stage.name }} </b><br>
+                                              Time Slots:-
+                                              <span v-for="(time_slot, tsIdx) in activity.slots" :key="tsIdx">
+                              {{ formatDate(time_slot.time.start, 'hh:mm A') }} - {{ formatDate(time_slot.time.end, 'hh:mm A') }}<span v-if="tsIdx !== activity.slots.length - 1">, </span>
+                            </span>
+                                              <br v-if="idx !== artist.my_activities.length - 1"/>
+                                              <br v-if="idx !== artist.my_activities.length - 1"/>
+                                            </b-card-sub-title>
+                                            <span class="ml-5">
+                                              {{ artist.notes }}
+                                            </span>
+                                          </b-card-text>
+                                          <b-button v-on:click="edit(artist)" variant="outline-primary">Edit</b-button>
+                                          <b-button v-on:click="remove(artist)" variant="outline-danger">Delete</b-button>
+                                        </b-card>
+                                      </b-col>
+                                    </b-row>
+                                  </b-popover>
                                 </b-list-group-item>
                               </b-list-group>
                             </b-col>
@@ -838,21 +917,6 @@
         </b-col>
       </b-row>
     </b-modal>
-
-    <b-popover
-        :target="popover.target"
-        :show.sync="popover.show"
-        triggers="hover"
-        placement="auto"
-        @show="popoverOnShow"
-        @hidden="popoverOnHidden"
-    >
-      <b-row>
-        <b-col>
-          <h1>Test</h1>
-        </b-col>
-      </b-row>
-    </b-popover>
   </div>
 </template>
 
@@ -1820,25 +1884,6 @@ export default {
         this.showStatusModal = false;
         this.statusForm = this.default('statusForm');
       }
-    },
-    popoverOnShow () {
-      console.log('in');
-    },
-    popoverOnHidden () {
-      console.log('insd');
-    },
-    onSlotEnter (e) {
-      this.popover.target = e.target.id;
-      this.popover.show = true;
-      console.log(e.target.id);
-      console.log(this.popover.show);
-      console.log(this.popover.target);
-    },
-    onSlotLeave () {
-      this.popover.target = '';
-      this.popover.show = false;
-      console.log(this.popover.show);
-      console.log(this.popover.target);
     }
   },
   created() {
