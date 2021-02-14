@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\PerformanceLocation;
 use App\Traits\HandleApiRequestAndResponse;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -38,18 +39,24 @@ class EventController extends Controller
         ];
         $this->validateApiRequest();
         if ($this->isInputValid) {
-            $this->setResponseVars(
-                'List of Events',
-                Event::with(['performanceLocation', 'stages', 'notes', 'timeSlots'])
-                    ->whereBetween(
-                        \DB::raw('DATE(date)'),
-                        [
-                            Carbon::createFromTimestampMs($request->get('start'))->format('Y-m-d'),
-                            Carbon::createFromTimestampMs($request->get('end'))->format('Y-m-d')
-                        ]
-                    )
-                    ->paginate()
-            );
+            $events = Event::with(['performanceLocation', 'stages', 'notes', 'timeSlots'])
+                ->whereBetween(
+                    \DB::raw('DATE(date)'),
+                    [
+                        Carbon::createFromTimestampMs($request->get('start'))->format('Y-m-d'),
+                        Carbon::createFromTimestampMs($request->get('end'))->format('Y-m-d')
+                    ]
+                );
+            if ($search = $request->get('search')) {
+                $events->where('name', 'LIKE', "{$search}%")
+                    ->orWhereHas('artists', function (Builder $query) use ($search){
+                        $query->where('name', 'LIKE', "{$search}%");
+                    })->orWhereHas('performanceLocation', function (Builder $query) use ($search){
+                        $query->where('name', 'LIKE', "{$search}%");
+                    });
+            }
+            $events = $events->paginate();
+            $this->setResponseVars('List of Events', $events);
         }
         
         return $this->apiResponse();

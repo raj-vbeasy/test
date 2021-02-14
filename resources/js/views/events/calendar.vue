@@ -5,23 +5,44 @@
       <b-col>
         <b-card>
           <b-card-body>
-            <div class="app-calendar">
-              <FullCalendar
-                  ref="eventCalendar"
-                  default-view="dayGridMonth"
-                  :header="calendarHeader"
-                  :editable="true"
-                  :droppable="true"
-                  :eventDrop="dropEvent"
-                  :plugins="calendarPlugins"
-                  :events="fetchEvents"
-                  :weekends="true"
-                  :event-drop="dropEvent"
-                  :theme-system="themeSystem"
-                  @eventDrop="dropEvent"
-                  @dateClick="addEvent"
-                  @eventClick="eventClick"/>
-            </div>
+            <b-row>
+              <b-col md="4">
+                <b-form-group>
+                  <b-form-input
+                      type="text"
+                      class="form-control"
+                      id="search-calendar"
+                      placeholder="Search by Artist name, Event name, Location" v-model="event_search"/>
+                </b-form-group>
+              </b-col>
+              <b-col md="1">
+                <b-button
+                    variant="outline-info float-right"
+                    @click="searchEvents"
+                >Search</b-button>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col>
+                <div class="app-calendar">
+                  <FullCalendar
+                      ref="eventCalendar"
+                      default-view="dayGridMonth"
+                      :header="calendarHeader"
+                      :editable="true"
+                      :droppable="true"
+                      :eventDrop="dropEvent"
+                      :plugins="calendarPlugins"
+                      :events="fetchEvents"
+                      :weekends="true"
+                      :event-drop="dropEvent"
+                      :theme-system="themeSystem"
+                      @eventDrop="dropEvent"
+                      @dateClick="addEvent"
+                      @eventClick="eventClick"/>
+                </div>
+              </b-col>
+            </b-row>
           </b-card-body>
         </b-card>
       </b-col>
@@ -220,7 +241,7 @@ import {cloneDeep} from 'lodash';
 
 export default {
   name: "event-calendar",
-  components: { FullCalendar, Layout, PageHeader, Multiselect, DatePicker },
+  components: {FullCalendar, Layout, PageHeader, Multiselect, DatePicker },
   page: {
     title: "Events",
     meta: [{ name: "description", content: appConfig.description }]
@@ -282,7 +303,8 @@ export default {
       formTitle: '',
       isLocationLoading: false,
       isStagesLoading: false,
-      total_time_slots: 1
+      total_time_slots: 1,
+      event_search: ''
     }
   },
   methods: {
@@ -388,7 +410,7 @@ export default {
     },
     fetchEvents (evt, success, error) {
       const loader = this.$loading.show();
-      const url = 'events?start=' + evt.start.getTime() + '&end=' + evt.end.getTime();
+      const url = 'events?start=' + evt.start.getTime() + '&end=' + evt.end.getTime() + '&search=' + this.event_search;
       this.$http.get(url)
           .then(response => {
             let events = [];
@@ -535,6 +557,9 @@ export default {
               this.isStagesLoading = false;
             });
       }
+    },
+    searchEvents () {
+      (this.$refs.eventCalendar.getApi()).refetchEvents();
     }
   },
   created () {
