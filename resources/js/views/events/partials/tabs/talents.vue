@@ -358,6 +358,770 @@
               </b-col>
             </b-row>
           </b-tab>
+
+          <b-tab>
+            <template v-slot:title>
+              <span class="d-inline-block d-sm-none">
+                <i class="fas fa-home"></i>
+              </span>
+              <span class="d-none d-sm-inline-block">Offer Terms</span>
+            </template>
+
+            <b-row class="mb-5 offer-terms">
+              <b-col>
+                <div class="tabs">
+                  <button class="tablink active" @click="openEvent($event,'offer')">OFFER</button>
+                  <button class="tablink" @click="openEvent($event,'logistics')">LOGISTICS</button>
+                  <button class="tablink" @click="openEvent($event,'artist_expenses')">ARTIST EXPENSES</button>
+                  <button class="tablink" @click="openEvent($event,'tickets')">TICKETS</button>
+                  <button class="tablink" @click="openEvent($event,'buyer_expenses')">BUYER EXPENSES</button>
+                </div>
+
+                <div id="offer" class="tabcontent" style="display: block;" >
+                  <div class="subtab">
+                    <button class="sublink sub-active" @click="openSub($event,'flat_gurantee')" >FLAT GURANTEE</button>
+                    <button class="sublink" @click="openSub($event,'versus')">VERSUS</button>
+                    <button class="sublink" @click="openSub($event,'plus_bonus')">PLUS BONUS</button>
+                    <button class="sublink" @click="openSub($event,'straight_percentage')">STRAIGHT PERCENTAGE</button>
+                  </div>
+                  <div class="subcontent" id="flat_gurantee" style="display: block;">
+                    <div class="subcontent-wrapper">
+                      <div class="group">
+                        <input type="number" required name="amount" value="" class="ak-input" autocomplete="off" />
+                        <span class="bar"></span>
+                        <label>Amount (In USD)</label>
+                      </div>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Gurantee : </span>
+                          <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-switch-input" class="toggle-switch-input"/>
+                            <label for="toggle-switch-input" class="toggle-switch-label"></label>
+                            Tax is inclusive
+                          </label>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span>
+                          <input type="number" value="1000" class="simple-input" placeholder="in Usd" >
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Precommission Costs/Expenses  </span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span>
+                          <input type="number" value="1000" class="simple-input" placeholder="in Usd" >
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <input type="number" value="20" class="block-input" />% &nbsp;
+                          <span>Booking Fee  </span>
+                          <label class="toggle-switch">
+                            <input type="checkbox" id="booking_fee" class="toggle-switch-input"/>
+                            <label for="booking_fee" class="toggle-switch-label"></label>
+                            On Top
+                          </label>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Tax : $</span><span class="value">0 %</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Artist Fee  </span>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Tax : $</span><span class="value">0 %</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Costs  </span>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Add Additional Bonus  </span>
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Add Withholdings Group  </span>
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="subcontent" id="versus">
+                    <div class="subcontent-wrapper">
+                      <div class="versus-box">
+                        <div class="group">
+                          <input type="number" required name="amount" value="" class="ak-input" autocomplete="off" />
+                          <span class="bar"></span>
+                          <label>Amount (In USD)</label>
+                        </div>
+                        <span class="vs">V.S</span>
+                        <div class="input-box-container">
+                          <input type="number" class="box-input" placeholder="Box Office (%)" />
+                          <div class="type">
+                            <span>Type : </span>
+                            <select class="box-input">
+                              <option>NBOR</option>
+                            </select>
+                          </div>
+                          <span>Split Point : $555</span>
+                        </div>
+                      </div>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Gurantee : </span>
+                          <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-switch-input" class="toggle-switch-input"/>
+                            <label for="toggle-switch-input" class="toggle-switch-label"></label>
+                            Tax is inclusive
+                          </label>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span>
+                          <input type="number" value="1000" class="simple-input" placeholder="in Usd" >
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Precommission Costs/Expenses  </span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span>
+
+                          <input type="number" value="1000" class="simple-input" placeholder="in Usd" >
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <input type="number" value="20" class="block-input" />% &nbsp;
+                          <span>Booking Fee  </span>
+                          <label class="toggle-switch">
+                            <input type="checkbox" id="booking_fee" class="toggle-switch-input"/>
+                            <label for="booking_fee" class="toggle-switch-label"></label>
+                            On Top
+                          </label>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Tax : $</span><span class="value">0 %</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Artist Fee  </span>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Tax : $</span><span class="value">0 %</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Costs  </span>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Add Additional Bonus  </span>
+
+                        </div>
+
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Add Withholdings Group  </span>
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="subcontent" id="plus_bonus">
+                    <div class="subcontent-wrapper">
+                      <div class="versus-box">
+                        <div class="group">
+                          <input type="number" required name="amount" value="" class="ak-input" autocomplete="off" />
+                          <span class="bar"></span>
+                          <label>Amount (In USD)</label>
+                        </div>
+                        <span class="vs">PLUS</span>
+                        <div class="input-box-container">
+                          <input type="number" class="box-input" placeholder="Box Office (%)" />
+                          <div class="type">
+                            <span>Type : </span>
+                            <select class="box-input">
+                              <option>NBOR</option>
+                            </select>
+                          </div>
+                          <span>Split Point : $555</span>
+                        </div>
+                      </div>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Gurantee : </span>
+                          <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-switch-input" class="toggle-switch-input"/>
+                            <label for="toggle-switch-input" class="toggle-switch-label"></label>
+                            Tax is inclusive
+                          </label>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span>
+                          <input type="number" value="1000" class="simple-input" placeholder="in Usd" >
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Precommission Costs/Expenses  </span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span>
+
+                          <input type="number" value="1000" class="simple-input" placeholder="in Usd" >
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <input type="number" value="20" class="block-input" />% &nbsp;
+                          <span>Booking Fee  </span>
+                          <label class="toggle-switch">
+                            <input type="checkbox" id="booking_fee" class="toggle-switch-input"/>
+                            <label for="booking_fee" class="toggle-switch-label"></label>
+                            On Top
+                          </label>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Tax : $</span><span class="value">0 %</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Artist Fee  </span>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Tax : $</span><span class="value">0 %</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Costs  </span>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Add Additional Bonus  </span>
+
+                        </div>
+
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Add Withholdings Group  </span>
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="subcontent" id="straight_percentage">
+                    <div class="subcontent-wrapper">
+                      <div class="versus-box">
+                        <div class="input-box-container">
+                          <input type="number" class="box-input" placeholder="Box Office (%)" />
+                          <div class="type">
+                            <span>Type : </span>
+                            <select class="box-input">
+                              <option>NBOR</option>
+                            </select>
+                          </div>
+                          <span>Split Point : $555</span>
+                        </div>
+                      </div>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Ticket Bonus : </span>
+                          <label class="toggle-switch">
+                            <input type="checkbox" id="ticket_bonus" class="toggle-switch-input"/>
+                            <label for="ticket_bonus" class="toggle-switch-label"></label>
+                            Tax is inclusive
+                          </label>
+
+                          <label class="toggle-switch">
+                            <input type="checkbox" id="tickets_final" class="toggle-switch-input"/>
+                            <label for="tickets_final" class="toggle-switch-label"></label>
+                            Tickets Final
+                          </label>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span>
+                          <input type="number" value="1000" class="simple-input" placeholder="in Usd" >
+                        </div>
+                      </div>
+                      <hr>
+
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <input type="number" value="20" class="block-input" />% &nbsp;
+                          <span>Agency Bonus  </span>
+
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Tax : $</span><span class="value">0 %</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Artist Bonus  </span>
+                        </div>
+                        <div class="total">
+                          <span>Amount : $</span><span class="value">2400</span>
+                        </div>
+                        <div class="total">
+                          <span>Tax : $</span><span class="value">0 %</span>
+                        </div>
+                        <div class="total">
+                          <span>Total : $</span><span class="value">0 %</span>
+
+                        </div>
+                      </div>
+
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Add Additional Bonus  </span>
+
+                        </div>
+
+                      </div>
+                      <hr>
+                      <div class="option-box">
+                        <div class="align-center">
+                          <span><img src="@/assets/icons/plus.svg" class="icon" /></span>
+                          <span><img src="@/assets/icons/minus.svg" class="icon" /></span>
+                          <span>Add Withholdings Group  </span>
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="logistics" class="tabcontent" >
+                  <div class="check-option">
+                    <img src="@/assets/icons/plane.svg" class="icon" />
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="flight" class="toggle-switch-input"/>
+                      <label for="flight" class="toggle-switch-label"></label>
+                      Purchaser pays for travel.&nbsp;
+                    </label>
+                    <span class="show-link">Show Details</span>
+                  </div>
+                  <div class="check-option">
+                    <img src="@/assets/icons/truck.svg" class="icon" />
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="truck" class="toggle-switch-input"/>
+                      <label for="truck" class="toggle-switch-label"></label>
+                      Purchaser pays for travel.&nbsp;
+                    </label>
+                    <span class="show-link">Show Details</span>
+                  </div>
+                  <div class="check-option">
+                    <img src="@/assets/icons/hotel.svg" class="icon" />
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="hotel" class="toggle-switch-input"/>
+                      <label for="hotel" class="toggle-switch-label"></label>
+                      Purchaser pays for travel.&nbsp;
+                    </label>
+                    <span class="show-link">Show Details</span>
+                  </div>
+                  <div class="check-option">
+                    <img src="@/assets/icons/compass.svg" class="icon" />
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="compass" class="toggle-switch-input"/>
+                      <label for="compass" class="toggle-switch-label"></label>
+                      Purchaser pays for travel.&nbsp;
+                    </label>
+                    <span class="show-link">Show Details</span>
+                  </div>
+                </div>
+                <div id="artist_expenses" class="tabcontent" >
+                  <div class="hr"></div>
+                  <div class="total-bill">
+                    <div class="bill-box">
+                      <span>Total</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Billable</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Paid</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Due</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Not Billed</span>
+                      <span>$100</span>
+                    </div>
+                  </div>
+                  <div class="hr"></div>
+                  <div class="artist-expenses">
+                    <div class="box-head">Artist Expenses</div>
+                    <div class="artist-expense-box">
+                      <div class="artist-expense-box-container">
+                        <div class="box-wrapper">
+                          <select>
+                            <option>Stage Lighting</option>
+                          </select>
+                          <span>For</span>
+                          <select>
+                            <option>Bert Fountain</option>
+                          </select>
+                          <div class="add-desc">
+                            <img src="@/assets/icons/plus.svg" class="icon-s" />
+                            <span>Add Description</span>
+                          </div>
+                        </div>
+                        <div class="right-box">
+                          <input type="number" class="simple-input w-40" value="500" />
+                          <span>Tax</span>
+                          <input type="number" class="simple-input" value="0" />%
+                        </div>
+                      </div>
+                      <div class="artist-expense-box-container">
+                        <div class="box-wrapper">
+                          <select>
+                            <option>COST</option>
+                          </select>
+                          <span>reimb. to</span>
+                          <select>
+                            <option>ITP inc</option>
+                          </select>
+                          <div class="add-desc">
+                            <img src="@/assets/icons/close.svg" class="icon-s" />
+                            <span>Billable</span>
+                          </div>
+                          <div class="add-desc">
+                            <img src="@/assets/icons/tick.svg" class="icon-s" />
+                            <span>PreComm</span>
+                          </div>
+                        </div>
+                        <div class="right-box">
+                          <span>Total : $</span>
+                          <input type="number" class="simple-input" value="500"/>
+                        </div>
+                      </div>
+                      <div class="hr"></div>
+                    </div>
+                  </div>
+                  <span class="add-desc"><img src="@/assets/icons/plus.svg" class="icon-s" />Add Expense</span>
+                </div>
+                <div id="tickets" class="tabcontent" >
+                  <div class="text-hr">Actuals</div>
+                  <div class="total-bill">
+                    <div class="bill-box">
+                      <span>GBOR</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>NBOR</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Ticket Fees</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Split Point</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Bonus Account</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Walk out</span>
+                      <span>$100</span>
+                    </div>
+                  </div>
+                  <div class="hr"></div>
+                  <div class="table-container">
+                    <div class="table">
+                      <span class="bold-color">Ticket Sale</span>
+                      <span>&nbsp;</span>
+                      <span class="bold-color">Tickets</span>
+                      <span class="bold-color">Comps</span>
+                      <span style="text-align: end;" class="bold-color">Total</span>
+                      <span><img src="@/assets/icons/plus.svg" class="icon-s" /></span>
+                    </div>
+                    <div class="table">
+                      <input type="number" class="simple-input w-40" placeholder="Description" />
+                      <span>Planned</span>
+                      <input type="number" class="simple-input w-40" />
+                      <input type="number" class="simple-input w-40" />
+                      <span style="text-align: end;">$333</span>
+                      <img src="@/assets/icons/close.svg" class="icon-s" />
+                      <input type="number" class="simple-input w-40" placeholder="Description" />
+                      <span>Actuals</span>
+                      <input type="number" class="simple-input w-40" />
+                      <input type="number" class="simple-input w-40" />
+                      <span style="text-align: end;">$333</span>
+
+                    </div>
+                    <div class="table">
+                      <input type="number" class="simple-input w-40" placeholder="Description" />
+                      <span>Planned</span>
+                      <input type="number" class="simple-input w-40" />
+                      <input type="number" class="simple-input w-40" />
+                      <span style="text-align: end;">$333</span>
+                      <img src="@/assets/icons/close.svg" class="icon-s" />
+                      <input type="number" class="simple-input w-40" placeholder="Description" />
+                      <span>Actuals</span>
+                      <input type="number" class="simple-input w-40" />
+                      <input type="number" class="simple-input w-40" />
+                      <span style="text-align: end;">$333</span>
+
+                    </div>
+
+                  </div>
+                  <span class="add-desc"><img src="@/assets/icons/plus.svg" class="icon-s" />Add Row</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="toggle-switch-input" class="toggle-switch-input"/>
+                    <label for="toggle-switch-input" class="toggle-switch-label"></label>
+                    Ticket Scaling Actuals are final
+                  </label>
+                  <div class="ticket-fees-container mt-2">
+                    <div class="ticket-Fees">
+                      <span>Ticket Fees</span>
+                      <span style=" display: flex; align-items: center;justify-content: flex-end; " ><img src="@/assets/icons/plus.svg" class="icon-s" />Total</span>
+                    </div>
+                    <div class="ticket-Fees">
+                      <span>No Tickets Added</span>
+                    </div>
+                  </div>
+                  <span class="add-desc"><img src="@/assets/icons/plus.svg" class="icon-s" />Add Ticket</span>
+                </div>
+                <div id="buyer_expenses" class="tabcontent" >
+                  <div class="text-hr">Actuals</div>
+                  <div class="total-bill">
+                    <div class="bill-box">
+                      <span>Total</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Fixed</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Variable</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Buyer Commission</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Split Point</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Buyer Profit</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Bonus Amount</span>
+                      <span>$100</span>
+                    </div>
+                    <div class="bill-box">
+                      <span>Walkout</span>
+                      <span>$100</span>
+                    </div>
+                  </div>
+                  <div class="hr"></div>
+                  <div class="ticket-fees-container mt-2">
+                    <div class="ticket-Fees">
+                      <span>Buyer Expenses</span>
+                      <span style=" display: flex; align-items: center;justify-content: flex-end; " ><img src="@/assets/icons/plus.svg" class="icon-s" />Total</span>
+                    </div>
+                    <div class="ticket-Fees">
+                      <span>No Buyer Expenses added</span>
+                    </div>
+                  </div>
+                  <span class="add-desc"><img src="@/assets/icons/plus.svg" class="icon-s">Add Expense</span>
+                  <div class="ticket-fees-container mt-2">
+                    <div class="ticket-Fees">
+                      <span>Buyer Commission</span>
+                      <span style=" display: flex; align-items: center;justify-content: flex-end; " ><img src="@/assets/icons/plus.svg" class="icon-s" />Total</span>
+                    </div>
+                    <div class="ticket-Fees">
+                      <span>No Buyer Commission</span>
+                    </div>
+                  </div>
+                  <span class="add-desc"><img src="@/assets/icons/plus.svg" class="icon-s">Add Commission</span>
+                  <div class="align-center">
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="toggle-switch-input" class="toggle-switch-input"/>
+                      <label for="toggle-switch-input" class="toggle-switch-label"></label>
+                      Include All Buyer Expenses in Split Point
+                    </label>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="toggle-switch-input" class="toggle-switch-input"/>
+                      <label for="toggle-switch-input" class="toggle-switch-label"></label>
+                      Include Gurantee in Split Point
+                    </label>
+                  </div>
+                </div>
+              </b-col>
+            </b-row>
+          </b-tab>
         </b-tabs>
       </b-col>
     </b-row>
@@ -1455,6 +2219,7 @@ export default {
                     my_activities: this.form.stages_time_slots
                   }
                 });
+                this.fetchActivities();
               } else if (this.modal.edit) {
                 let oldPosition = null,
                     updateArtist = false;
@@ -1884,8 +2649,53 @@ export default {
         this.showStatusModal = false;
         this.statusForm = this.default('statusForm');
       }
+    },
+    fetchActivities (artistId) {
+      this.$http.get(`events/${this.event.id}/activities?artist_id=${artistId}`)
+          .then(response => {
+            this.$emit('eventUpdate', {
+              activities: response.data.data
+            });
+          })
+          .catch(error => {
+            this.$toastr.fire({
+              toast: true,
+              icon: 'error',
+              title: error.response.data.message
+            });
+          })
+          .then(() => {
+            this.initiated = true;
+            this.setData();
+          });
+    },
+    openEvent (evt,eventName) {
+      var i,tabcontent,tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for(i=0;i<tabcontent.length;i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablink");
+      for(i=0;i<tablinks.length;i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active","");
+      }
+      document.getElementById(eventName).style.display = " block";
+      evt.currentTarget.className += " active";
+    },
+    openSub (evt,subName) {
+      var i,subcontent,sublink;
+      subcontent = document.getElementsByClassName("subcontent");
+      for(i=0;i<subcontent.length;i++) {
+        subcontent[i].style.display = "none";
+      }
+      sublink = document.getElementsByClassName("sublink");
+      for(i=0;i<sublink.length;i++) {
+        sublink[i].className = sublink[i].className.replace(" sub-active","");
+      }
+      document.getElementById(subName).style.display = "block";
+      evt.currentTarget.className += " sub-active";
     }
-  },
+},
   created() {
     this.$http.get('events/' + this.$route.params.id + '/artists/create')
         .then(response => {
@@ -1919,3 +2729,456 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.offer-terms {
+  .tabs {
+    display: flex;
+    gap: .5rem;
+    justify-content: center;
+  }
+  button {
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  .tablink {
+
+    font-size: 1.1rem;
+    font-weight: 400;
+    background-image: linear-gradient(120deg,transparent 0%,transparent 50%,#6f42c1 50%);
+    background-size: 230%;
+    padding: .5rem 1rem;
+    transition: all .3s ease-out;
+    border-radius: 20px;
+  }
+  .tablink:hover {
+    background-position: 100%;
+    color: white;
+    transform: translateX(-5%);
+
+  }
+  .bold-color {
+    color: #6f42c1;
+    font-weight: 700;
+  }
+  .tabcontent  {
+    display: none;
+    padding: 1rem;
+  }
+  .active {
+    background-color: #6f42c1;
+    color: white;
+  }
+  .subtab {
+    display: flex;
+    /* justify-content: center; */
+    gap: 1rem;
+  }
+  .sublink {
+    padding: .5rem 1rem;
+    color: #a6a6a6;
+    font-size: 1.03rem;
+  }
+  .sub-active {
+
+    color: #6f42c1;
+    font-weight: 600;
+    border-bottom: 1.5px solid #6f42c1;
+    transition: border-bottom .1s ease;
+  }
+  .group {
+    position: relative;
+    width: 35%;
+  }
+  .group label {
+    position: absolute;
+    pointer-events: none;
+    font-size: 1rem;
+    left: 4%;
+    top: 25%;
+    color: #6f42c1;
+    transition: all .3s ease;
+  }
+  .bar {
+    position: relative;
+    display: block;
+    width: 100%;
+  }
+  .bar::after , .bar::before {
+    content: '';
+    height: 2px;
+    position: absolute;
+    width: 0;
+    bottom: 0;
+    background: #6f42c1;
+    transition: all .2s ease;
+  }
+  .bar::before {
+    left: 50%;
+  }
+  .bar::after {
+    right: 50%;
+  }
+  .ak-input:focus ~ .bar::before , .ak-input:focus ~ .bar::after {
+    width: 50%;
+  }
+
+  .ak-input:focus ~ label , .ak-input:valid ~ label  {
+    top: -44%;
+    left: 2%;
+    font-size: .8rem;
+    color: #6f42c1;
+  }
+  .ak-input  {
+    outline: none;
+    border:none;
+    border-bottom: 1px solid #6f42c1;
+    font-size: 1rem;
+    width: 100%;
+    background: transparent;
+    padding: .5rem;
+  }
+  .subcontent {
+    display: none;
+    padding: 3rem 2rem;
+  }
+  .option-box {
+    display: flex;
+    color: black;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .simple-input {
+    border: none;
+    border-bottom: 1.5px solid #6f42c1;
+    outline: none;
+    font-size: 1.05rem;
+  }
+  .align-center {
+    display: flex;
+    align-items: center;
+  }
+  .icon {
+    width: 1.2rem;
+    margin-right: .5rem;
+    cursor: pointer;
+  }
+  .subcontent-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+  }
+  .block-input {
+    border: none;
+    display: block;
+    border-bottom: 1.5px solid #6f42c1;
+    width: 3rem;
+    font-size: 1.1rem;
+    outline: none;
+  }
+  .value {
+    color: #6f42c1;
+    font-weight: bold;
+  }
+  .toggle-switch {
+    margin: 0!important;
+  }
+  .versus-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .box-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    border-bottom: 1.5px solid #6f42c1;
+    font-size: 1.1rem;
+  }
+  .input-box-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    border: 1.5px solid #6f42c1;
+    padding: .7rem 1.4rem;
+    border-radius: 30px;
+  }
+  .vs {
+    width: 1.8rem;
+    height: 1.8rem;
+    border: 1px solid black;
+    border-radius: 50%;
+    padding: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .toggle-switch > :checked + label::after, :checked + .toggle-switch-label::after {
+    background: #6f42c1!important;
+  }
+  .toggle-switch > :checked + label::before, :checked + .toggle-switch-label::before {
+    background: #6f42c1!important;
+  }
+  .check-option {
+    display: flex;
+    align-items: center;
+    padding: 1rem 2rem;
+  }
+  .show-link {
+    text-decoration: none;
+    color: #6f42c1;
+  }
+  .hr {
+    width: 100%;
+    height: 2px;
+    background-color: #6f42c1;
+  }
+  .color {
+    color: #6f42c1;
+  }
+  .total-bill {
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  .bill-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+  }
+  .artist-expenses {
+    margin-top: 2rem;
+    border: 1.5px solid #6f42c1;
+    border-radius: 10px;
+    padding: .8rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .add-desc {
+    display: flex;
+    align-items: center;
+    margin:.2rem 0;
+  }
+  .artist-expense-box {
+    display: flex;
+
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .artist-expense-box-container {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+  }
+  .icon-s {
+    width: .8rem;
+    height: .8rem;
+    margin: .3rem;
+    cursor: pointer;
+  }
+  .box-wrapper {
+    display: flex;
+    gap: .4rem;
+  }
+  .simple-input {
+    line-height: 1.3;
+  }
+  .box-head {
+    border-bottom: 1.5px solid #6f42c1;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #6f42c1;
+    font-weight: 600;
+  }
+  select {
+    border-radius: 10px;
+    font-size: 1.05rem;
+    border: 1px solid #6f42c1;
+    outline: none;
+  }
+  .text-hr {
+
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+  }
+  .text-hr::before {
+    content: '';
+    display:block;
+    width: 50%;
+    height: 1.5px;
+    background-color: #6f42c1;
+  }
+  .text-hr::after {
+    content: '';
+    display: block;
+    width: 50%;
+    height: 1.5px;
+    background-color: #6f42c1;
+  }
+  .ticket-table {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 1rem;
+
+  }
+  .table {
+    width: 100%;
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: 1.3fr .6fr .7fr .7fr 1.2fr .3fr;
+    gap: 1rem;
+    border: 1.5px solid #6f42c1;
+    padding: 1rem;
+  }
+  .w-40 {
+    width: 50%;
+  }
+  .table-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  .ticket-Fees {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-between;
+    padding: 1rem;
+
+  }
+  .ticket-fees-container {
+    display: flex;
+    flex-direction: column;
+
+    border: 1.5px solid #6f42c1;
+
+  }
+  .mt-2 {
+    margin-top: 2rem;
+  }
+  /* separate css */
+  .toggle-switch {
+    /** bar */
+    --bar-height: 14px;
+    --bar-width: 32px;
+    --bar-color: #eee;
+
+    /** knob */
+    --knob-size: 20px;
+    --knob-color: #fff;
+
+    /** switch */
+    --switch-offset: calc(var(--knob-size) - var(--bar-height));
+    --switch-width: calc(var(--bar-width) + var(--switch-offset));
+    --transition-duration: 200ms;
+    --switch-transition: all var(--transition-duration) ease-in-out;
+    --switch-theme-rgb: 26, 115, 232;
+    --switch-theme-color: rgb(var(--switch-theme-rgb));
+    --switch-box-shadow: 0 0 var(--switch-offset) #11111180;
+    --switch-margin: 8px;
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-width: var(--bar-width);
+    min-height: var(--bar-height);
+    margin: var(--switch-margin);
+    user-select: none;
+  }
+
+  .toggle-switch.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .toggle-switch > input,
+  .toggle-switch-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+
+  .toggle-switch > label,
+  .toggle-switch-label {
+    --knob-x: calc((var(--bar-height) - var(--bar-width)) / 2);
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: var(--bar-width);
+    height: var(--bar-height);
+    margin: var(--switch-margin);
+    user-select: none;
+  }
+
+  /* checked */
+  .toggle-switch > :checked + label,
+  :checked + .toggle-switch-label {
+    --knob-x: calc((var(--bar-width) - var(--bar-height)) / 2);
+  }
+
+  /* bar */
+  .toggle-switch > label::before,
+  .toggle-switch-label::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    width: var(--bar-width);
+    height: var(--bar-height);
+    background: var(--bar-color);
+    border: 1px solid var(--switch-theme-color);
+    border-radius: var(--bar-height);
+    opacity: 0.5;
+    transition: var(--switch-transition);
+    content: "";
+  }
+
+  /* checked bar */
+  .toggle-switch > :checked + label::before,
+  :checked + .toggle-switch-label::before {
+    background: var(--switch-theme-color);
+  }
+
+  /* knob */
+  .toggle-switch > label::after,
+  .toggle-switch-label::after {
+    box-sizing: border-box;
+    width: var(--knob-size);
+    height: var(--knob-size);
+    background: var(--knob-color);
+    border-radius: 50%;
+    box-shadow: var(--switch-box-shadow);
+    transform: translateX(var(--knob-x));
+    transition: var(--switch-transition);
+    content: "";
+  }
+
+  /* checked knob */
+  .toggle-switch > :checked + label::after,
+  :checked + .toggle-switch-label::after {
+    background: var(--switch-theme-color);
+  }
+
+  /* hover & focus knob */
+  .toggle-switch > :focus + label::after,
+  :focus + .toggle-switch-label::after,
+  .toggle-switch:hover > label::after,
+  :hover > .toggle-switch-label::after {
+    box-shadow: var(--switch-box-shadow), 0 0 0 calc(var(--knob-size) / 2) rgba(var(--switch-theme-rgb), 0.2);
+  }
+}
+</style>

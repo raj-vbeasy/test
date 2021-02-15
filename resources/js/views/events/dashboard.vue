@@ -27,7 +27,7 @@
           <b-row>
             <b-col>
               <b-tabs justified nav-class="nav-tabs-custom" content-class="p-3 text-muted">
-                <b-tab>
+                <b-tab v-if="false">
                   <template v-slot:title>
                     <span class="d-inline-block d-sm-none">
                       <i class="fas fa-home"></i>

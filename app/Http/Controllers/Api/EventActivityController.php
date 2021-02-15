@@ -195,4 +195,31 @@ class EventActivityController extends Controller
         }
         return $this->apiResponse();
     }
+
+    /**
+     * @param Request $request
+     * @param int $eventId
+     * @return JsonResponse
+     */
+    final public function index(Request $request, int $eventId): JsonResponse
+    {
+        $activities = [];
+
+        $eventActivities = Event::find($eventId)->activities()->with(['artist:id,name,image_url', 'stage:id,name']);
+
+        if ($artistId = $request->get('artist_id')) {
+            $eventActivities->where('artist_id', $artistId);
+        }
+
+        $eventActivities = $eventActivities->get();
+
+        foreach ($eventActivities as $activity) {
+            if (in_array($activity->type, ['other', 'important'])) {
+                $activity->date = Carbon::createFromFormat('Y-m-d H:i:s', $activity->updated_at)->format('M d, Y');
+            }
+            $activities[$activity->type][] = $activity;
+        }
+        $this->setResponseVars('List of activities', $activities);
+        return $this->apiResponse();
+    }
 }

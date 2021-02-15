@@ -47,6 +47,8 @@ class EventArtistController extends Controller
      */
     final public function store(Request $request, int $eventId): JsonResponse
     {
+        $this->setResponseVars('Dummy artist added');
+        return $this->apiResponse();
         $request->merge(['event_id' => $eventId]);
         $this->validationRules = [
             'type' => 'required',
@@ -76,6 +78,7 @@ class EventArtistController extends Controller
             'publicity_firm.spotify.url' => 'Please enter valid spotify link'
         ];
         $this->validateApiRequest();
+
         if ($this->isInputValid) {
             $event = Event::find($eventId);
             \DB::beginTransaction();
