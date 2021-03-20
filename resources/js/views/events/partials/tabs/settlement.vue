@@ -3,7 +3,13 @@
     <b-row>
       <b-col>
         <p>
-          Below is preview of settlement <b-button variant="outline-info" style="float: right">Download</b-button>
+          Below is preview of settlement
+          <b-button
+            variant="outline-info"
+            style="float: right"
+          >
+            Download
+          </b-button>
         </p>
       </b-col>
     </b-row>
@@ -16,7 +22,9 @@
           <p>Additional Revenue <span class="pull-right">$0.00</span></p>
           <p>Total Expenses <span class="pull-right">$0.00</span></p>
           <hr>
-          <p><strong>Net Profit <span class="pull-right">$0.00</span></strong></p>
+          <p>
+            <strong>Net Profit <span class="pull-right">$0.00</span></strong>
+          </p>
           <hr>
           <p>Actual Attendance <span class="pull-right">0</span></p>
         </b-card>
@@ -27,10 +35,8 @@
 
 <script>
 export default {
-name: "settlement-tab"
-}
+  name: "SettlementTab"
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

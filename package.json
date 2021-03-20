@@ -12,18 +12,21 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "dependencies": {
-        "@fullcalendar/bootstrap": "^4.4.2",
-        "@fullcalendar/core": "^4.4.2",
-        "@fullcalendar/daygrid": "^4.4.2",
-        "@fullcalendar/interaction": "^4.4.2",
-        "@fullcalendar/timegrid": "^4.4.2",
-        "@fullcalendar/vue": "^4.4.2",
+        "@fullcalendar/bootstrap": "^5.5.0",
+        "@fullcalendar/core": "^5.5.1",
+        "@fullcalendar/daygrid": "^5.5.0",
+        "@fullcalendar/interaction": "^5.5.0",
+        "@fullcalendar/list": "^5.5.0",
+        "@fullcalendar/timegrid": "^5.5.1",
+        "@fullcalendar/vue": "^5.5.0",
         "@toast-ui/vue-chart": "^1.1.2",
+        "@vue/eslint-config-prettier": "^6.0.0",
         "apexcharts": "^3.19.3",
         "bootstrap": "^4.5.0",
         "bootstrap-vue": "^2.15.0",
         "core-js": "^3.4.4",
         "dotenv": "^8.2.0",
+        "eslint-plugin-prettier": "^3.3.1",
         "lodash": "^4.17.15",
         "metismenujs": "^1.2.1",
         "moment": "^2.27.0",
@@ -69,8 +72,8 @@
         "babel-plugin-transform-vue-jsx": "^3.7.0",
         "babel-preset-env": "^1.7.0",
         "cross-env": "^7.0",
-        "eslint": "^5.16.0",
-        "eslint-plugin-vue": "^5.0.0",
+        "eslint": "^7.20.0",
+        "eslint-plugin-vue": "^7.6.0",
         "laravel-mix": "^5.0.4",
         "resolve-url-loader": "^3.1.1",
         "vue-template-compiler": "^2.6.10"
@@ -90,7 +93,6 @@
         }
     },
     "browserslist": [
-        "> 1%",
-        "last 2 versions"
+        "since 2010"
     ]
 }
