@@ -35,9 +35,6 @@
                   <FullCalendar
                     ref="eventCalendar"
                     :options="calendarOptions"
-                    @eventDrop="dropEvent"
-                    @dateClick="addEvent"
-                    @eventClick="eventClick"
                   />
                 </div>
               </b-col>
@@ -343,13 +340,21 @@ export default {
         headerToolbar: {
           left: "prev,next today",
           center: "title",
-          right: "monthGridYear,dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+          right: "dayGridMonth,timeGridWeek,timeGridDay,listYear"
         },
         editable: true,
         droppable: true,
-        events: "fetchEvents",
+        events: this.fetchEvents,
         weekends: true,
-        themeSystem: "bootstrap"
+        themeSystem: "bootstrap",
+        views: {
+          listYear: {
+            buttonText: "Year"
+          }
+        },
+        eventDrop: this.dropEvent,
+        dateClick: this.addEvent,
+        eventClick: this.eventClick
       },
       calendarEvents: [],
       showModal: false,
@@ -393,6 +398,7 @@ export default {
   },
   methods: {
     addEvent (info) {
+      console.log(info);
       this.event.date = moment(info.date).utc().valueOf();
       this.formTitle = "Add New Event";
       this.showModal = true;
