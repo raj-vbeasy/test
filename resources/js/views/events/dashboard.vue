@@ -189,7 +189,7 @@ import TasksTab from "./partials/tabs/tasks";
 import NotesTab from "./partials/tabs/notes";
 
 export default {
-  name: "Dashboard",
+  name: "EventDashboard",
   components: {
     PageHeader,
     Layout,
@@ -312,7 +312,7 @@ export default {
         for (let i = 0; i < this.event.activities[args.data.type].length; i++) {
           if (this.event.activities[args.data.type][i].id === args.id) {
             for (const argsKey in args.data) {
-              if (args.data.hasOwnProperty(argsKey)) {
+              if (Object.prototype.hasOwnProperty.call(args.data, argsKey)) {
                 this.event.activities[args.data.type][i][argsKey] = args.data[argsKey];
               }
             }
@@ -342,7 +342,7 @@ export default {
         for (let i = 0; i < this.event.contacts.length; i++) {
           if (this.event.contacts[i].id === args.id) {
             for (const argsKey in args.data) {
-              if (args.data.hasOwnProperty(argsKey)) {
+              if (Object.prototype.hasOwnProperty.call(args.data, argsKey)) {
                 this.event.contacts[i][argsKey] = args.data[argsKey];
               }
             }
@@ -369,7 +369,7 @@ export default {
         for (let i = 0; i < this.event.notes.length; i++) {
           if (this.event.notes[i].id === args.id) {
             for (const argsKey in args.data) {
-              if (args.data.hasOwnProperty(argsKey)) {
+              if (Object.prototype.hasOwnProperty.call(args.data, argsKey)) {
                 this.event.notes[i][argsKey] = args.data[argsKey];
               }
             }
@@ -396,7 +396,7 @@ export default {
         for (let i = 0; i < this.event.expenses.length; i++) {
           if (this.event.expenses[i].id === args.id) {
             for (const argsKey in args.data) {
-              if (args.data.hasOwnProperty(argsKey)) {
+              if (Object.prototype.hasOwnProperty.call(args.data, argsKey)) {
                 this.event.expenses[i][argsKey] = args.data[argsKey];
               }
             }
@@ -416,7 +416,7 @@ export default {
     },
     eventUpdate (args) {
       for (const arg in args) {
-        if (args.hasOwnProperty(arg)) {
+        if (Object.prototype.hasOwnProperty.call(args, arg)) {
           this.event[arg] = cloneDeep(args[arg]);
         }
       }
