@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class HandleExpiredChallenges extends Command
 {
     /**
-     * The name and signature of the console command.
+     * The name and signature of the console command.  
      *
      * @var string
      */
