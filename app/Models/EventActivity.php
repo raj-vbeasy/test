@@ -43,6 +43,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereCellPhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereRadioChannel($value)
+ * @property int $status
+ * @property int $hold_position
+ * @property string|null $offer_expiration_date
+ * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereHoldPosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereOfferExpirationDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EventActivity whereStatus($value)
  */
 class EventActivity extends Model
 {

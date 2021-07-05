@@ -227,6 +227,7 @@ export default {
     const loader = this.$loading.show();
     this.$http.get("events/" + this.$route.params.id)
       .then(response => {
+        console.log(response);
         this.title = response.data.data.name;
         this.items.push({
           text: this.title,
