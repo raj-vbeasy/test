@@ -26,72 +26,7 @@
                                     :title="stage.name"
                                     style="box-shadow: 1px 1px 8px 0"
                                 >
-                                    <div
-                                        v-b-toggle="
-                                            `history_collapse_${summaryIdx}`
-                                        "
-                                        class="bg-light font-weight-bold p-1 text-center"
-                                    >
-                                        Talent's history
-                                    </div>
-                                    <b-collapse
-                                        :id="`history_collapse_${summaryIdx}`"
-                                    >
-                                        <b-card
-                                            class="border rounded-sm shadow-sm"
-                                        >
-                                            <div
-                                                v-for="(getHistory,
-                                                historyIdx) in talentHistory(
-                                                    stage.id
-                                                )"
-                                                :key="historyIdx"
-                                            >
-                                                <!-- <div
-                                                    v-if="
-                                                        getHistory.talentSummaryId ===
-                                                            stage.id
-                                                    "
-                                                > -->
-                                                <b-col
-                                                    class="border col mb-1 p-2"
-                                                >
-                                                    {{ getHistory.artistName }}/
-                                                    {{ getHistory.status }}/
-                                                    {{
-                                                        getHistory.hold_position
-                                                    }}/
-                                                    {{ getHistory.stage_name }}/
-                                                    {{
-                                                        formatDate(
-                                                            getHistory.startTime,
-                                                            "DD-MM-YYYY"
-                                                        )
-                                                    }}
-                                                    /
-                                                    {{
-                                                        formatDate(
-                                                            getHistory.startTime,
-                                                            "hh:mm A"
-                                                        )
-                                                    }}
-                                                    -
-                                                    {{
-                                                        formatDate(
-                                                            getHistory.endTime,
-                                                            "hh:mm A"
-                                                        )
-                                                    }}/ {{ getHistory.price }}/
-                                                    {{ getHistory.offer_term }}/
-                                                    {{ getHistory.notes }}
-                                                </b-col>
-                                                <!-- </div> -->
-                                                <!-- Artist /Status/Position/Stage
-                                                /Date/ Timeslot/ Quote/Offer
-                                                terms/Notes -->
-                                            </div>
-                                        </b-card>
-                                    </b-collapse>
+                                    
                                     <b-row class="mt-4">
                                         <b-col>
                                             <b-tabs
@@ -569,6 +504,55 @@
                                         </b-col>
                                     </b-row>
                                 </b-card>
+                                <div v-b-toggle="`history_collapse_1`" class="bg-light font-weight-bold p-1 text-center">
+                                    History
+                                </div>
+                                <b-collapse
+                                    id="history_collapse_1"
+                                >
+                                    <b-card
+                                        class="border rounded-sm shadow-sm"
+                                    >
+                                        <div
+                                            v-for="(getHistory,
+                                            historyIdx) in talentHistory"
+                                            :key="historyIdx"
+                                        >
+                                            <b-col
+                                                class="border col mb-1 p-2"
+                                            >
+                                                {{ getHistory.artistName }}/
+                                                {{ getHistory.status }}/
+                                                {{
+                                                    getHistory.hold_position
+                                                }}/
+                                                {{ getHistory.stage_name }}/
+                                                {{
+                                                    formatDate(
+                                                        getHistory.startTime,
+                                                        "DD-MM-YYYY"
+                                                    )
+                                                }}
+                                                /
+                                                {{
+                                                    formatDate(
+                                                        getHistory.startTime,
+                                                        "hh:mm A"
+                                                    )
+                                                }}
+                                                -
+                                                {{
+                                                    formatDate(
+                                                        getHistory.endTime,
+                                                        "hh:mm A"
+                                                    )
+                                                }}/ {{ getHistory.price }}/
+                                                {{ getHistory.offer_term }}/
+                                                {{ getHistory.notes }}
+                                            </b-col>
+                                        </div>
+                                    </b-card>
+                                </b-collapse>
                             </b-col>
                         </b-row>
                     </b-tab>
@@ -4269,6 +4253,40 @@ export default {
 
             return summary;
         },
+        talentHistory: function() {
+            let setHistory = [];
+            this.talentSummary.forEach((talent, talentIndex) => {
+                // if (talentSummaryId === talent.id) {
+                    for (let i = 0; i < talent.slots.length; i++) {
+                        for (
+                            let j = 0;
+                            j < talent.slots[i].artists.length;
+                            j++
+                        ) {
+                            let time = talent.slots[i].time.split(",");
+                            let startTime = Number(time[0]);
+                            let endTime = Number(time[1]);
+                            setHistory.push({
+                                artistName: talent.slots[i].artists[j].name,
+                                notes: talent.slots[i].artists[j].notes,
+                                hold_position:
+                                    talent.slots[i].artists[j].hold_position,
+                                notes: talent.slots[i].artists[j].notes,
+                                status: talent.slots[i].artists[j].status,
+                                // talentSummaryId: talent.id,
+                                stage_name: talent.name,
+                                price: talent.slots[i].artists[j].amount,
+                                offer_term: "Offer",
+                                notes: talent.slots[i].artists[j].notes,
+                                startTime: startTime,
+                                endTime: endTime,
+                            });
+                        }
+                    }
+                // }
+            });
+            return setHistory;
+        }
     },
     watch: {
         event: {
@@ -5364,41 +5382,7 @@ export default {
             }
             document.getElementById(subName).style.display = "block";
             evt.currentTarget.className += " sub-active";
-        },
-        talentHistory: function(talentSummaryId) {
-            let setHistory = [];
-            this.talentSummary.forEach((talent, talentIndex) => {
-                if (talentSummaryId === talent.id) {
-                    for (let i = 0; i < talent.slots.length; i++) {
-                        for (
-                            let j = 0;
-                            j < talent.slots[i].artists.length;
-                            j++
-                        ) {
-                            let time = talent.slots[i].time.split(",");
-                            let startTime = Number(time[0]);
-                            let endTime = Number(time[1]);
-                            setHistory.push({
-                                artistName: talent.slots[i].artists[j].name,
-                                notes: talent.slots[i].artists[j].notes,
-                                hold_position:
-                                    talent.slots[i].artists[j].hold_position,
-                                notes: talent.slots[i].artists[j].notes,
-                                status: talent.slots[i].artists[j].status,
-                                talentSummaryId: talent.id,
-                                stage_name: talent.name,
-                                price: talent.slots[i].artists[j].amount,
-                                offer_term: "Offer",
-                                notes: talent.slots[i].artists[j].notes,
-                                startTime: startTime,
-                                endTime: endTime,
-                            });
-                        }
-                    }
-                }
-            });
-            return setHistory;
-        },
+        }
     },
 };
 </script>
@@ -5857,5 +5841,6 @@ export default {
         box-shadow: var(--switch-box-shadow),
             0 0 0 calc(var(--knob-size) / 2) rgba(var(--switch-theme-rgb), 0.2);
     }
+
 }
 </style>
