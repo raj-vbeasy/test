@@ -60,6 +60,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereChallenge($value)
  * @property int $challenge_expired
  * @method static \Illuminate\Database\Eloquent\Builder|Event whereChallengeExpired($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EventTimeSlot[] $timeSlots
+ * @property-read int|null $time_slots_count
  */
 class Event extends Model
 {
